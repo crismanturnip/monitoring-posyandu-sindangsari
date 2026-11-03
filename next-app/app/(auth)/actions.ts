@@ -18,7 +18,7 @@ export async function signIn(formData: FormData) {
   if (error || !data.user) redirect(authErrorPath('/login', 'Email atau kata sandi tidak valid.'));
   // Account status is checked by proxy.ts on the following request. Querying
   // immediately after sign-in can observe the pre-session token in an SSR action.
-  redirect('/');
+  redirect('/dashboard');
 }
 
 export async function signUp(formData: FormData) {

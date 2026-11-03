@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 type FrameProfile = { full_name: string; role: 'BIDAN' | 'KADER' } | null;
 
-const publicPaths = new Set(['/login', '/register', '/forgot-password', '/update-password', '/jadwal-publik']);
+const publicPaths = new Set(['/', '/login', '/register', '/forgot-password', '/update-password', '/jadwal-publik']);
 const primaryItems = [
-  { href: '/', label: 'Dashboard' },
+  { href: '/dashboard', label: 'Dashboard' },
   { href: '/balita', label: 'Bayi & Balita' },
   { href: '/ibu-hamil', label: 'Ibu Hamil' },
   { href: '/lansia', label: 'Lansia' },
@@ -23,11 +23,17 @@ function isActive(pathname: string, href: string) {
 
 export function ApplicationFrame({ profile, children }: { profile: FrameProfile; children: ReactNode }) {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => setMenuOpen(false), [pathname]);
   const isPublic = publicPaths.has(pathname) || pathname.startsWith('/auth/');
   if (!profile || isPublic) return children;
 
   return <div className="shell">
-    <aside className="sidebar">
+    <button className="menu-toggle" type="button" aria-label={menuOpen ? 'Tutup menu' : 'Buka menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen((current) => !current)}>
+      <span /><span /><span />
+    </button>
+    {menuOpen && <button className="menu-backdrop" type="button" aria-label="Tutup menu" onClick={() => setMenuOpen(false)} />}
+    <aside className={`sidebar${menuOpen ? ' open' : ''}`}>
       <div className="brand"><div className="brand-mark">P</div><div><strong>Monitoring Posyandu</strong><span>Desa Sindangsari</span></div></div>
       <div className="nav-label">Menu utama</div>
       <nav>

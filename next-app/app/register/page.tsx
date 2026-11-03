@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { signUp } from '../(auth)/actions';
+import { PasswordInput } from '@/components/password-input';
 
 type RegisterPageProps = { searchParams: Promise<{ error?: string }> };
 
@@ -11,8 +12,8 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
     {params.error && <div className="form-error" role="alert">{params.error}</div>}
     <label>Nama lengkap<input name="fullName" autoComplete="name" required minLength={2} /></label>
     <label>Email<input name="email" type="email" autoComplete="email" required /></label>
-    <label>Kata sandi<input name="password" type="password" autoComplete="new-password" required minLength={8} /></label>
-    <label>Konfirmasi kata sandi<input name="confirmPassword" type="password" autoComplete="new-password" required minLength={8} /></label>
+    <label>Kata sandi<PasswordInput name="password" autoComplete="new-password" required minLength={8} /></label>
+    <label>Konfirmasi kata sandi<PasswordInput name="confirmPassword" autoComplete="new-password" required minLength={8} /></label>
     <button type="submit">Kirim registrasi</button>
     <p className="auth-footer">Sudah memiliki akun? <Link href="/login">Masuk</Link></p>
   </form></main>;

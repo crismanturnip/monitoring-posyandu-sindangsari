@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { signIn } from '../(auth)/actions';
+import { PasswordInput } from '@/components/password-input';
 
 type LoginPageProps = { searchParams: Promise<{ error?: string; registered?: string; password_updated?: string }> };
 
@@ -12,7 +13,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     {params.registered && <div className="form-success">Registrasi diterima. Tunggu persetujuan bidan sebelum masuk.</div>}
     {params.password_updated && <div className="form-success">Kata sandi berhasil diperbarui. Silakan masuk kembali.</div>}
     <label>Email<input name="email" type="email" autoComplete="email" required /></label>
-    <label>Kata sandi<input name="password" type="password" autoComplete="current-password" required /></label>
+    <label>Kata sandi<PasswordInput name="password" autoComplete="current-password" required /></label>
     <button type="submit">Masuk</button>
     <p className="auth-footer"><Link href="/forgot-password">Lupa kata sandi?</Link></p>
     <p className="auth-footer">Belum memiliki akun? <Link href="/register">Daftar sebagai kader</Link></p>

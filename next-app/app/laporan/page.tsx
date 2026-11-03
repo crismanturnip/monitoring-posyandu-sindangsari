@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { LogoutButton } from '@/components/logout-button';
 import { requireActiveProfile } from '@/lib/auth';
 import { loadReportRows, normalizeReportFilters } from '@/lib/reports';
@@ -19,7 +18,6 @@ export default async function ReportsPage({ searchParams }: Props) {
   const formatDate = (date: string) => new Intl.DateTimeFormat('id-ID', { dateStyle: 'long', timeZone: 'Asia/Jakarta' }).format(new Date(`${date}T00:00:00+07:00`));
 
   return <main className="admin-page report-page"><header className="admin-header"><div><p className="eyebrow">Rekap data</p><h1>Laporan Monitoring</h1><p>Hasil laporan mengikuti filter dan hak akses Posyandu akun Anda.</p></div><div className="profile"><div className="avatar">{profile.full_name[0]}</div><span>{profile.full_name}</span><LogoutButton /></div></header>
-    <nav className="admin-nav"><Link href="/">Dashboard</Link><Link className="active" href="/laporan">Laporan</Link><Link href="/akun">Akun</Link></nav>
     <section className="card"><form className="report-filters" method="get">
       <label>Kategori<select name="category" defaultValue={filters.category}><option value="balita">Bayi &amp; Balita</option><option value="ibu-hamil">Ibu Hamil</option><option value="lansia">Lansia</option></select></label>
       <label>Posyandu<select name="posyandu" defaultValue={filters.posyanduId}><option value="">Semua Posyandu yang dapat diakses</option>{posyandu.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>

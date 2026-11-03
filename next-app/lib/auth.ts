@@ -21,6 +21,6 @@ export async function requireActiveProfile(): Promise<{ profile: ActiveProfile; 
 
 export async function requireBidan() {
   const result = await requireActiveProfile();
-  if (result.profile.role !== 'BIDAN') redirect('/');
+  if (result.profile.role !== 'BIDAN') redirect('/dashboard');
   return result;
 }

@@ -17,6 +17,7 @@ export async function createSchedule(formData: FormData) {
   await supabase.from('schedules').insert({ posyandu_id: posyanduId, starts_at: startsAt, location, status: 'TERJADWAL', is_public: true, created_by: profile.id });
   revalidatePath('/jadwal');
   revalidatePath('/jadwal-publik');
+  revalidatePath('/');
 }
 
 export async function cancelSchedule(formData: FormData) {
@@ -26,6 +27,7 @@ export async function cancelSchedule(formData: FormData) {
   await supabase.from('schedules').update({ status: 'DIBATALKAN', cancelled_at: new Date().toISOString() }).eq('id', id);
   revalidatePath('/jadwal');
   revalidatePath('/jadwal-publik');
+  revalidatePath('/');
 }
 
 export async function updateSchedule(formData: FormData) {
@@ -37,4 +39,15 @@ export async function updateSchedule(formData: FormData) {
   await supabase.from('schedules').update({ starts_at: startsAt, location, status: 'TERJADWAL', cancelled_at: null }).eq('id', id);
   revalidatePath('/jadwal');
   revalidatePath('/jadwal-publik');
+  revalidatePath('/');
+}
+
+export async function deleteSchedule(formData: FormData) {
+  const id = String(formData.get('id') ?? '');
+  if (!id) return;
+  const { supabase } = await requireBidan();
+  await supabase.from('schedules').delete().eq('id', id);
+  revalidatePath('/jadwal');
+  revalidatePath('/jadwal-publik');
+  revalidatePath('/');
 }

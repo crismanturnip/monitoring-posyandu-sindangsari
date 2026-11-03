@@ -1,8 +1,8 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { addMeasurement, softDeleteChild, updateChild } from "../actions";
-import { requireActiveProfile } from "@/lib/auth";
-import { LogoutButton } from "@/components/logout-button";
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { addMeasurement, softDeleteChild, updateChild } from '../actions';
+import { requireActiveProfile } from '@/lib/auth';
+import { LogoutButton } from '@/components/logout-button';
 
 type Props = { params: Promise<{ id: string }> };
 type Measurement = {
@@ -13,33 +13,36 @@ type Measurement = {
   officer_notes: string | null;
 };
 
+const deliveryTypes = ['Normal', 'Operasi Caesar', 'Vakum', 'Forsep'];
+
 export default async function ChildDetailPage({ params }: Props) {
   const { id } = await params;
   const { profile, supabase } = await requireActiveProfile();
   const [{ data: child }, { data: measurementsData }] = await Promise.all([
     supabase
-      .from("children")
-      .select("*")
-      .eq("id", id)
-      .is("deleted_at", null)
+      .from('children')
+      .select('*')
+      .eq('id', id)
+      .is('deleted_at', null)
       .single(),
     supabase
-      .from("child_measurements")
-      .select("id, measured_at, weight_kg, height_cm, officer_notes")
-      .eq("child_id", id)
-      .order("measured_at", { ascending: false }),
+      .from('child_measurements')
+      .select('id, measured_at, weight_kg, height_cm, officer_notes')
+      .eq('child_id', id)
+      .order('measured_at', { ascending: false }),
   ]);
   if (!child) notFound();
   const measurements = (measurementsData ?? []) as Measurement[];
   const formatDate = (date: string) =>
-    new Intl.DateTimeFormat("id-ID", { dateStyle: "long" }).format(
+    new Intl.DateTimeFormat('id-ID', { dateStyle: 'long' }).format(
       new Date(`${date}T00:00:00`),
     );
+
   return (
     <main className="admin-page">
-      <nav className="admin-nav">
-        <Link href="/balita">← Kembali ke bayi &amp; balita</Link>
-      </nav>
+      <Link className="back-link" href="/balita">
+        ← Kembali ke bayi &amp; balita
+      </Link>
       <header className="admin-header">
         <div>
           <p className="eyebrow">Detail monitoring</p>
@@ -62,24 +65,15 @@ export default async function ChildDetailPage({ params }: Props) {
           </label>
           <label>
             Nama ibu
-            <input
-              name="motherName"
-              required
-              defaultValue={child.mother_name}
-            />
+            <input name="motherName" required defaultValue={child.mother_name} />
           </label>
           <label>
             Tempat lahir
-            <input name="birthPlace" defaultValue={child.birth_place ?? ""} />
+            <input name="birthPlace" defaultValue={child.birth_place ?? ''} />
           </label>
           <label>
             Tanggal lahir
-            <input
-              name="birthDate"
-              type="date"
-              required
-              defaultValue={child.birth_date}
-            />
+            <input name="birthDate" type="date" required defaultValue={child.birth_date} />
           </label>
           <label>
             Jenis kelamin
@@ -90,39 +84,25 @@ export default async function ChildDetailPage({ params }: Props) {
           </label>
           <label>
             Anak ke-
-            <input
-              name="childOrder"
-              type="number"
-              min="1"
-              defaultValue={child.child_order ?? ""}
-            />
+            <input name="childOrder" type="number" min="1" defaultValue={child.child_order ?? ''} />
           </label>
           <label>
             Jenis persalinan
-            <input
-              name="deliveryType"
-              defaultValue={child.delivery_type ?? ""}
-            />
+            <select name="deliveryType" defaultValue={child.delivery_type ?? ''}>
+              <option value="">Pilih jenis persalinan</option>
+              {deliveryTypes.map((type) => <option value={type} key={type}>{type}</option>)}
+              {child.delivery_type && !deliveryTypes.includes(child.delivery_type) && (
+                <option value={child.delivery_type}>{child.delivery_type}</option>
+              )}
+            </select>
           </label>
           <label>
             Berat lahir (kg)
-            <input
-              name="birthWeight"
-              type="number"
-              step="0.01"
-              min="0.01"
-              defaultValue={child.birth_weight_kg ?? ""}
-            />
+            <input name="birthWeight" type="number" step="0.01" min="0.01" defaultValue={child.birth_weight_kg ?? ''} />
           </label>
           <label>
             Tinggi badan (cm)
-            <input
-              name="birthLength"
-              type="number"
-              step="0.01"
-              min="0.01"
-              defaultValue={child.birth_length_cm ?? ""}
-            />
+            <input name="birthLength" type="number" step="0.01" min="0.01" defaultValue={child.birth_length_cm ?? ''} />
           </label>
           <button type="submit">Simpan perubahan</button>
         </form>
@@ -136,23 +116,11 @@ export default async function ChildDetailPage({ params }: Props) {
             </label>
             <label>
               Berat badan (kg)
-              <input
-                name="weightKg"
-                type="number"
-                step="0.01"
-                min="0.01"
-                required
-              />
+              <input name="weightKg" type="number" step="0.01" min="0.01" required />
             </label>
             <label>
               Tinggi badan (cm)
-              <input
-                name="heightCm"
-                type="number"
-                step="0.01"
-                min="0.01"
-                required
-              />
+              <input name="heightCm" type="number" step="0.01" min="0.01" required />
             </label>
             <label>
               Catatan petugas
@@ -170,22 +138,18 @@ export default async function ChildDetailPage({ params }: Props) {
                   <div className="data-row" key={item.id}>
                     <div>
                       <strong>{formatDate(item.measured_at)}</strong>
-                      <span>{item.officer_notes || "Tanpa catatan"}</span>
+                      <span>{item.officer_notes || 'Tanpa catatan'}</span>
                     </div>
-                    <strong>
-                      {item.weight_kg} kg · {item.height_cm} cm
-                    </strong>
+                    <strong>{item.weight_kg} kg · {item.height_cm} cm</strong>
                   </div>
                 ))}
               </div>
             )}
           </section>
-          {profile.role === "BIDAN" && (
+          {profile.role === 'BIDAN' && (
             <form action={softDeleteChild} className="delete-form">
               <input type="hidden" name="id" value={id} />
-              <button className="danger" type="submit">
-                Hapus data (soft delete)
-              </button>
+              <button className="danger" type="submit">Hapus data (soft delete)</button>
             </form>
           )}
         </div>
