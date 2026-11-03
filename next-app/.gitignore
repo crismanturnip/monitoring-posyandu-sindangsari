@@ -6,3 +6,5 @@ out
 .env.*.local
 *.log
 supabase/.temp/
+
+.vercel/
