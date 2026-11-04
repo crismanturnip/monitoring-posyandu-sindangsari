@@ -1,12 +1,20 @@
 import Link from 'next/link';
+import { unstable_cache } from 'next/cache';
 import { createPublicSupabaseClient, isSupabaseConfigured } from '@/lib/supabase/public';
 
 type PublicSchedule = { id: string; posyandu_name: string; starts_at: string; location: string; status: 'TERJADWAL' | 'SELESAI' | 'DIBATALKAN' };
 
+export const revalidate = 60;
+
+const getPublicSchedules = unstable_cache(async (): Promise<PublicSchedule[]> => {
+  if (!isSupabaseConfigured()) return [];
+  const { data, error } = await createPublicSupabaseClient().rpc('get_public_schedules');
+  if (error) throw new Error(`Jadwal publik gagal dimuat: ${error.message}`);
+  return (data ?? []) as PublicSchedule[];
+}, ['public-schedules'], { revalidate: 60, tags: ['public-schedules'] });
+
 export default async function PublicSchedulePage() {
-  const schedules: PublicSchedule[] = isSupabaseConfigured()
-    ? ((await createPublicSupabaseClient().rpc('get_public_schedules')).data ?? []) as PublicSchedule[]
-    : [];
+  const schedules = await getPublicSchedules();
   const formatDate = (date: string) => new Intl.DateTimeFormat('id-ID', { dateStyle: 'full', timeStyle: 'short', timeZone: 'Asia/Jakarta' }).format(new Date(date));
   return <main className="public-page"><header className="public-header"><Link className="brand public-brand" href="/"><div className="brand-mark">P</div><div><strong>Monitoring Posyandu</strong><span>Desa Sindangsari</span></div></Link><Link className="public-login" href="/login">Masuk petugas</Link></header><section className="public-hero"><p className="eyebrow">Informasi untuk masyarakat</p><h1>Jadwal kegiatan Posyandu</h1><p>Lihat waktu dan lokasi kegiatan Posyandu Desa Sindangsari. Halaman ini dapat dibuka tanpa login dan tidak menampilkan data pribadi atau kesehatan.</p></section><section className="public-list">{schedules.length === 0 ? <div className="card empty">Belum ada jadwal kegiatan yang dipublikasikan.</div> : schedules.map((schedule) => <article className="public-schedule card" key={schedule.id}><span className={`status ${schedule.status.toLowerCase()}`}>{schedule.status}</span><h2>{schedule.posyandu_name}</h2><p>{formatDate(schedule.starts_at)}</p><p>{schedule.location}</p></article>)}</section></main>;
 }

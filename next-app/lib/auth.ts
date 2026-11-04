@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { cache } from 'react';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export type ActiveProfile = {
@@ -8,7 +9,7 @@ export type ActiveProfile = {
   account_status: 'PENDING' | 'ACTIVE' | 'REJECTED' | 'INACTIVE';
 };
 
-export async function requireActiveProfile(): Promise<{ profile: ActiveProfile; supabase: Awaited<ReturnType<typeof createSupabaseServerClient>> }> {
+export const requireActiveProfile = cache(async (): Promise<{ profile: ActiveProfile; supabase: Awaited<ReturnType<typeof createSupabaseServerClient>> }> => {
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
@@ -17,7 +18,7 @@ export async function requireActiveProfile(): Promise<{ profile: ActiveProfile; 
   const profile = data as ActiveProfile | null;
   if (!profile || profile.account_status !== 'ACTIVE') redirect('/login?error=Akun%20Anda%20belum%20aktif.');
   return { profile, supabase };
-}
+});
 
 export async function requireBidan() {
   const result = await requireActiveProfile();

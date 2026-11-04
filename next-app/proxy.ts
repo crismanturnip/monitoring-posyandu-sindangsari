@@ -22,13 +22,9 @@ export async function proxy(request: NextRequest) {
     },
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.redirect(new URL('/login', request.url));
-
-  const { data: profile } = await supabase.rpc('get_current_profile').single<{ account_status: string }>();
-  if (profile?.account_status !== 'ACTIVE') {
-    return NextResponse.redirect(new URL('/login?error=Akun%20Anda%20belum%20aktif.', request.url));
-  }
+  const { data } = await supabase.auth.getClaims();
+  if (!data?.claims) return NextResponse.redirect(new URL('/login', request.url));
+  response.headers.set('Cache-Control', 'private, no-store');
   return response;
 }
 
