@@ -1,5 +1,5 @@
 type PosyanduLogoProps = {
-  id: 'header' | 'footer';
+  id: 'header' | 'footer' | 'auth';
 };
 
 /** Inline SVG so the public landing page does not depend on a separate image request. */
