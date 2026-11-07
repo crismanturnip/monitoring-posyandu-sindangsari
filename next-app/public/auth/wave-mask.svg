@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+  <defs>
+    <filter id="soft-edge" x="-400" y="-400" width="2200" height="1800" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="24" />
+    </filter>
+  </defs>
+  <path d="M90-200V0C270 150-10 240 45 370S245 560 110 730 20 930 120 1000V1200H1400V-200Z" fill="white" filter="url(#soft-edge)" />
+</svg>
