@@ -100,5 +100,15 @@
   .formArea { align-items: flex-start; padding: 24px 0; }
   .art { display: none; }
 }
-@media (max-width: 380px) { .content { padding: 24px 20px; } }
-@media (prefers-reduced-motion: reduce) { .inputWrap input, .submit, .secondaryButton { transition: none; } }
+@media (max-width: 380px) {
+  .identity { inset: 20px 20px auto; }
+  .content { padding: 96px 20px 20px; }
+  .brand { gap: 8px; }
+  .brand > svg { flex-basis: 40px; width: 40px; height: 40px; }
+  .brand strong { font-size: 12px; }
+  .brand span { font-size: 11px; }
+  .back { gap: 6px; padding-inline: 10px; font-size: 12px; }
+  .alternativeActions { gap: 8px; }
+  .alternativeActions .secondaryButton { padding: 12px 8px; font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) { .inputWrap input, .submit, .secondaryButton, .back, .back svg { transition: none; } .back:hover svg { transform: none; } }
