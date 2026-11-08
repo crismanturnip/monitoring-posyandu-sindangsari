@@ -7,6 +7,9 @@
   --lp-line: #e5e7eb;
   --lp-canvas: #f7f8fa;
   --lp-surface: #ffffff;
+  --lp-nav-height: 104px;
+  --lp-nav-logo: 48px;
+  --lp-nav-gutter: clamp(28px, 3.33vw, 64px);
   min-height: 100vh;
   background: var(--lp-surface);
   color: var(--lp-ink);
