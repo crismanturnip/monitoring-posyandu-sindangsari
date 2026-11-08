@@ -21,6 +21,6 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
     <AuthNote><p><strong>Persetujuan akun</strong></p><p>Akun akan berstatus menunggu persetujuan bidan.</p></AuthNote>
   </form>
     <div className={styles.divider}><span>atau</span></div>
-    <div className={styles.alternative}><p>Sudah memiliki akun?</p><Link className={styles.secondaryButton} href="/login">Masuk ke sistem</Link></div>
+    <div className={styles.alternative}><p>Sudah memiliki akun?</p><Link className={styles.secondaryButton} href="/login">Masuk</Link></div>
   </AuthShell>;
 }
