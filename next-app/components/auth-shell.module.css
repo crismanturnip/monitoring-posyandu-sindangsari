@@ -90,8 +90,11 @@
   .serviceStep:not(:last-child)::after { bottom: -10px; }
 }
 @media (max-width: 760px) {
-  .identity { flex-wrap: wrap; gap: 8px 16px; margin-bottom: 24px; }
-  .brand > svg { flex-basis: 48px; width: 48px; height: 48px; }
+  .identity { inset: 24px 24px auto; gap: 12px; }
+  .back { color: var(--auth-muted); }
+  .back:hover { color: var(--auth-ink); }
+  .page .back:focus-visible { outline-color: var(--auth-primary); }
+  .backPrefix { display: none; }
   .card { grid-template-columns: 1fr; }
   .content { padding: 40px 24px; }
   .art { display: none; }
