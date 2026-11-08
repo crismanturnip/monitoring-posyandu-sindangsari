@@ -52,9 +52,17 @@ export function AuthShell({ registration = false, contentLabel, showBackLink = t
             <div className={styles.formContent}>{children}</div>
           </div>
         </section>
-        <aside className={styles.art} aria-hidden="true">
-          <div className={styles.artCaption}><span className={styles.artEyebrow}>POSYANDU DESA SINDANGSARI</span><strong>Tumbuh sehat bersama,<br />terpantau setiap bulan.</strong><p>Pencatatan dan pemantauan kesehatan masyarakat dalam satu sistem.</p></div>
-          <div className={styles.location}><i />Desa Sindangsari<span>Monitoring Posyandu</span></div>
+        <aside className={styles.art} aria-label="Pelayanan Posyandu">
+          <div className={styles.artCaption}>
+            <h2>Tumbuh sehat bersama,<br />terpantau setiap bulan</h2>
+            <p>Pencatatan dan pemantauan kesehatan masyarakat dalam satu sistem</p>
+            <ol className={styles.serviceFlow} aria-label="Alur pelayanan Posyandu">
+              {serviceSteps.map((step) => <li className={styles.serviceStep} key={step.title}>
+                <span className={styles.serviceIcon}><AuthIcon name={step.icon} /></span>
+                <div><strong>{step.title}</strong><p>{step.description}</p></div>
+              </li>)}
+            </ol>
+          </div>
         </aside>
       </div>
     </div>

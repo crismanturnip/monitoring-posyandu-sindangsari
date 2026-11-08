@@ -51,15 +51,18 @@
 .note p { margin: 0; }
 .note p + p { margin-top: 4px; }
 .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
-.art { position: relative; min-height: 100%; overflow: hidden; }
-.art::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, #312e81dc, #4f46e560), url('../public/auth/botanical.svg') center / cover no-repeat, #312e81; mask-image: url('../public/auth/wave-mask.svg'); mask-size: 100% 100%; mask-repeat: no-repeat; }
-.artCaption { position: relative; z-index: 1; width: 100%; padding: clamp(64px, 16vh, 180px) 40px 160px 28%; color: var(--auth-white); }
-.artEyebrow { color: #e0e7ff; font-size: 12px; font-weight: 700; letter-spacing: .1em; }
-.artCaption strong { display: block; margin-top: 24px; font-size: clamp(30px, 3vw, 48px); font-weight: 750; letter-spacing: -.04em; line-height: 1.2; text-wrap: balance; }
-.artCaption p { max-width: 330px; margin-top: 24px; color: #eef2ff; font-size: 16px; line-height: 1.8; }
-.location { position: absolute; right: 40px; bottom: 36px; display: grid; grid-template-columns: 8px 1fr; align-items: center; column-gap: 10px; border: 1px solid #ffffff40; border-radius: 12px; padding: 14px 18px; color: #fff; background: #312e8170; font-size: 13px; font-weight: 600; }
-.location i { width: 8px; height: 8px; border-radius: 50%; background: #a5b4fc; }
-.location span { grid-column: 2; margin-top: 3px; color: #e0e7ff; font-size: 12px; font-weight: 400; }
+.art { position: relative; display: flex; align-items: center; min-height: 100%; overflow: hidden; }
+.art::before { content: ''; position: absolute; inset: 0; background: linear-gradient(145deg, #312e81eb, #3730a3c7), url('../public/auth/botanical.svg') center / cover no-repeat, #312e81; mask-image: url('../public/auth/wave-mask.svg'); mask-size: 100% 100%; mask-repeat: no-repeat; }
+.artCaption { position: relative; z-index: 1; width: 100%; padding: 80px 40px 80px 28%; color: var(--auth-white); }
+.artCaption h2 { margin: 0; font-size: clamp(30px, 3vw, 48px); font-weight: 750; letter-spacing: -.04em; line-height: 1.2; text-wrap: balance; }
+.artCaption > p { max-width: 360px; margin: 20px 0 0; color: #e0e7ff; font-size: 15px; line-height: 1.7; }
+.serviceFlow { display: grid; max-width: 380px; gap: 24px; margin: 48px 0 0 48px; padding: 0; list-style: none; }
+.serviceStep { position: relative; display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 18px; }
+.serviceStep:not(:last-child)::after { content: ''; position: absolute; top: 33px; bottom: -16px; left: 11.5px; width: 1px; background: #ffffff29; }
+.serviceIcon { display: flex; padding-top: 1px; color: #c7d2fe; }
+.serviceIcon svg { width: 24px; height: 24px; }
+.serviceStep strong { display: block; color: var(--auth-white); font-size: 16px; font-weight: 600; line-height: 1.4; }
+.serviceStep p { margin: 5px 0 0; color: #e0e7ff; font-size: 14px; line-height: 1.5; }
 .page :is(a, button):focus-visible { outline: 3px solid var(--auth-primary); outline-offset: 3px; }
 .page .back:focus-visible { outline-color: #fff; }
 @media (min-width: 1600px) { .formContent { max-width: 580px; } }
