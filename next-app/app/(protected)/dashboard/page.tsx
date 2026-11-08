@@ -26,7 +26,7 @@ export default async function DashboardPage() {
   return <div className="dashboard-home">
     <header className="topbar"><div><h1>Dashboard</h1><p>Ringkasan monitoring Posyandu Desa Sindangsari</p></div><div className="profile"><div className="avatar">{profile.full_name[0]}</div><span>{profile.full_name} · {profile.role === 'BIDAN' ? 'Bidan' : 'Kader'}</span><LogoutButton /></div></header>
     <section className="content">
-      <div className="notice"><strong>Data langsung dari sistem</strong>Statistik dan jadwal mengikuti hak akses Posyandu akun yang sedang masuk.</div>
+      <div className="notice"><strong>Data langsung dari sistem</strong>Statistik dan jadwal mengikuti hak akses Posyandu akun yang sedang masuk</div>
       <div className="stats">{stats.map(([label, value, href]) => <Link className="card stat-card" href={href} key={label}><div className="stat-label">{label}</div><div className="stat-value">{new Intl.NumberFormat('id-ID').format(value)}</div></Link>)}</div>
       <div className="section-grid">
         <section className="card"><h2>Jadwal kegiatan mendatang</h2>{upcoming.length === 0 ? <div className="empty">Belum ada jadwal mendatang.</div> : <div className="data-list">{upcoming.map((schedule) => <div className="data-row" key={schedule.id}><div><strong>{schedule.posyandu?.name ?? 'Posyandu'}</strong><span>{formatDate(schedule.starts_at)} · {schedule.location}</span></div></div>)}</div>}<Link className="panel-link" href="/jadwal">Lihat seluruh jadwal</Link></section>
