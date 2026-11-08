@@ -41,15 +41,15 @@ const serviceSteps: { title: string; description: string; icon: IconName }[] = [
 
 export function AuthShell({ registration = false, contentLabel, showBackLink = true, children }: { registration?: boolean; contentLabel?: string; showBackLink?: boolean; children: ReactNode }) {
   return <main className={styles.page}>
+    <header className={styles.identity}>
+      <Link className={styles.brand} href="/" aria-label="Monitoring Posyandu, beranda"><PosyanduLogo id="auth" /><div><strong>Monitoring Posyandu</strong><span>Desa Sindangsari</span></div></Link>
+      {showBackLink && <Link className={styles.back} href="/" aria-label="Kembali ke beranda"><span><span className={styles.backPrefix}>Kembali ke </span>Beranda</span></Link>}
+    </header>
     <div className={styles.container}>
       <div className={styles.card}>
-        <section className={styles.content} aria-label={registration ? 'Pendaftaran kader' : 'Masuk petugas'}>
-          <div className={styles.formContent}>
-            <div className={styles.identity}>
-              <div className={styles.brand}><PosyanduLogo id="auth" /><div><strong>Monitoring Posyandu</strong><span>Desa Sindangsari</span></div></div>
-              <Link className={styles.back} href="/"><AuthIcon name="back" />Kembali ke beranda</Link>
-            </div>
-            {children}
+        <section className={styles.content} aria-label={contentLabel ?? (registration ? 'Pendaftaran kader' : 'Masuk petugas')}>
+          <div className={styles.formArea}>
+            <div className={styles.formContent}>{children}</div>
           </div>
         </section>
         <aside className={styles.art} aria-hidden="true">
