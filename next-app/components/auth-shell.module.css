@@ -39,9 +39,9 @@
 .submit svg { width: 20px; height: 20px; }
 .submit:hover { border-color: var(--auth-hover); background: var(--auth-hover); }
 .submit:active { background: #3730a3; }
-.secondaryButton { color: var(--auth-primary); background: var(--auth-soft); }
-.secondaryButton:hover { border-color: var(--auth-hover); background: #e0e7ff; }
-.divider { position: relative; display: flex; align-items: center; gap: 16px; margin: 24px 0 20px; color: var(--auth-muted); font-size: 14px; }
+.secondaryButton { border-color: #cfd4df; color: var(--auth-ink); background: var(--auth-white); font-weight: 600; }
+.secondaryButton:hover { border-color: #9ca3af; background: #f9fafb; }
+.divider { position: relative; display: flex; align-items: center; gap: 16px; margin: 14px 0 10px; color: var(--auth-muted); font-size: 14px; }
 .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--auth-border); }
 .alternative p { margin: 0 0 12px; color: var(--auth-muted); font-size: 15px; text-align: center; }
 .note { display: flex; align-items: flex-start; gap: 10px; margin-top: 22px; border: 1px solid #dce0fc; border-radius: 12px; padding: 16px; color: #465163; background: #f5f6ff; font-size: 13px; line-height: 1.7; }
