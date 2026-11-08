@@ -4,5 +4,5 @@
       <feGaussianBlur stdDeviation="24" />
     </filter>
   </defs>
-  <path d="M90-200V0C270 150-10 240 45 370S245 560 110 730 20 930 120 1000V1200H1400V-200Z" fill="white" filter="url(#soft-edge)" />
+  <path d="M170-200V0C350 150 70 240 125 370S325 560 190 730 100 930 200 1000V1200H1400V-200Z" fill="white" filter="url(#soft-edge)" />
 </svg>
