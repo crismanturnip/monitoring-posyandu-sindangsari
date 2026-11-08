@@ -4,7 +4,8 @@ import { revalidatePath, updateTag } from 'next/cache';
 import { requireBidan } from '@/lib/auth';
 
 const toIso = (dateTime: string) => {
-  const value = new Date(dateTime);
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(dateTime)) return null;
+  const value = new Date(`${dateTime}:00+07:00`);
   return Number.isNaN(value.getTime()) ? null : value.toISOString();
 };
 
