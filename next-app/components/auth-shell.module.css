@@ -43,7 +43,9 @@
 .secondaryButton:hover { border-color: #9ca3af; background: #f9fafb; }
 .divider { position: relative; display: flex; align-items: center; gap: 16px; margin: 14px 0 10px; color: var(--auth-muted); font-size: 14px; }
 .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--auth-border); }
-.alternative p { margin: 0 0 12px; color: var(--auth-muted); font-size: 15px; text-align: center; }
+.alternative p { margin: 0 0 8px; color: var(--auth-muted); font-size: 15px; text-align: center; }
+.alternativeActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.alternativeActions .secondaryButton { min-width: 0; padding-inline: 12px; font-size: 14px; }
 .note { display: flex; align-items: flex-start; gap: 10px; margin-top: 22px; border: 1px solid #dce0fc; border-radius: 12px; padding: 16px; color: #465163; background: #f5f6ff; font-size: 13px; line-height: 1.7; }
 .note > svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 2px; color: var(--auth-primary); }
 .note p { margin: 0; }

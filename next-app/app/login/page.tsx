@@ -20,6 +20,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <AuthSubmit>Masuk</AuthSubmit>
   </form>
     <div className={styles.divider}><span>atau</span></div>
-    <div className={styles.alternative}><p>Belum memiliki akun?</p><Link className={styles.secondaryButton} href="/register">Daftar sebagai kader</Link></div>
+    <div className={styles.alternative}>
+      <p>Belum memiliki akun?</p>
+      <div className={styles.alternativeActions}>
+        <Link className={styles.secondaryButton} href="/">Kembali ke beranda</Link>
+        <Link className={styles.secondaryButton} href="/register">Daftar sebagai kader</Link>
+      </div>
+    </div>
   </AuthShell>;
 }
