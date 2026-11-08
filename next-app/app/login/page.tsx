@@ -8,9 +8,8 @@ type LoginPageProps = { searchParams: Promise<{ error?: string; registered?: str
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
-  return <AuthShell><form action={signIn}>
-    <p className={styles.eyebrow}>Akses bidan &amp; kader</p>
-    <h1>Masuk ke sistem</h1><p>Gunakan akun bidan atau kader yang sudah aktif.</p>
+  return <AuthShell showBackLink={false}><form action={signIn}>
+    <h1>Masuk ke sistem</h1><p>Gunakan akun bidan atau kader yang sudah aktif</p>
     {params.error && <div className="form-error" role="alert">{params.error}</div>}
     {params.registered && <div className="form-success">Registrasi diterima. Tunggu persetujuan bidan sebelum masuk.</div>}
     {params.password_updated && <div className="form-success">Kata sandi berhasil diperbarui. Silakan masuk kembali.</div>}
