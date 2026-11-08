@@ -25,7 +25,7 @@ export function AuthField({ label, icon, children }: { label: string; icon: Icon
 }
 
 export function AuthSubmit({ children }: { children: ReactNode }) {
-  return <button type="submit" className={styles.submit}>{children}<AuthIcon name="arrow" /></button>;
+  return <button type="submit" className={styles.submit}>{children}</button>;
 }
 
 export function AuthNote({ children }: { children: ReactNode }) {
