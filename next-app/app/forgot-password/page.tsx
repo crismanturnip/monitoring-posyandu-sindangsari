@@ -1,20 +1,23 @@
 import Link from 'next/link';
 import { requestPasswordReset } from '@/app/(auth)/actions';
+import { AuthField, AuthShell, AuthSubmit } from '@/components/auth-shell';
+import styles from '@/components/auth-shell.module.css';
 
 type Props = { searchParams: Promise<{ error?: string; sent?: string }> };
 
 export default async function ForgotPasswordPage({ searchParams }: Props) {
   const params = await searchParams;
-  return <main className="auth-page"><section className="auth-card">
-    <div className="brand"><div className="brand-mark">P</div><div><strong>Monitoring Posyandu</strong><span>Desa Sindangsari</span></div></div>
-    <h1>Reset kata sandi</h1>
-    <p>Masukkan email akun. Tautan pengaturan ulang akan dikirim melalui Supabase Auth.</p>
-    {params.error && <div className="form-error">{params.error}</div>}
-    {params.sent && <div className="form-success">Jika email terdaftar, tautan reset sudah dikirim. Periksa kotak masuk dan folder spam.</div>}
+  return <AuthShell contentLabel="Pemulihan kata sandi">
     <form action={requestPasswordReset}>
-      <label>Email<input name="email" type="email" autoComplete="email" required /></label>
-      <button type="submit">Kirim tautan reset</button>
+      <p className={styles.eyebrow}>Pemulihan akun</p>
+      <h1>Reset kata sandi</h1>
+      <p>Masukkan email yang terdaftar. Kami akan mengirimkan tautan untuk mengatur ulang kata sandi.</p>
+      {params.error && <div className="form-error" role="alert">{params.error}</div>}
+      {params.sent && <div className="form-success" role="status" aria-live="polite">Jika email terdaftar, tautan reset sudah dikirim. Periksa kotak masuk dan folder spam.</div>}
+      <AuthField label="Email" icon="mail"><input name="email" type="email" autoComplete="email" required /></AuthField>
+      <AuthSubmit>Kirim tautan reset</AuthSubmit>
     </form>
-    <p className="auth-footer"><Link href="/login">Kembali ke login</Link></p>
-  </section></main>;
+    <div className={styles.divider}><span>atau</span></div>
+    <div className={styles.alternative}><p>Sudah ingat kata sandinya?</p><Link className={styles.secondaryButton} href="/login">Kembali ke login</Link></div>
+  </AuthShell>;
 }
