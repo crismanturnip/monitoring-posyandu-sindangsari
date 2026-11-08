@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { PosyanduLogo } from '@/components/posyandu-logo';
+import { PublicSchedulePreview } from '@/components/public-schedule-preview';
 import { getPublicSchedules, type PublicSchedule } from '@/lib/public-schedules';
 import './landing-clean.css';
 
@@ -92,7 +93,9 @@ function ClockIcon() {
 export default async function LandingPage() {
   const schedules = await loadSchedules();
   const { items, upcoming } = pickHighlighted(schedules);
-  const next = upcoming ? items[0] : undefined;
+  const previewSchedules = upcoming ? items : [...schedules]
+    .filter((schedule) => schedule.status !== 'DIBATALKAN')
+    .sort((a, b) => new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime());
   const year = new Date().getFullYear();
 
   return (
@@ -142,29 +145,8 @@ export default async function LandingPage() {
               </ul>
             </div>
 
-            <div className="lp-hero-visual" aria-hidden="true">
-              <div className="lp-visual-card lp-visual-main">
-                <div className="lp-visual-head">
-                  <span className="lp-window-dots"><i /><i /><i /></span>
-                  <span>Jadwal Posyandu</span>
-                  <span className="lp-live">Publik</span>
-                </div>
-                <div className="lp-visual-content">
-                  <span className="lp-visual-label">INFORMASI KEGIATAN</span>
-                  <h3>Kegiatan berikutnya</h3>
-                {next ? (
-                  <>
-                    <div className="lp-preview-row">
-                      <div className="lp-visual-date"><strong>{dayNumber.format(new Date(next.starts_at))}</strong><span>{monthShort.format(new Date(next.starts_at))}</span></div>
-                      <div className="lp-preview-detail"><strong>{next.posyandu_name}</strong><span><ClockIcon />{fullDate.format(new Date(next.starts_at))} · {timeOnly.format(new Date(next.starts_at))} WIB</span><span><PinIcon />{next.location}</span></div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="lp-preview-empty"><ClockIcon /><p>Jadwal kegiatan berikutnya belum diumumkan. Silakan cek kembali nanti</p></div>
-                )}
-                </div>
-                <div className="lp-visual-foot"><span className="lp-dot" />Informasi jadwal untuk seluruh warga</div>
-              </div>
+            <div className="lp-hero-visual">
+              <PublicSchedulePreview schedules={previewSchedules} upcoming={upcoming} />
             </div>
           </div>
         </section>
