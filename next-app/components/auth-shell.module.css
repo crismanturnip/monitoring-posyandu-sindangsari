@@ -79,7 +79,7 @@
   .inputWrap input { min-height: 48px; padding-top: 10px; padding-bottom: 10px; }
   .forgot { margin: -10px 0 8px; }
   .submit, .secondaryButton { min-height: 48px; padding-block: 11px; }
-  .divider { margin: 16px 0 12px; }
+  .divider { margin: 12px 0 8px; }
   .alternative p { margin-bottom: 8px; }
   .artCaption { padding-top: 64px; }
 }
