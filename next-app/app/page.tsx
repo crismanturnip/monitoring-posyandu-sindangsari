@@ -102,7 +102,7 @@ export default async function LandingPage() {
     <div className="lp">
       <a className="lp-skip" href="#konten-utama">Lewati ke konten utama</a>
       <header className="lp-nav">
-        <div className="lp-container lp-nav-inner">
+        <div className="lp-nav-inner">
           <Link className="brand lp-brand" href="/">
             <PosyanduLogo id="header" />
             <div><strong>Monitoring Posyandu</strong><span>Desa Sindangsari</span></div>
