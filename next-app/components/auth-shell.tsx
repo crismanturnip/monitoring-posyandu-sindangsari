@@ -32,7 +32,14 @@ export function AuthNote({ children }: { children: ReactNode }) {
   return <div className={styles.note}><AuthIcon name="info" /><div>{children}</div></div>;
 }
 
-export function AuthShell({ registration = false, children }: { registration?: boolean; children: ReactNode }) {
+const serviceSteps: { title: string; description: string; icon: IconName }[] = [
+  { title: 'Pendaftaran', description: 'Pendataan warga sesuai kelompok layanan', icon: 'user' },
+  { title: 'Pengukuran', description: 'Pemantauan pertumbuhan dan kondisi kesehatan', icon: 'measure' },
+  { title: 'Pencatatan', description: 'Hasil pemeriksaan tersimpan secara digital', icon: 'record' },
+  { title: 'Pelayanan kesehatan', description: 'Pendampingan dan tindak lanjut oleh petugas', icon: 'care' },
+];
+
+export function AuthShell({ registration = false, contentLabel, showBackLink = true, children }: { registration?: boolean; contentLabel?: string; showBackLink?: boolean; children: ReactNode }) {
   return <main className={styles.page}>
     <div className={styles.container}>
       <div className={styles.card}>
