@@ -119,6 +119,7 @@ export default async function LandingPage() {
               <a href="#layanan">Layanan</a>
               <a href="#jadwal">Jadwal</a>
               <a href="#alur">Alur Kegiatan</a>
+              <Link className="lp-menu-login" href="/login">Masuk</Link>
             </nav>
           </details>
         </div>
