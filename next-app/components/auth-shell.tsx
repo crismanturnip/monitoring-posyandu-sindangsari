@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { PosyanduLogo } from './posyandu-logo';
 import styles from './auth-shell.module.css';
 
-type IconName = 'mail' | 'lock' | 'user' | 'arrow' | 'back' | 'info';
+type IconName = 'mail' | 'lock' | 'user' | 'arrow' | 'back' | 'info' | 'measure' | 'record' | 'care';
 
 export function AuthIcon({ name }: { name: IconName }) {
   const paths: Record<IconName, ReactNode> = {
@@ -13,6 +13,9 @@ export function AuthIcon({ name }: { name: IconName }) {
     arrow: <path d="M4 12h16m-6-6 6 6-6 6" />,
     back: <path d="M20 12H4m6-6-6 6 6 6" />,
     info: <><circle cx="12" cy="12" r="9" /><path d="M12 11v6m0-10h.01" /></>,
+    measure: <><path d="m3 15 12-12 6 6L9 21Z" /><path d="m13 5 3 3m-6 0 2 2m-5 1 3 3m-6 0 2 2" /></>,
+    record: <><rect x="5" y="5" width="14" height="16" rx="2" /><rect x="9" y="3" width="6" height="4" rx="1" /><path d="M9 11h6M9 15h6" /></>,
+    care: <path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6Z" />,
   };
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
 }
