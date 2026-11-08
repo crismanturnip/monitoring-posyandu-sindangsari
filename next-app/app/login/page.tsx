@@ -11,8 +11,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return <AuthShell showBackLink={false}><form action={signIn}>
     <h1>Masuk ke sistem</h1><p>Gunakan akun bidan atau kader yang sudah aktif</p>
     {params.error && <div className="form-error" role="alert">{params.error}</div>}
-    {params.registered && <div className="form-success">Registrasi diterima. Tunggu persetujuan bidan sebelum masuk.</div>}
-    {params.password_updated && <div className="form-success">Kata sandi berhasil diperbarui. Silakan masuk kembali.</div>}
+    {params.registered && <div className="form-success">Registrasi diterima, tunggu persetujuan bidan sebelum masuk</div>}
+    {params.password_updated && <div className="form-success">Kata sandi berhasil diperbarui, silakan masuk kembali</div>}
     <AuthField label="Email" icon="mail"><input name="email" type="email" autoComplete="email" required /></AuthField>
     <AuthField label="Kata sandi" icon="lock"><PasswordInput name="password" autoComplete="current-password" required /></AuthField>
     <div className={styles.forgot}><Link href="/forgot-password">Lupa kata sandi?</Link></div>
