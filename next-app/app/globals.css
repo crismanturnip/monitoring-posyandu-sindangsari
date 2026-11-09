@@ -41,7 +41,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .nav-label { position: relative; z-index: 1; margin: 18px 14px 8px; color: rgba(255,255,255,.45); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 .nav-item { position: relative; z-index: 1; display: flex; align-items: center; min-height: 42px; margin: 3px 0; padding: 10px 16px; border: 1px solid transparent; border-radius: 9999px; color: rgba(255,255,255,.82); font-size: 13px; font-weight: 550; text-decoration: none; transition: all .18s ease; }
 .nav-svg-icon { margin-right: 12px; flex-shrink: 0; transition: transform .18s ease, color .18s ease; }
-.nav-svg-dot { opacity: .65; }
 .nav-item:hover { transform: translateX(3px); color: #ffffff; background: rgba(255,255,255,.12); }
 .nav-item.active { background: #ffffff !important; color: #0C7E72 !important; font-weight: 750 !important; box-shadow: 0 4px 16px rgba(0,0,0,.08); transform: none; }
 .nav-item.active .nav-svg-icon { color: #0C7E72 !important; opacity: 1; }
