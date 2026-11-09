@@ -44,7 +44,7 @@ const services = [
     ),
   },
   {
-    tone: 'amber',
+    tone: 'blue',
     title: 'Ibu Hamil',
     text: 'Kunjungan rutin untuk memantau kondisi kehamilan, tekanan darah, dan berat badan ibu bersama bidan desa',
     points: ['Riwayat kunjungan', 'Pemeriksaan rutin', 'Edukasi gizi ibu'],
