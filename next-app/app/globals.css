@@ -12,6 +12,7 @@
   --line: #d8e7e3;
   --surface: #ffffff;
   --danger: #c2413b;
+  --danger-hover: #a5322d;
   --shadow-sm: 0 8px 24px rgba(13, 131, 119, .07);
   --shadow-md: 0 18px 48px rgba(13, 131, 119, .12);
 }
@@ -740,6 +741,34 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 .stitch-hero-compact .stitch-profile-meta {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.stitch-hero-compact .stitch-logout-btn {
+  min-height: 34px;
+  height: 34px;
+  gap: 4px;
+  padding: 4px 7px !important;
+  background: var(--danger) !important;
+  border-color: var(--danger) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.stitch-hero-compact .stitch-logout-btn .logout-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.stitch-hero-compact .stitch-logout-btn:hover {
+  background: var(--danger-hover) !important;
+  border-color: var(--danger-hover) !important;
+  transform: none;
+}
+
+.stitch-hero-compact .stitch-logout-btn:focus-visible {
+  outline: 2px solid var(--surface);
+  outline-offset: 3px;
 }
 
 .stitch-hero-compact + .posyandu-content {
