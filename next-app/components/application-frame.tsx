@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState, type ReactNode } from 'react';
 
@@ -63,7 +64,7 @@ export function ApplicationFrame({ profile, children }: { profile: FrameProfile;
       {menuOpen && <button className="menu-backdrop" type="button" aria-label="Tutup menu" onClick={() => setMenuOpen(false)} />}
       <aside className={`sidebar${menuOpen ? ' open' : ''}`}>
         <div className="brand">
-          <div className="brand-mark">P</div>
+          <Image src="/logo-posyandu-sindangsari.png" alt="" width={44} height={44} sizes="44px" className="sidebar-logo" />
           <div>
             <strong>Monitoring Posyandu</strong>
             <span>Desa Sindangsari</span>
