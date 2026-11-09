@@ -201,7 +201,7 @@ export default async function LandingPage() {
                         <span>{monthShort.format(date)}</span>
                       </div>
                       <div className="lp-schedule-body">
-                        <span className={`status ${schedule.status.toLowerCase()}`}>{schedule.status}</span>
+                        <span className={`lp-schedule-status ${schedule.status.toLowerCase()}`}>{schedule.status}</span>
                         <h3>{schedule.posyandu_name}</h3>
                         <p><ClockIcon />{fullDate.format(date)} · {timeOnly.format(date)} WIB</p>
                         <p><PinIcon />{schedule.location}</p>

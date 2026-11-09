@@ -125,8 +125,8 @@ html:has(.lp) { scroll-behavior: smooth; }
 .lp-schedule-body { min-width: 0; }.lp-schedule h3 { margin: 10px 0 7px; font-size: 18px; }
 .lp-schedule p { display: flex; align-items: flex-start; gap: 8px; margin-top: 5px; color: var(--lp-muted); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
 .lp-schedule p svg { margin-top: 1px; color: #5b56cf; }
-.lp .status { border: 0; padding: 5px 9px; font-size: 11px !important; font-weight: 700; letter-spacing: 0; }
-.lp .status.selesai { color: #047857 !important; background: #ecfdf5; }.lp .status.dibatalkan { color: #b42318 !important; background: #fff1f2; }
+.lp-schedule-status { display: block; flex-shrink: 0; color: var(--lp-muted); font-size: 11px; font-weight: 700; letter-spacing: 0; text-align: right; white-space: nowrap; }
+.lp-schedule-status.selesai { color: #047857; }.lp-schedule-status.dibatalkan { color: #b42318; }
 .lp-empty { display: grid; justify-items: center; gap: 9px; border: 1px dashed #cbd5e1; border-radius: 16px; padding: 48px 24px; background: #fff; text-align: center; }
 .lp-empty svg { width: 28px; height: 28px; margin-bottom: 5px; color: #5b56cf; }
 .lp-empty strong { font-size: 16px; }.lp-empty span { color: var(--lp-muted); font-size: 14px; }
