@@ -122,7 +122,9 @@ html:has(.lp) { scroll-behavior: smooth; }
 .lp-schedule { display: flex; min-width: 0; gap: 18px; border: 1px solid var(--lp-line); border-radius: 16px; padding: 22px; background: #fff; }
 .lp-schedule-date { display: grid; width: 65px; height: 70px; flex: 0 0 65px; place-content: center; border-radius: 11px; background: #eef2ff; color: #4338ca; text-align: center; }
 .lp-schedule-date strong { font-size: 26px; line-height: 1; }.lp-schedule-date span { margin-top: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
-.lp-schedule-body { min-width: 0; }.lp-schedule h3 { margin: 10px 0 7px; font-size: 18px; }
+.lp-schedule-body { min-width: 0; flex: 1; }
+.lp-schedule-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 7px; }
+.lp-schedule h3 { min-width: 0; flex: 1; margin: 0; font-size: 18px; overflow-wrap: anywhere; }
 .lp-schedule p { display: flex; align-items: flex-start; gap: 8px; margin-top: 5px; color: var(--lp-muted); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
 .lp-schedule p svg { margin-top: 1px; color: #5b56cf; }
 .lp-schedule-status { display: block; flex-shrink: 0; color: var(--lp-muted); font-size: 11px; font-weight: 700; letter-spacing: 0; text-align: right; white-space: nowrap; }
