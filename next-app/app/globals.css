@@ -700,6 +700,11 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 
 .stitch-hero-compact .stitch-page-title-text {
   grid-area: 1 / 1;
+  font-family: inherit;
+  font-size: clamp(24px, 2.4vw, 30px);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 .stitch-hero-compact .stitch-date-pill {
@@ -729,6 +734,35 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 
 .stitch-hero-compact + .posyandu-content {
   padding-top: 24px;
+}
+
+.posyandu-content .card h2 {
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.posyandu-content .stacked-form label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.posyandu-content .stacked-form input,
+.posyandu-content .stacked-form textarea {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.posyandu-content .stacked-form textarea {
+  height: 104px;
+  resize: none;
+  overflow-y: auto;
+}
+
+.posyandu-content .stacked-form button {
+  font-size: 14px;
+  font-weight: 600;
 }
 
 /* Content Area */
