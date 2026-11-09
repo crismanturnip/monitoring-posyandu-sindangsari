@@ -8,7 +8,7 @@ type RegisterPageProps = { searchParams: Promise<{ error?: string }> };
 
 export default async function RegisterPage({ searchParams }: RegisterPageProps) {
   const params = await searchParams;
-  return <AuthShell registration showBackLink={false}><form action={signUp}>
+  return <AuthShell registration showBackLink={false} theme="teal"><form action={signUp}>
     <h1>Registrasi kader</h1><p>Akun akan berstatus menunggu persetujuan bidan.</p>
     {params.error && <div className="form-error" role="alert">{params.error}</div>}
     <div className={styles.fields}>
