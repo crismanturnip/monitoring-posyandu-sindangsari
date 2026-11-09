@@ -39,8 +39,8 @@ const serviceSteps: { title: string; description: string; icon: IconName }[] = [
   { title: 'Pelayanan kesehatan', description: 'Pendampingan dan tindak lanjut oleh petugas', icon: 'care' },
 ];
 
-export function AuthShell({ registration = false, contentLabel, showBackLink = true, children }: { registration?: boolean; contentLabel?: string; showBackLink?: boolean; children: ReactNode }) {
-  return <main className={styles.page}>
+export function AuthShell({ registration = false, contentLabel, showBackLink = true, theme = 'default', children }: { registration?: boolean; contentLabel?: string; showBackLink?: boolean; theme?: 'default' | 'teal'; children: ReactNode }) {
+  return <main className={theme === 'teal' ? `${styles.page} ${styles.teal}` : styles.page}>
     <header className={styles.identity}>
       <Link className={styles.brand} href="/" aria-label="Monitoring Posyandu, beranda"><PosyanduLogo id="auth" /><div><strong>Monitoring Posyandu</strong><span>Desa Sindangsari</span></div></Link>
       {showBackLink && <Link className={styles.back} href="/" aria-label="Kembali ke beranda"><span><span className={styles.backPrefix}>Kembali ke </span>Beranda</span></Link>}
