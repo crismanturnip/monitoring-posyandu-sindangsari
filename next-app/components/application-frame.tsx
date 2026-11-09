@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState, type ReactNode } from 'react';
+import { LogoutButton } from '@/components/logout-button';
 
 type FrameProfile = { full_name: string; role: 'BIDAN' | 'KADER' } | null;
 
@@ -57,6 +58,7 @@ export function ApplicationFrame({ profile, children }: { profile: FrameProfile;
         type="button"
         aria-label={menuOpen ? 'Tutup menu' : 'Buka menu'}
         aria-expanded={menuOpen}
+        aria-controls="application-sidebar"
         onClick={() => setMenuOpen((current) => !current)}
       >
         <span />
@@ -64,7 +66,7 @@ export function ApplicationFrame({ profile, children }: { profile: FrameProfile;
         <span />
       </button>
       {menuOpen && <button className="menu-backdrop" type="button" aria-label="Tutup menu" onClick={() => setMenuOpen(false)} />}
-      <aside className={`sidebar${menuOpen ? ' open' : ''}`}>
+      <aside id="application-sidebar" className={`sidebar${menuOpen ? ' open' : ''}`}>
         <div className="brand">
           <Image src="/logo-posyandu-sindangsari.png" alt="" width={44} height={44} sizes="44px" className="sidebar-logo" />
           <div>
@@ -108,10 +110,11 @@ export function ApplicationFrame({ profile, children }: { profile: FrameProfile;
         </div>
         <div className="sidebar-user">
           <span>{profile.full_name.slice(0, 1).toUpperCase()}</span>
-          <div>
+          <div className="sidebar-user-meta">
             <strong>{profile.full_name}</strong>
             <small>{profile.role === 'BIDAN' ? 'Bidan' : 'Kader'}</small>
           </div>
+          <div className="sidebar-mobile-logout"><LogoutButton className="sidebar-logout-btn" /></div>
         </div>
       </aside>
       <div className="main">{children}</div>
