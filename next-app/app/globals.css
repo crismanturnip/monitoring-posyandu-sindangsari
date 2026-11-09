@@ -716,6 +716,11 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 .stitch-hero-compact .stitch-date-pill {
   grid-area: 1 / 2;
   justify-self: end;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  backdrop-filter: none;
 }
 
 .stitch-hero-compact .stitch-page-title-desc {
