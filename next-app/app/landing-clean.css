@@ -207,3 +207,8 @@ html:has(.lp) { scroll-behavior: smooth; }
   html:has(.lp) { scroll-behavior: auto; }
   .lp *, .lp *::before, .lp *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+.lp-tag { display: inline-block; margin: 2px 0 4px; border-radius: 999px; padding: 3px 10px; color: var(--lp-primary-hover); background: #f0fdfa; border: 1px solid #99f6e4; font-size: 11px; font-weight: 700; }
+.lp-tag-ibu_hamil { color: #047857; background: #ecfdf5; border-color: #a7f3d0; }
+.lp-tag-lansia { color: #b45309; background: #fffbeb; border-color: #fde68a; }
+.lp-tag-umum { color: #475569; background: #f8fafc; border-color: #e2e8f0; }
+.lp-schedule-desc { margin-top: 6px; }

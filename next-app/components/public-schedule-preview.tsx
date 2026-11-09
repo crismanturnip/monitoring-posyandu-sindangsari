@@ -1,11 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState, type TouchEvent } from 'react';
+import { scheduleCategoryLabels, type ScheduleCategory } from '@/lib/schedule-categories';
 
 type PreviewSchedule = {
   id: string;
   posyandu_name: string;
+  title: string;
+  target_category: ScheduleCategory;
   starts_at: string;
+  ends_at: string | null;
   location: string;
 };
 
@@ -121,9 +125,10 @@ export function PublicSchedulePreview({ schedules, upcoming }: { schedules: Prev
                     aria-hidden={index !== activeIndex}
                   >
                     <div className="lp-preview-entry">
-                      <h3>{schedule.posyandu_name}</h3>
-                      <p><ClockIcon /><time dateTime={schedule.starts_at}>{fullDate.format(date)} · {timeOnly.format(date)} WIB</time></p>
-                      <p><PinIcon />{schedule.location}</p>
+                      <h3>{schedule.title}</h3>
+                      <span className={`lp-tag lp-tag-${schedule.target_category.toLowerCase()}`}>{scheduleCategoryLabels[schedule.target_category]}</span>
+                      <p><ClockIcon /><time dateTime={schedule.starts_at}>{fullDate.format(date)} · {timeOnly.format(date)}{schedule.ends_at ? ` - ${timeOnly.format(new Date(schedule.ends_at))}` : ''} WIB</time></p>
+                      <p><PinIcon />{schedule.posyandu_name} · {schedule.location}</p>
                     </div>
                   </div>
                 );

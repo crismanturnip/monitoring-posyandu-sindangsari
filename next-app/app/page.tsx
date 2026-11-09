@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { PosyanduLogo } from '@/components/posyandu-logo';
 import { PublicSchedulePreview } from '@/components/public-schedule-preview';
 import { getPublicSchedules, type PublicSchedule } from '@/lib/public-schedules';
+import { scheduleCategoryLabels } from '@/lib/schedule-categories';
 import './landing-clean.css';
 
 export const revalidate = 60;
@@ -32,6 +33,8 @@ const dayNumber = fmt({ day: '2-digit' });
 const monthShort = fmt({ month: 'short' });
 const fullDate = fmt({ weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 const timeOnly = fmt({ hour: '2-digit', minute: '2-digit' });
+const timeRange = (schedule: PublicSchedule) =>
+  `${timeOnly.format(new Date(schedule.starts_at))}${schedule.ends_at ? ` - ${timeOnly.format(new Date(schedule.ends_at))}` : ''} WIB`;
 
 const services = [
   {
@@ -202,11 +205,13 @@ export default async function LandingPage() {
                       </div>
                       <div className="lp-schedule-body">
                         <div className="lp-schedule-heading">
-                          <h3>{schedule.posyandu_name}</h3>
+                          <h3>{schedule.title}</h3>
                           <span className={`lp-schedule-status ${schedule.status.toLowerCase()}`}>{schedule.status}</span>
                         </div>
-                        <p><ClockIcon />{fullDate.format(date)} · {timeOnly.format(date)} WIB</p>
-                        <p><PinIcon />{schedule.location}</p>
+                        <span className={`lp-tag lp-tag-${schedule.target_category.toLowerCase()}`}>{scheduleCategoryLabels[schedule.target_category]}</span>
+                        {schedule.description && <p className="lp-schedule-desc">{schedule.description}</p>}
+                        <p><ClockIcon />{fullDate.format(date)} · {timeRange(schedule)}</p>
+                        <p><PinIcon />{schedule.posyandu_name} · {schedule.location}</p>
                       </div>
                     </article>
                   );
