@@ -94,6 +94,15 @@ export function ApplicationFrame({ profile, children }: { profile: FrameProfile;
             </>
           )}
         </nav>
+        <div className="sidebar-leaf-decor" aria-hidden="true">
+          <svg viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M180 240 C140 180, 110 110, 130 40 C100 80, 60 130, 40 180 C20 220, 20 240, 180 240 Z" fill="rgba(255, 255, 255, 0.05)" />
+            <path d="M130 40 Q110 140 30 240" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="2" strokeLinecap="round" />
+            <path d="M118 90 Q80 110 50 130" stroke="rgba(255, 255, 255, 0.07)" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M102 140 Q65 160 38 180" stroke="rgba(255, 255, 255, 0.07)" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M85 190 Q55 210 32 230" stroke="rgba(255, 255, 255, 0.07)" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </div>
         <div className="sidebar-user">
           <span>{profile.full_name.slice(0, 1).toUpperCase()}</span>
           <div>

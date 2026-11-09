@@ -94,17 +94,10 @@ export default async function AccountPage({ searchParams }: Props) {
           </div>
         </div>
 
-        {/* Greeting Banner - Mascot removed & typography neatly refined */}
-        <div className="stitch-hero-greeting">
-          <div className="stitch-greeting-content">
-            <span className="stitch-greeting-prefix">Selamat Datang,</span>
-            <h1 className="stitch-greeting-name">
-              {profile.full_name}! <span className="stitch-wave-icon">👋</span>
-            </h1>
-            <p className="stitch-greeting-desc">
-              Ringkasan operasional dan pengelolaan keamanan akun profil Anda.
-            </p>
-          </div>
+        {/* Page Title */}
+        <div className="stitch-hero-page-title">
+          <h1 className="stitch-page-title-text">Akun Saya</h1>
+          <p className="stitch-page-title-desc">Kelola keamanan dan informasi akun profil Anda.</p>
         </div>
       </header>
 
@@ -113,21 +106,6 @@ export default async function AccountPage({ searchParams }: Props) {
         {/* Breadcrumb line */}
         <div className="account-breadcrumb">
           PENGATURAN AKUN • DESA SINDANGSARI • PROFIL PENGGUNA
-        </div>
-
-        {/* Page Title & Status Header */}
-        <div className="account-header-row">
-          <div>
-            <h1 className="account-main-title">Akun Saya</h1>
-            <p className="account-main-desc">
-              Kelola informasi profil, data kepegawaian, kontak dinas, dan keamanan akun {roleTitle} Desa Sindangsari.
-            </p>
-          </div>
-
-          <div className="account-session-badge">
-            <span className="session-dot" />
-            <span>Sesi Aktif: {sessionRole}</span>
-          </div>
         </div>
 
         {/* Feedback Messages */}
