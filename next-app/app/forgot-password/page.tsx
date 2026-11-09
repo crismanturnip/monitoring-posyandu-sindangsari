@@ -7,9 +7,8 @@ type Props = { searchParams: Promise<{ error?: string; sent?: string }> };
 
 export default async function ForgotPasswordPage({ searchParams }: Props) {
   const params = await searchParams;
-  return <AuthShell contentLabel="Pemulihan kata sandi">
+  return <AuthShell contentLabel="Pemulihan kata sandi" showBackLink={false} theme="teal">
     <form action={requestPasswordReset}>
-      <p className={styles.eyebrow}>Pemulihan akun</p>
       <h1>Reset kata sandi</h1>
       <p>Masukkan email yang terdaftar. Kami akan mengirimkan tautan untuk mengatur ulang kata sandi.</p>
       {params.error && <div className="form-error" role="alert">{params.error}</div>}
