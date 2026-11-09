@@ -107,10 +107,10 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
     ? { id: editing.id, title: editing.title, posyanduId: editing.posyandu_id, category: editing.target_category, location: editing.location, description: editing.description ?? '', date: startValue.slice(0, 10), startTime: startValue.slice(11, 16), endTime: endValue.slice(11, 16) }
     : { title: '', posyanduId: '', category: '', location: '', description: '', date: '', startTime: '', endTime: '' };
 
-  return <div className="schedule-page">
-    <PageHero profile={profile} description="Ringkasan operasional dan monitoring Posyandu Desa Sindangsari." />
-    <section className="content">
-      <nav className="breadcrumb" aria-label="Breadcrumb"><span>Pelayanan Posyandu</span><span>Desa Sindangsari</span><span aria-current="page">Jadwal Kegiatan</span></nav>
+  return <div className="stitch-dashboard schedule-page">
+    <PageHero profile={profile} description="Ringkasan operasional dan agenda kegiatan Posyandu Desa Sindangsari." />
+    <section className="stitch-content schedule-content">
+      <nav className="account-breadcrumb" aria-label="Breadcrumb">PELAYANAN POSYANDU • DESA SINDANGSARI • JADWAL KEGIATAN</nav>
       <div className="page-heading">
         <div><h1>Jadwal Kegiatan</h1><p>Pencatatan dan agenda operasional posyandu balita, ibu hamil, dan lansia di wilayah kerja Desa Sindangsari.</p></div>
         {canManage && <Link className="primary-btn" href={buildHref({ tambah: '1', page: pageParam })}><PlusIcon />Tambah Jadwal Kegiatan</Link>}
