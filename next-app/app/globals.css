@@ -804,6 +804,15 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   font-weight: 600;
 }
 
+@media (max-width: 720px) {
+  .stitch-hero.stitch-hero-compact { padding: 24px 16px; border-radius: 0 0 16px 16px; }
+  .stitch-hero-compact .stitch-hero-top { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .stitch-hero-compact .stitch-hero-page-title { grid-area: 1 / 1; min-height: 0; }
+  .stitch-hero-compact .stitch-page-title-text { padding-right: 52px; }
+  .stitch-hero-compact .stitch-date-pill { grid-area: 2 / 1; justify-self: start; }
+  .stitch-hero-compact .stitch-profile-pill { grid-area: 3 / 1; justify-self: start; }
+}
+
 /* Content Area */
 .stitch-content {
   position: relative;
