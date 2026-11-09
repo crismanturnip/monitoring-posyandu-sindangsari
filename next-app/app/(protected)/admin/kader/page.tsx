@@ -16,7 +16,40 @@ export default async function KaderPage() {
   return <div className="stitch-dashboard">
     <PageHero compact profile={profile} pageTitle="Persetujuan Kader" pageDescription="Verifikasi dan tetapkan penugasan Posyandu untuk akun kader yang mendaftar." />
     <main className="stitch-content kader-content">
-    <section className="card"><h2>Menunggu persetujuan</h2>{pending.length === 0 ? <div className="empty">Tidak ada registrasi kader yang menunggu.</div> : <div className="data-list">{pending.map((kader) => <div className="approval-row" key={kader.id}><div><strong>{kader.full_name}</strong><span>Terdaftar {new Intl.DateTimeFormat('id-ID', { dateStyle: 'long' }).format(new Date(kader.created_at))}</span></div><div className="approval-actions"><form action={approveKader}><input type="hidden" name="kaderId" value={kader.id} /><select name="posyanduId" required defaultValue=""><option value="" disabled>Pilih Posyandu</option>{posyandu.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select><button type="submit" disabled={posyandu.length === 0}>Setujui</button></form><form action={rejectKader}><input type="hidden" name="kaderId" value={kader.id} /><input name="reason" required placeholder="Alasan penolakan" /><button className="danger" type="submit">Tolak</button></form></div></div>)}</div>}</section>
+      <section className="card">
+        <h2>Menunggu persetujuan</h2>
+        {pending.length === 0 ? <div className="empty">Tidak ada registrasi kader yang menunggu.</div> : (
+          <div className="data-list">
+            {pending.map((kader) => (
+              <div className="approval-row" key={kader.id}>
+                <div>
+                  <strong>{kader.full_name}</strong>
+                  <span>Terdaftar {new Intl.DateTimeFormat('id-ID', { dateStyle: 'long' }).format(new Date(kader.created_at))}</span>
+                </div>
+                <div className="approval-actions">
+                  <form action={approveKader}>
+                    <input type="hidden" name="kaderId" value={kader.id} />
+                    <label className="approval-field">Penugasan Posyandu
+                      <select name="posyanduId" required defaultValue="">
+                        <option value="" disabled>Pilih Posyandu</option>
+                        {posyandu.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}
+                      </select>
+                    </label>
+                    <button type="submit" disabled={posyandu.length === 0}>Setujui</button>
+                  </form>
+                  <form action={rejectKader}>
+                    <input type="hidden" name="kaderId" value={kader.id} />
+                    <label className="approval-field">Alasan penolakan
+                      <input name="reason" required placeholder="Tuliskan alasan penolakan" />
+                    </label>
+                    <button className="danger" type="submit">Tolak</button>
+                  </form>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </main>
   </div>;
 }

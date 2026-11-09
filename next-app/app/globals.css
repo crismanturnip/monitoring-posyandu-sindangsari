@@ -816,6 +816,59 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   font-weight: 600;
 }
 
+.kader-content .approval-row {
+  padding: 20px 0;
+  gap: 24px;
+}
+
+.kader-content .approval-row > div:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.kader-content .approval-actions {
+  width: min(100%, 460px);
+  min-width: 0;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.kader-content .approval-actions form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+}
+
+.kader-content .approval-field {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.kader-content .approval-field input,
+.kader-content .approval-field select {
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.kader-content .approval-actions button {
+  min-width: 82px;
+  min-height: 46px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@media (max-width: 1100px) {
+  .kader-content .approval-row { flex-direction: column; align-items: stretch; gap: 16px; }
+  .kader-content .approval-actions { width: 100%; }
+}
+
 @media (max-width: 720px) {
   .stitch-hero.stitch-hero-compact { padding: 24px 16px; border-radius: 0 0 16px 16px; }
   .stitch-hero-compact .stitch-hero-top { grid-template-columns: minmax(0, 1fr); gap: 12px; }
