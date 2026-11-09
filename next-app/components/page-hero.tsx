@@ -2,7 +2,7 @@ import { LogoutButton } from '@/components/logout-button';
 
 type HeroProfile = { full_name: string; role: 'BIDAN' | 'KADER' };
 
-export function PageHero({ profile, pageTitle, pageDescription }: { profile: HeroProfile; pageTitle: string; pageDescription?: string }) {
+export function PageHero({ profile, pageTitle, pageDescription, compact = false }: { profile: HeroProfile; pageTitle: string; pageDescription?: string; compact?: boolean }) {
   const roleLabel = profile.role === 'BIDAN' ? 'Bidan Desa' : 'Kader Posyandu';
   const roleBadge = profile.role === 'BIDAN' ? 'Bidan Desa Aktif' : 'Kader Posyandu Aktif';
   const today = new Intl.DateTimeFormat('id-ID', {
@@ -14,9 +14,15 @@ export function PageHero({ profile, pageTitle, pageDescription }: { profile: Her
   }).format(new Date());
 
   const userInitial = profile.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U';
+  const pageHeading = (
+    <div className="stitch-hero-page-title">
+      <h1 className="stitch-page-title-text">{pageTitle}</h1>
+      {pageDescription && <p className="stitch-page-title-desc">{pageDescription}</p>}
+    </div>
+  );
 
   return (
-    <header className="stitch-hero">
+    <header className={`stitch-hero${compact ? ' stitch-hero-compact' : ''}`}>
       <div className="stitch-hero-ambient" aria-hidden="true" />
 
       {/* Organic Botanical Leaf Impressions Backdrop */}
@@ -55,11 +61,11 @@ export function PageHero({ profile, pageTitle, pageDescription }: { profile: Her
 
       {/* Top bar inside hero */}
       <div className="stitch-hero-top">
-        <div className="stitch-hero-location">
+        {compact ? pageHeading : <div className="stitch-hero-location">
           <span className="stitch-location-dot" />
           <span className="stitch-location-name">POSYANDU DESA SINDANGSARI</span>
           <span className="stitch-location-badge">{roleBadge}</span>
-        </div>
+        </div>}
 
         <div className="stitch-hero-actions">
           <div className="stitch-date-pill">
@@ -84,10 +90,7 @@ export function PageHero({ profile, pageTitle, pageDescription }: { profile: Her
       </div>
 
       {/* Page Title */}
-      <div className="stitch-hero-page-title">
-        <h1 className="stitch-page-title-text">{pageTitle}</h1>
-        {pageDescription && <p className="stitch-page-title-desc">{pageDescription}</p>}
-      </div>
+      {!compact && pageHeading}
     </header>
   );
 }

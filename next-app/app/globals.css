@@ -674,6 +674,63 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   line-height: 1.5;
 }
 
+/* Compact administration header: title and date share the first row. */
+.stitch-hero.stitch-hero-compact {
+  padding: 28px clamp(20px, 3.5vw, 44px);
+  border-radius: 0 0 20px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.stitch-hero-compact .stitch-hero-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 24px;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.stitch-hero-compact .stitch-hero-page-title {
+  display: contents;
+}
+
+.stitch-hero-compact .stitch-hero-actions {
+  display: contents;
+}
+
+.stitch-hero-compact .stitch-page-title-text {
+  grid-area: 1 / 1;
+}
+
+.stitch-hero-compact .stitch-date-pill {
+  grid-area: 1 / 2;
+  justify-self: end;
+}
+
+.stitch-hero-compact .stitch-page-title-desc {
+  grid-area: 2 / 1;
+  margin: 0;
+}
+
+.stitch-hero-compact .stitch-profile-pill {
+  grid-area: 2 / 2;
+  justify-self: end;
+  max-width: 100%;
+}
+
+.stitch-hero-compact .stitch-avatar {
+  flex-shrink: 0;
+}
+
+.stitch-hero-compact .stitch-profile-meta {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.stitch-hero-compact + .posyandu-content {
+  padding-top: 24px;
+}
+
 /* Content Area */
 .stitch-content {
   position: relative;
