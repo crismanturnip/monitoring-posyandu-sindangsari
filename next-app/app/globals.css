@@ -781,11 +781,13 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   outline-offset: 3px;
 }
 
-.stitch-hero-compact + .posyandu-content {
+.stitch-hero-compact + .posyandu-content,
+.stitch-hero-compact + .kader-content {
   padding-top: 24px;
 }
 
-.posyandu-content .card h2 {
+.posyandu-content .card h2,
+.kader-content .card h2 {
   font-size: 18px;
   font-weight: 650;
   line-height: 1.4;
