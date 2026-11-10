@@ -76,7 +76,7 @@ const steps = [
 const officerFeatures = [
   { title: 'Dashboard ringkas', text: 'Pantau jumlah balita, ibu hamil, dan lansia dalam satu layar' },
   { title: 'Riwayat lengkap', text: 'Setiap pengukuran dan kunjungan tersimpan rapi per warga' },
-  { title: 'Laporan CSV & PDF', text: 'Ekspor laporan berdasarkan Posyandu dan rentang tanggal' },
+  { title: 'Laporan Excel & PDF', text: 'Ekspor laporan berdasarkan Posyandu dan rentang tanggal' },
   { title: 'Akses terkontrol', text: 'Akun kader disetujui bidan dan dibatasi sesuai Posyandu' },
 ];
 
