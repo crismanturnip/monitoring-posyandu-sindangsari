@@ -161,9 +161,10 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 .form-success { border: 1px solid #c4e4cf; color: var(--green-800); background: var(--green-50); }
 
 /* Reports */
-.report-filters { display: grid; grid-template-columns: 1fr 1.45fr 1fr 1fr auto; align-items: end; gap: 12px; }
-.report-filters label { display: grid; gap: 6px; color: #345248; font-size: 11px; font-weight: 750; }
-.report-filters button { white-space: nowrap; }
+.report-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 12px; }
+.report-filters label { display: grid; min-width: 0; gap: 6px; color: #345248; font-size: 11px; font-weight: 750; }
+.report-filters input, .report-filters select { min-width: 0; }
+.report-filters button { justify-self: start; white-space: nowrap; }
 .report-results { margin-top: 19px; }
 .export-actions { display: flex; gap: 8px; }
 .export-actions a { display: inline-flex; align-items: center; min-height: 39px; border-radius: 10px; padding: 9px 13px; color: white; background: linear-gradient(135deg, var(--green-600), var(--green-800)); font-size: 11px; font-weight: 750; text-decoration: none; }
