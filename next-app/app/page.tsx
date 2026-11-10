@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { PosyanduLogo } from '@/components/posyandu-logo';
 import { PublicSchedulePreview } from '@/components/public-schedule-preview';
 import { getPublicSchedules, type PublicSchedule } from '@/lib/public-schedules';
-import { scheduleCategoryLabels } from '@/lib/schedule-categories';
 import './landing-clean.css';
 
 export const revalidate = 60;
@@ -208,7 +207,6 @@ export default async function LandingPage() {
                           <h3>{schedule.title}</h3>
                           <span className={`lp-schedule-status ${schedule.status.toLowerCase()}`}>{schedule.status}</span>
                         </div>
-                        <span className={`lp-tag lp-tag-${schedule.target_category.toLowerCase()}`}>{scheduleCategoryLabels[schedule.target_category]}</span>
                         {schedule.description && <p className="lp-schedule-desc">{schedule.description}</p>}
                         <p><ClockIcon />{fullDate.format(date)} · {timeRange(schedule)}</p>
                         <p><PinIcon />{schedule.posyandu_name} · {schedule.location}</p>
