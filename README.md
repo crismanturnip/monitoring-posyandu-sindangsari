@@ -46,7 +46,7 @@ monitoring-posyandu-sindangsari/
 - Jadwal kegiatan internal dan publik
 - Dashboard berbasis data Supabase
 - Laporan berdasarkan kategori, Posyandu, dan rentang tanggal
-- Ekspor laporan ke CSV dan PDF
+- Ekspor laporan ke Excel (.xlsx) dan PDF
 - Pembatasan akses Bidan dan Kader melalui backend serta RLS
 - Log aktivitas database
 
