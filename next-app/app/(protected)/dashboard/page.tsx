@@ -372,7 +372,7 @@ export default async function DashboardPage() {
 
             <div className="stitch-card-footer">
               <Link href="/jadwal" className="stitch-link-arrow">
-                Lihat seluruh jadwal <span>→</span>
+                Lihat seluruh jadwal <span></span>
               </Link>
             </div>
           </section>
