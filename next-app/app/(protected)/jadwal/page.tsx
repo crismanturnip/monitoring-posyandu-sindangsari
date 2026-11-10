@@ -133,7 +133,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
                 <td className="cell-no">{from + index + 1}</td>
                 <td><strong>{formatDay(schedule.starts_at)}</strong><span className="time"><ClockIcon />{timeRange(schedule)}</span></td>
                 <td><strong>{schedule.title}</strong>{schedule.description && <span className="desc">{schedule.description}</span>}{schedule.status !== 'TERJADWAL' && <span className={`status ${schedule.status.toLowerCase()}`}>{statusLabels[schedule.status]}</span>}</td>
-                <td><span className={`badge badge-${schedule.target_category.toLowerCase()}`}>{scheduleCategoryLabels[schedule.target_category]}</span></td>
+                <td>{scheduleCategoryLabels[schedule.target_category]}</td>
                 <td><strong>{schedule.posyandu?.name ?? 'Posyandu'}</strong><span className="desc">{schedule.location}</span></td>
                 {canManage && <td><div className="row-icons">
                   <Link className="icon-btn" href={buildHref({ edit: schedule.id, page: pageParam })} aria-label={`Ubah ${schedule.title}`}><EditIcon /></Link>
@@ -182,7 +182,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
       <div className="modal-body">
         <p>Apakah Anda yakin ingin menghapus agenda kegiatan ini? Data yang dihapus tidak dapat dikembalikan dan jadwal akan hilang dari halaman publik.</p>
         <div className="delete-summary">
-          <div className="delete-summary-top"><span className={`badge badge-${deleting.target_category.toLowerCase()}`}>{scheduleCategoryLabels[deleting.target_category]}</span><span className="mono">ID Agenda: #{agendaCode(deleting.id)}</span></div>
+          <div className="delete-summary-top"><span>{scheduleCategoryLabels[deleting.target_category]}</span><span className="mono">ID Agenda: #{agendaCode(deleting.id)}</span></div>
           <strong>{deleting.title}</strong>
           {deleting.description && <p className="desc-line">{deleting.description}</p>}
           <hr />
