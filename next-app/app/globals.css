@@ -320,9 +320,9 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 .sch-step.step-2 { --step: #1d6fb8; }
 .sch-step.step-3 { --step: #7c6fd1; }
 .sch-step-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
-.sch-step-head h3 { display: flex; align-items: center; gap: 10px; margin: 0; color: #0f2f2b; font-size: 16px; }
+.sch-step-head h3 { display: flex; align-items: center; gap: 10px; margin: 0; color: #0f2f2b; font-family: inherit; font-size: 16px; font-weight: 600; line-height: 1.5; }
 .sch-step-head h3::before { content: ""; width: 8px; height: 20px; border-radius: 6px; background: var(--step); }
-.step-count { color: var(--step); font-size: 13px; font-weight: 800; }
+.sch-step-head .step-count { flex-shrink: 0; color: var(--muted); font-family: inherit; font-size: 13px; font-weight: 600; line-height: 1.5; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .sch-form label { color: #2c4a44; font-size: 13px; font-weight: 600; }
 .req { color: #e11d48; }
 .sch-label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
