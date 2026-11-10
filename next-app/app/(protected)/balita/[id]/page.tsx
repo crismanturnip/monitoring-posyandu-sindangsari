@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { addMeasurement, softDeleteChild, updateChild } from '../actions';
 import { requireActiveProfile } from '@/lib/auth';
 import { LogoutButton } from '@/components/logout-button';
+import { AutoResizeTextarea } from '@/components/auto-resize-textarea';
 
 type Props = { params: Promise<{ id: string }> };
 type Measurement = {
@@ -124,7 +125,7 @@ export default async function ChildDetailPage({ params }: Props) {
             </label>
             <label>
               Catatan petugas
-              <textarea name="notes" rows={3} />
+              <AutoResizeTextarea name="notes" rows={3} />
             </label>
             <button type="submit">Simpan sebagai riwayat baru</button>
           </form>
