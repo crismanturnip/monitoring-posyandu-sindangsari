@@ -334,7 +334,7 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 .input-icon > svg { position: absolute; left: 14px; color: #6b7f7a; pointer-events: none; }
 .input-icon input, .input-icon select, .sch-form textarea { width: 100%; min-height: 46px; border: 1px solid transparent; border-radius: 12px; padding: 10px 14px 10px 42px; color: var(--ink); background-color: white; box-shadow: 0 1px 2px rgba(15, 47, 43, .05); font-size: 14px; }
 .input-icon select { appearance: none; padding-right: 38px; text-overflow: ellipsis; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7f7a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>"); background-repeat: no-repeat; background-position: right 14px center; }
-.sch-form textarea { padding-left: 14px; resize: vertical; }
+.sch-form textarea { min-height: calc(4.5em + 22px); padding-left: 14px; overflow: hidden; resize: none; }
 .input-icon input:focus, .input-icon select:focus, .sch-form textarea:focus { border-color: #0D9488; }
 .sch-feedback { width: fit-content; margin: 0; border-radius: 8px; padding: 4px 10px; color: #0f766e; background: #e0f5f0; font-size: 13px; font-weight: 600; }
 .sch-info { display: flex; align-items: flex-start; gap: 10px; border-radius: 12px; padding: 12px 14px; color: #365650; background: white; font-size: 13px; }

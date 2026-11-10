@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
+import { AutoResizeTextarea } from '@/components/auto-resize-textarea';
 import { scheduleCategoryKeys, scheduleCategoryLabels, type ScheduleCategory } from '@/lib/schedule-categories';
 
 type PosyanduOption = { id: string; name: string; address: string | null };
@@ -101,7 +102,7 @@ export function ScheduleForm({ action, posyandu, initial, error, submitLabel, cl
     <section className="sch-step step-3">
       <div className="sch-step-head"><h3>Deskripsi Kegiatan</h3><span className="step-count">Langkah 3/3</span></div>
       <div className="sch-label-row"><label htmlFor="sch-description">Deskripsi singkat (opsional)</label><span className="hint">{description.length}/{MAX_DESCRIPTION} karakter</span></div>
-      <textarea id="sch-description" name="description" rows={3} maxLength={MAX_DESCRIPTION} value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Contoh: Penimbangan, pengukuran KMS, dan imunisasi Polio/DPT-HB-Hib" />
+      <AutoResizeTextarea id="sch-description" name="description" rows={3} maxLength={MAX_DESCRIPTION} value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Contoh: Penimbangan, pengukuran KMS, dan imunisasi Polio/DPT-HB-Hib" />
     </section>
 
     <footer className="sch-footer">
