@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { BalitaCreateModal } from '@/components/balita-create-modal';
 import { BalitaDeleteModal } from '@/components/balita-delete-modal';
 import { BalitaEditModal } from '@/components/balita-edit-modal';
+import { PageHero } from '@/components/page-hero';
 import { requireActiveProfile } from '@/lib/auth';
 
 type Props = { searchParams: Promise<{ q?: string; posyandu?: string; usia?: string }> };
@@ -92,20 +93,15 @@ export default async function BalitaPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="balita-page-shell">
-      <div className="balita-page-wrap">
+    <div className="stitch-dashboard">
+      <PageHero
+        profile={profile}
+        pageTitle="Data Bayi & Balita"
+        pageDescription="Pencatatan data antropometri, penimbangan bulanan, status gizi, dan pemantauan kurva KMS balita di wilayah kerja Desa Sindangsari."
+      />
+      <main className="balita-page-shell balita-page-wrap">
         <div className="balita-topbar">
-          <div className="balita-breadcrumb">
-            PELAYANAN POSYANDU <span>•</span> DESA SINDANGSARI <span>•</span> PENCATATAN BALITA
-          </div>
           <BalitaCreateModal posyandu={posyandu} />
-        </div>
-
-        <div className="balita-header-row">
-          <div>
-            <h1 className="balita-page-title">Data Bayi &amp; Balita</h1>
-            <p className="balita-page-subtitle">Pencatatan data antropometri, penimbangan bulanan, status gizi, dan pemantauan kurva KMS balita di wilayah kerja Desa Sindangsari.</p>
-          </div>
         </div>
 
         <div className="balita-stats-grid">
@@ -269,7 +265,7 @@ export default async function BalitaPage({ searchParams }: Props) {
             <button type="button" className="balita-page-btn">Selanjutnya</button>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
