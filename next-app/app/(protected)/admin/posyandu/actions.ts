@@ -29,3 +29,36 @@ export async function togglePosyandu(formData: FormData) {
   revalidatePath('/');
   redirect('/admin/posyandu?success=Status%20Posyandu%20berhasil%20diubah.');
 }
+
+export async function deletePosyandu(formData: FormData) {
+  const id = String(formData.get('id') ?? '');
+  if (!id) redirect('/admin/posyandu?error=Data%20Posyandu%20tidak%20valid.');
+
+  const { supabase } = await requireBidan();
+  
+  // Periksa apakah Posyandu masih memiliki keterkaitan data aktif
+  const [childrenCheck, mothersCheck, elderlyCheck, schedulesCheck, kaderCheck] = await Promise.all([
+    supabase.from('children').select('id', { count: 'exact', head: true }).eq('posyandu_id', id),
+    supabase.from('pregnant_mothers').select('id', { count: 'exact', head: true }).eq('posyandu_id', id),
+    supabase.from('elderly_people').select('id', { count: 'exact', head: true }).eq('posyandu_id', id),
+    supabase.from('schedules').select('id', { count: 'exact', head: true }).eq('posyandu_id', id),
+    supabase.from('kader_assignments').select('id', { count: 'exact', head: true }).eq('posyandu_id', id),
+  ]);
+
+  const totalLinked = (childrenCheck.count ?? 0) + 
+                      (mothersCheck.count ?? 0) + 
+                      (elderlyCheck.count ?? 0) + 
+                      (schedulesCheck.count ?? 0) + 
+                      (kaderCheck.count ?? 0);
+
+  if (totalLinked > 0) {
+    redirect('/admin/posyandu?error=Posyandu%20tidak%20dapat%20dihapus%20karena%20masih%20memiliki%20data%20terkait%20(warga/jadwal/kader).%20Gunakan%20opsi%20Nonaktifkan.');
+  }
+
+  const { error } = await supabase.from('posyandu').delete().eq('id', id);
+  if (error) redirect(`/admin/posyandu?error=${encodeURIComponent('Posyandu gagal dihapus: ' + error.message)}`);
+  
+  revalidatePath('/admin/posyandu');
+  revalidatePath('/');
+  redirect('/admin/posyandu?success=Data%20Posyandu%20berhasil%20dihapus.');
+}

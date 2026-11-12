@@ -107,7 +107,7 @@ export default async function LandingPage() {
         <div className="lp-nav-inner">
           <Link className="brand lp-brand" href="/">
             <PosyanduLogo id="header" />
-            <div><strong>Monitoring Posyandu</strong><span>Desa Sindangsari</span></div>
+            <div><strong>Monitoring Posyandu</strong><span>Desa Sindang Sari</span></div>
           </Link>
           <nav className="lp-links" aria-label="Navigasi utama">
             <a href="#layanan">Layanan</a>
@@ -135,7 +135,7 @@ export default async function LandingPage() {
             <div className="lp-hero-copy">
               <h1>Tumbuh sehat bersama, <em>terpantau pada</em> setiap bulan</h1>
               <p className="lp-lead">
-                Informasi jadwal Posyandu  dan Sistem Pencatatan Digital untuk petugas kesehatan dalam memantau kesehatan masyarakat Desa Sindangsari
+                Informasi jadwal Posyandu  dan Sistem Pencatatan Digital untuk petugas kesehatan dalam memantau kesehatan masyarakat Desa Sindang Sari
               </p>
               <div className="lp-cta-row">
                 <a className="lp-btn lp-btn-primary" href="#jadwal">Lihat jadwal kegiatan </a>
@@ -278,9 +278,9 @@ export default async function LandingPage() {
           <div>
             <div className="brand lp-brand">
               <PosyanduLogo id="footer" />
-              <div><strong>Monitoring Posyandu</strong><span>Desa Sindangsari</span></div>
+              <div><strong>Monitoring Posyandu</strong><span>Desa Sindang Sari</span></div>
             </div>
-            <p>Sistem informasi dan monitoring kegiatan Posyandu Desa Sindangsari</p>
+            <p>Sistem informasi dan monitoring kegiatan Posyandu Desa Sindang Sari</p>
           </div>
           <div className="lp-footer-links">
             <div>

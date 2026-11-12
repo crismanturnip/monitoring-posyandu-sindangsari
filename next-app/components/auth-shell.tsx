@@ -42,7 +42,7 @@ const serviceSteps: { title: string; description: string; icon: IconName }[] = [
 export function AuthShell({ registration = false, contentLabel, showBackLink = true, theme = 'default', children }: { registration?: boolean; contentLabel?: string; showBackLink?: boolean; theme?: 'default' | 'teal'; children: ReactNode }) {
   return <main className={theme === 'teal' ? `${styles.page} ${styles.teal}` : styles.page}>
     <header className={styles.identity}>
-      <Link className={styles.brand} href="/" aria-label="Monitoring Posyandu, beranda"><PosyanduLogo id="auth" /><div><strong>Monitoring Posyandu</strong><span>Desa Sindangsari</span></div></Link>
+      <Link className={styles.brand} href="/" aria-label="Monitoring Posyandu, beranda"><PosyanduLogo id="auth" /><div><strong>Monitoring Posyandu</strong><span>Desa Sindang Sari</span></div></Link>
       {showBackLink && <Link className={styles.back} href="/" aria-label="Kembali ke beranda"><span><span className={styles.backPrefix}>Kembali ke </span>Beranda</span></Link>}
     </header>
     <div className={styles.container}>

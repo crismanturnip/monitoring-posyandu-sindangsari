@@ -66,7 +66,7 @@ export default async function AccountPage({ searchParams }: Props) {
         <div className="stitch-hero-top">
           <div className="stitch-hero-location">
             <span className="stitch-location-dot" />
-            <span className="stitch-location-name">POSYANDU DESA SINDANGSARI</span>
+            <span className="stitch-location-name">POSYANDU DESA SINDANG SARI</span>
             <span className="stitch-location-badge">
               {profile.role === 'BIDAN' ? 'Bidan Desa Aktif' : 'Kader Posyandu Aktif'}
             </span>
@@ -105,7 +105,7 @@ export default async function AccountPage({ searchParams }: Props) {
       <main className="stitch-content stitch-account-content">
         {/* Breadcrumb line */}
         <div className="account-breadcrumb">
-          PENGATURAN AKUN • DESA SINDANGSARI • PROFIL PENGGUNA
+          PENGATURAN AKUN • DESA SINDANG SARI • PROFIL PENGGUNA
         </div>
 
         {/* Feedback Messages */}

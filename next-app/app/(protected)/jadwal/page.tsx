@@ -108,9 +108,9 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
     : { title: '', posyanduId: '', category: '', location: '', description: '', date: '', startTime: '', endTime: '' };
 
   return <div className="stitch-dashboard schedule-page">
-    <PageHero profile={profile} pageTitle="Jadwal Kegiatan" pageDescription="Pencatatan dan agenda operasional posyandu balita, ibu hamil, dan lansia di wilayah kerja Desa Sindangsari." />
+    <PageHero profile={profile} pageTitle="Jadwal Kegiatan" pageDescription="Pencatatan dan agenda operasional posyandu balita, ibu hamil, dan lansia di wilayah kerja Desa Sindang Sari." />
     <section className="stitch-content schedule-content">
-      <nav className="account-breadcrumb" aria-label="Breadcrumb">PELAYANAN POSYANDU • DESA SINDANGSARI • JADWAL KEGIATAN</nav>
+      <nav className="account-breadcrumb" aria-label="Breadcrumb">PELAYANAN POSYANDU • DESA SINDANG SARI • JADWAL KEGIATAN</nav>
       <div className="page-heading">
         {canManage && <Link className="primary-btn" href={buildHref({ tambah: '1', page: pageParam })}><PlusIcon />Tambah Jadwal Kegiatan</Link>}
       </div>
@@ -159,7 +159,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
     {showForm && <Modal closeHref={closeHref} labelledBy="schedule-modal-title">
       {editing
         ? <ModalHeader icon={<CalendarEditIcon />} eyebrow="Jadwal Registry • Update" chip={`ID: ${agendaCode(editing.id)}`} mono title="Edit Jadwal Kegiatan" description="Perbarui rincian agenda pelaksanaan, waktu, atau lokasi pelayanan posyandu." titleId="schedule-modal-title" closeHref={closeHref} />
-        : <ModalHeader icon={<CalendarPlusIcon />} eyebrow="Agenda Posyandu" chip={`Tahun ${new Date().getFullYear()}`} title="Tambah Jadwal Kegiatan" description="Jadwalkan pelayanan kesehatan balita, ibu hamil, atau lansia di wilayah Desa Sindangsari." titleId="schedule-modal-title" closeHref={closeHref} />}
+        : <ModalHeader icon={<CalendarPlusIcon />} eyebrow="Agenda Posyandu" chip={`Tahun ${new Date().getFullYear()}`} title="Tambah Jadwal Kegiatan" description="Jadwalkan pelayanan kesehatan balita, ibu hamil, atau lansia di wilayah Desa Sindang Sari." titleId="schedule-modal-title" closeHref={closeHref} />}
       <ScheduleForm
         key={editing?.id ?? 'new'}
         action={editing ? updateSchedule : createSchedule}

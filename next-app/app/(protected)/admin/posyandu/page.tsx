@@ -1,5 +1,5 @@
 import { requireBidan } from '@/lib/auth';
-import { createPosyandu, togglePosyandu } from './actions';
+import { createPosyandu, togglePosyandu, deletePosyandu } from './actions';
 import { PageHero } from '@/components/page-hero';
 
 type Posyandu = { id: string; name: string; address: string | null; is_active: boolean };
@@ -12,11 +12,11 @@ export default async function PosyanduPage({ searchParams }: PageProps) {
   const posyandu = (data ?? []) as Posyandu[];
 
   return <div className="stitch-dashboard">
-    <PageHero compact profile={profile} pageTitle="Data Posyandu" pageDescription="Tambah, aktifkan, atau nonaktifkan Posyandu tanpa menghapus riwayat data." />
+    <PageHero compact profile={profile} pageTitle="Data Posyandu" pageDescription="Tambah, aktifkan, nonaktifkan, atau hapus Posyandu tanpa menghilangkan keterkaitan data." />
     <main className="stitch-content posyandu-content">
     {message.error && <div className="form-error" role="alert">{message.error}</div>}{message.success && <div className="form-success" role="status">{message.success}</div>}{error && <div className="form-error" role="alert">Daftar Posyandu gagal dimuat.</div>}
     <section className="admin-grid"><form action={createPosyandu} className="card stacked-form"><h2>Tambah Posyandu</h2><label>Nama Posyandu<input name="name" required minLength={2} placeholder="Contoh: Posyandu Melati" /></label><label>Alamat / lokasi utama<textarea name="address" rows={3} placeholder="Opsional" /></label><button type="submit">Simpan Posyandu</button></form>
-      <section className="card"><h2>Daftar Posyandu</h2>{posyandu.length === 0 ? <div className="empty">Belum ada data Posyandu.</div> : <div className="data-list">{posyandu.map((item) => <div className="data-row" key={item.id}><div><strong>{item.name}</strong><span>{item.address || 'Alamat belum diisi'}</span></div><form action={togglePosyandu}><input type="hidden" name="id" value={item.id} /><input type="hidden" name="nextStatus" value={String(!item.is_active)} /><button className="secondary" type="submit">{item.is_active ? 'Nonaktifkan' : 'Aktifkan'}</button></form></div>)}</div>}</section>
+      <section className="card"><h2>Daftar Posyandu</h2>{posyandu.length === 0 ? <div className="empty">Belum ada data Posyandu.</div> : <div className="data-list">{posyandu.map((item) => <div className="data-row" key={item.id}><div><strong>{item.name}</strong><span>{item.address || 'Alamat belum diisi'}</span></div><div className="row-actions"><form action={togglePosyandu}><input type="hidden" name="id" value={item.id} /><input type="hidden" name="nextStatus" value={String(!item.is_active)} /><button className="secondary" type="submit">{item.is_active ? 'Nonaktifkan' : 'Aktifkan'}</button></form><form action={deletePosyandu}><input type="hidden" name="id" value={item.id} /><button className="danger" type="submit" title={`Hapus ${item.name}`}>Hapus</button></form></div></div>)}</div>}</section>
     </section>
     </main>
   </div>;

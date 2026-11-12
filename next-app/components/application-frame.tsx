@@ -71,7 +71,7 @@ export function ApplicationFrame({ profile, children }: { profile: FrameProfile;
           <Image src="/logo-posyandu-sindangsari.png" alt="" width={44} height={44} sizes="44px" className="sidebar-logo" />
           <div>
             <strong>Monitoring Posyandu</strong>
-            <span>Desa Sindangsari</span>
+            <span>Desa Sindang Sari</span>
           </div>
         </div>
         <div className="nav-label">Menu utama</div>

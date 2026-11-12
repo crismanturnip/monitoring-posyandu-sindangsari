@@ -154,7 +154,7 @@ export default async function DashboardPage() {
         <div className="stitch-hero-top">
           <div className="stitch-hero-location">
             <span className="stitch-location-dot" />
-            <span className="stitch-location-name">POSYANDU DESA SINDANGSARI</span>
+            <span className="stitch-location-name">POSYANDU DESA SINDANG SARI</span>
             <span className="stitch-location-badge">
               {profile.role === 'BIDAN' ? 'Bidan Desa Aktif' : 'Kader Posyandu Aktif'}
             </span>
@@ -211,7 +211,7 @@ export default async function DashboardPage() {
               <div className="stitch-notice-title-row">
                 <strong>Data langsung dari sistem</strong>
                 <span className="stitch-live-pill">
-                  <span className="stitch-live-dot" /> LIVE SINDANGSARI
+                  <span className="stitch-live-dot" /> LIVE SINDANG SARI
                 </span>
               </div>
               <p>Statistik dan jadwal mengikuti hak akses Posyandu akun yang sedang masuk</p>
@@ -308,7 +308,7 @@ export default async function DashboardPage() {
               <span className="stitch-chip">
                 <span className="chip-bullet">•</span> Wilayah Binaan
               </span>
-              <span className="stitch-chip chip-highlight-emerald">Sindangsari</span>
+              <span className="stitch-chip chip-highlight-emerald">Sindang Sari</span>
             </div>
           </Link>
         </section>

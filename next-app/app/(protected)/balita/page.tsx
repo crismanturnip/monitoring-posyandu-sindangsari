@@ -97,7 +97,7 @@ export default async function BalitaPage({ searchParams }: Props) {
       <PageHero
         profile={profile}
         pageTitle="Data Bayi & Balita"
-        pageDescription="Pencatatan data antropometri, penimbangan bulanan, status gizi, dan pemantauan kurva KMS balita di wilayah kerja Desa Sindangsari."
+        pageDescription="Pencatatan data antropometri, penimbangan bulanan, status gizi, dan pemantauan kurva KMS balita di wilayah kerja Desa Sindang Sari."
       />
       <main className="balita-page-shell balita-page-wrap">
         <div className="balita-topbar">
