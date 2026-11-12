@@ -1374,6 +1374,232 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   to { transform: rotate(360deg); }
 }
 
+/* ========================================================
+   Lansia Page - Stitch Theme Elements
+   ======================================================== */
+.lansia-content {
+  padding-top: 28px;
+  display: grid;
+  gap: 20px;
+  max-width: 1500px;
+}
+
+.lansia-top-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: -6px;
+  margin-bottom: 4px;
+}
+
+.lansia-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 22px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #096D62 0%, #0D8377 60%, #129486 100%);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 750;
+  text-decoration: none;
+  border: none;
+  box-shadow: 0 8px 20px rgba(13, 131, 119, 0.25);
+  transition: all 0.2s ease;
+}
+
+.lansia-add-btn:hover {
+  background: linear-gradient(135deg, #075e54 0%, #0b756a 60%, #0f8679 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(13, 131, 119, 0.32);
+  color: #ffffff;
+}
+
+.lansia-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.lansia-stat-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #dfeae3;
+  border-radius: 18px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(10, 40, 35, 0.04);
+}
+
+.stat-icon-amber-warn {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.lansia-table-card {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid #e2ece7;
+}
+
+.lansia-table-wrap {
+  overflow-x: auto;
+}
+
+.lansia-table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+}
+
+.lansia-table th {
+  padding: 16px 18px;
+  border-bottom: 1px solid #e8f0ec;
+  background: #fafcfb;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.lansia-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid #edf4f0;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.lansia-table tbody tr:hover {
+  background: #f8fbf9;
+}
+
+.lansia-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.cell-avatar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lansia-avatar {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border-radius: 10px;
+  background: #ccfbf1;
+  color: #0f766e;
+  font-weight: 800;
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  letter-spacing: -0.02em;
+}
+
+.lansia-avatar.avatar-warn {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.lansia-name-cell strong {
+  display: block;
+  color: #0f2f2b;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.25;
+}
+
+.lansia-name-cell .lansia-id-sub {
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+  margin-top: 3px;
+}
+
+.lansia-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.pill-mandiri {
+  background: #f0fdfa;
+  color: #0d9488;
+  border: 1px solid #99f6e4;
+}
+
+.pill-pendampingan {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.pill-posyandu {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.pill-sehat {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.pill-perhatian {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.exam-vitals {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #1e293b;
+}
+
+.exam-vitals-primary {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.exam-vitals-warn {
+  color: #b91c1c;
+}
+
+.exam-vitals-sub {
+  margin-top: 3px;
+  font-size: 11px;
+  color: #0d9488;
+  font-weight: 600;
+}
+
+.exam-vitals-sub.warn {
+  color: #d97706;
+}
+
+@media (max-width: 768px) {
+  .lansia-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Responsive Stitch Layout */
 @media (max-width: 1024px) {
   .stitch-stats-grid { grid-template-columns: repeat(2, 1fr); }
