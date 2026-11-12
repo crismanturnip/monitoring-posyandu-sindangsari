@@ -1,14 +1,14 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { addMeasurement, softDeleteChild, updateChild } from '../actions';
+import { softDeleteChild, updateChild } from '../actions';
 import { requireActiveProfile } from '@/lib/auth';
 import { LogoutButton } from '@/components/logout-button';
-import { AutoResizeTextarea } from '@/components/auto-resize-textarea';
 
 type Props = { params: Promise<{ id: string }> };
 type Measurement = {
   id: string;
   measured_at: string;
+  created_at: string;
   weight_kg: number;
   height_cm: number;
   officer_notes: string | null;
@@ -28,9 +28,10 @@ export default async function ChildDetailPage({ params }: Props) {
       .single(),
     supabase
       .from('child_measurements')
-      .select('id, measured_at, weight_kg, height_cm, officer_notes')
+      .select('id, measured_at, created_at, weight_kg, height_cm, officer_notes')
       .eq('child_id', id)
-      .order('measured_at', { ascending: false }),
+      .order('measured_at', { ascending: false })
+      .order('created_at', { ascending: false }),
   ]);
   if (!child) notFound();
   const measurements = (measurementsData ?? []) as Measurement[];
@@ -108,27 +109,6 @@ export default async function ChildDetailPage({ params }: Props) {
           <button type="submit">Simpan perubahan</button>
         </form>
         <div>
-          <form action={addMeasurement} className="card stacked-form">
-            <h2>Catat pengukuran baru</h2>
-            <input type="hidden" name="childId" value={id} />
-            <label>
-              Tanggal pengukuran
-              <input name="measuredAt" type="date" required />
-            </label>
-            <label>
-              Berat badan (kg)
-              <input name="weightKg" type="number" step="0.01" min="0.01" required />
-            </label>
-            <label>
-              Tinggi badan (cm)
-              <input name="heightCm" type="number" step="0.01" min="0.01" required />
-            </label>
-            <label>
-              Catatan petugas
-              <AutoResizeTextarea name="notes" rows={3} />
-            </label>
-            <button type="submit">Simpan sebagai riwayat baru</button>
-          </form>
           <section className="card history-card">
             <h2>Riwayat pengukuran</h2>
             {measurements.length === 0 ? (
