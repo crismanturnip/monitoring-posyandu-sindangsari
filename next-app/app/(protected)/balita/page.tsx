@@ -8,6 +8,7 @@ type Props = { searchParams: Promise<{ q?: string; posyandu?: string; usia?: str
 type Child = {
   id: string;
   name: string;
+  nik: string | null;
   mother_name: string;
   birth_date: string;
   gender: string;
@@ -42,8 +43,10 @@ export default async function BalitaPage({ searchParams }: Props) {
   const { q = '', posyandu: posyanduFilter = 'semua', usia: usiaFilter = 'semua' } = await searchParams;
   const { profile, supabase } = await requireActiveProfile();
 
-  let childQuery = supabase.from('children').select('id, name, mother_name, birth_date, gender, birth_place, delivery_type, posyandu_id, kms_status, posyandu(name)').is('deleted_at', null).order('name');
-  if (q?.trim()) childQuery = childQuery.ilike('name', `%${q.trim()}%`);
+  const childQuery = supabase.from('children')
+    .select('id, name, nik, mother_name, birth_date, gender, birth_place, delivery_type, posyandu_id, kms_status, posyandu(name)')
+    .is('deleted_at', null)
+    .order('name');
 
   const [{ data: childrenData }, { data: posyanduData }] = await Promise.all([
     childQuery,
@@ -53,14 +56,18 @@ export default async function BalitaPage({ searchParams }: Props) {
   const children = (childrenData ?? []) as unknown as Child[];
   const posyandu = (posyanduData ?? []) as Posyandu[];
 
+  const normalizedQuery = q.trim().toLocaleLowerCase('id-ID');
   const filteredChildren = children.filter((child) => {
+    const matchesSearch = !normalizedQuery ||
+      child.name.toLocaleLowerCase('id-ID').includes(normalizedQuery) ||
+      (child.nik ?? '').includes(normalizedQuery);
     const matchesPosyandu = posyanduFilter === 'semua' || child.posyandu?.name === posyanduFilter;
     const ageMonths = getAgeInMonths(child.birth_date);
     const matchesUsia = usiaFilter === 'semua' ||
       (usiaFilter === '0-12' && ageMonths <= 12) ||
       (usiaFilter === '12-24' && ageMonths > 12 && ageMonths <= 24) ||
       (usiaFilter === '24+' && ageMonths > 24);
-    return matchesPosyandu && matchesUsia;
+    return matchesSearch && matchesPosyandu && matchesUsia;
   });
 
   const totalBalita = filteredChildren.length;
@@ -216,7 +223,7 @@ export default async function BalitaPage({ searchParams }: Props) {
                             </span>
                             <span className="balita-child-identity">
                             <strong>{child.name}</strong>
-                            <span className="balita-child-id">ID: {child.id.slice(0, 8).toUpperCase()}</span>
+                            <span className="balita-child-id">NIK: {child.nik ?? 'Belum diisi'}</span>
                             </span>
                           </div>
                         </td>

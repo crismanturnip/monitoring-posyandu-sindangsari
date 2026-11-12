@@ -66,6 +66,10 @@ export default async function ChildDetailPage({ params }: Props) {
             <input name="name" required defaultValue={child.name} />
           </label>
           <label>
+            NIK balita
+            <input name="nik" type="text" inputMode="numeric" pattern="[0-9]{16}" minLength={16} maxLength={16} required defaultValue={child.nik ?? ''} placeholder="16 digit NIK" title="NIK harus terdiri dari 16 digit angka" />
+          </label>
+          <label>
             Nama ibu
             <input name="motherName" required defaultValue={child.mother_name} />
           </label>

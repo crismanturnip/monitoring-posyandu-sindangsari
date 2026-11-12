@@ -76,6 +76,11 @@ export function BalitaCreateModal({ posyandu }: { posyandu: Posyandu[] }) {
                   <input name="name" required placeholder="Nama lengkap anak" />
                 </label>
 
+                <label className="balita-modal-field full">
+                  <span className="balita-modal-label">NIK Balita <span>*</span></span>
+                  <input name="nik" type="text" inputMode="numeric" pattern="[0-9]{16}" minLength={16} maxLength={16} required placeholder="16 digit NIK" title="NIK harus terdiri dari 16 digit angka" />
+                </label>
+
                 <label className="balita-modal-field balita-modal-date">
                   <span className="balita-modal-label">Tanggal Lahir <span>*</span></span>
                   <input name="birthDate" type="date" required />

@@ -9,21 +9,24 @@ const optionalNumber = (value: FormDataEntryValue | null) => {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
 };
 
+const isValidNik = (nik: string) => /^\d{16}$/.test(nik);
+
 export async function createChild(formData: FormData) {
   const name = String(formData.get('name') ?? '').trim();
+  const nik = String(formData.get('nik') ?? '').trim();
   const motherName = String(formData.get('motherName') ?? '').trim();
   const posyanduId = String(formData.get('posyanduId') ?? '');
   const birthDate = String(formData.get('birthDate') ?? '');
   const gender = String(formData.get('gender') ?? '');
   const kmsStatus = String(formData.get('kmsStatus') ?? '');
-  if (!name || !motherName || !posyanduId || !birthDate ||
+  if (!name || !isValidNik(nik) || !motherName || !posyanduId || !birthDate ||
       !['LAKI_LAKI', 'PEREMPUAN'].includes(gender) ||
       !['NONE', 'GIZI_BAIK', 'PERLU_PANTAUAN'].includes(kmsStatus)) {
     throw new Error('Lengkapi semua data wajib dengan nilai yang valid.');
   }
   const { supabase } = await requireActiveProfile();
   const { data, error } = await supabase.from('children').insert({
-    name, mother_name: motherName, posyandu_id: posyanduId, birth_date: birthDate, gender,
+    name, nik, mother_name: motherName, posyandu_id: posyanduId, birth_date: birthDate, gender,
     kms_status: kmsStatus === 'NONE' ? null : kmsStatus,
     birth_place: String(formData.get('birthPlace') ?? '').trim() || null,
     child_order: optionalNumber(formData.get('childOrder')),
@@ -31,7 +34,8 @@ export async function createChild(formData: FormData) {
     birth_weight_kg: optionalNumber(formData.get('birthWeight')),
     birth_length_cm: optionalNumber(formData.get('birthLength')),
   }).select('id').single();
-  if (error || !data) return;
+  if (error) throw new Error(`Gagal menyimpan data balita: ${error.message}`);
+  if (!data) throw new Error('Data balita tidak berhasil disimpan.');
   revalidatePath('/balita');
   redirect(`/balita/${data.id}`);
 }
@@ -39,15 +43,19 @@ export async function createChild(formData: FormData) {
 export async function updateChild(formData: FormData) {
   const id = String(formData.get('id') ?? '');
   const name = String(formData.get('name') ?? '').trim();
+  const nik = String(formData.get('nik') ?? '').trim();
   const motherName = String(formData.get('motherName') ?? '').trim();
-  if (!id || !name || !motherName) return;
+  if (!id || !name || !isValidNik(nik) || !motherName) {
+    throw new Error('Nama anak, NIK 16 digit, dan nama ibu wajib diisi.');
+  }
   const { supabase } = await requireActiveProfile();
-  await supabase.from('children').update({
-    name, mother_name: motherName, birth_place: String(formData.get('birthPlace') ?? '').trim() || null,
+  const { error } = await supabase.from('children').update({
+    name, nik, mother_name: motherName, birth_place: String(formData.get('birthPlace') ?? '').trim() || null,
     birth_date: String(formData.get('birthDate') ?? ''), gender: String(formData.get('gender') ?? ''),
     child_order: optionalNumber(formData.get('childOrder')), delivery_type: String(formData.get('deliveryType') ?? '').trim() || null,
     birth_weight_kg: optionalNumber(formData.get('birthWeight')), birth_length_cm: optionalNumber(formData.get('birthLength')),
   }).eq('id', id);
+  if (error) throw new Error(`Gagal memperbarui data balita: ${error.message}`);
   revalidatePath('/balita');
   revalidatePath(`/balita/${id}`);
 }
@@ -55,6 +63,7 @@ export async function updateChild(formData: FormData) {
 export async function updateChildFromModal(formData: FormData) {
   const id = String(formData.get('id') ?? '');
   const name = String(formData.get('name') ?? '').trim();
+  const nik = String(formData.get('nik') ?? '').trim();
   const motherName = String(formData.get('motherName') ?? '').trim();
   const posyanduId = String(formData.get('posyanduId') ?? '');
   const birthDate = String(formData.get('birthDate') ?? '');
@@ -67,9 +76,9 @@ export async function updateChildFromModal(formData: FormData) {
   const weight = optionalNumber(formData.get('weightKg'));
   const height = optionalNumber(formData.get('heightCm'));
 
-  if (!id || !name || !motherName || !posyanduId || !birthDate ||
+  if (!id || !name || !isValidNik(nik) || !motherName || !posyanduId || !birthDate ||
       !['LAKI_LAKI', 'PEREMPUAN'].includes(gender)) {
-    throw new Error('Nama balita, nama ibu, Posyandu, tanggal lahir, dan jenis kelamin wajib diisi.');
+    throw new Error('Nama balita, NIK 16 digit, nama ibu, Posyandu, tanggal lahir, dan jenis kelamin wajib diisi.');
   }
   if (Boolean(weightValue) !== Boolean(heightValue)) {
     throw new Error('Isi berat dan tinggi badan bersama-sama, atau kosongkan keduanya jika tidak mencatat pengukuran.');
@@ -84,6 +93,7 @@ export async function updateChildFromModal(formData: FormData) {
   const { profile, supabase } = await requireActiveProfile();
   const childUpdates: {
     name: string;
+    nik: string;
     mother_name: string;
     posyandu_id: string;
     birth_place: string | null;
@@ -93,6 +103,7 @@ export async function updateChildFromModal(formData: FormData) {
     kms_status?: string | null;
   } = {
     name,
+    nik,
     mother_name: motherName,
     posyandu_id: posyanduId,
     birth_place: birthPlace || null,
