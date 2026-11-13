@@ -147,51 +147,83 @@ export default async function ReportsPage({ searchParams }: Props) {
               <p>Unduhan tersedia setelah hasil laporan berisi data.</p>
             </div>
           ) : (
-            <div className="lansia-table-wrap">
-              <table className="stitch-report-table">
-                <thead>
-                  <tr>
-                    <th style={{ width: 48, textAlign: 'center' }}>NO</th>
-                    <th>PERIODE / TANGGAL</th>
-                    <th>KATEGORI &amp; MODUL</th>
-                    <th>POSYANDU &amp; SASARAN</th>
-                    <th>HASIL PEMERIKSAAN</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedRows.map((row, index) => {
-                    return (
-                      <tr key={`${row.category}:${row.id}`}>
-                        <td style={{ textAlign: 'center', color: '#64748b', fontWeight: 600 }}>
-                          {from + index + 1}
-                        </td>
-                        <td>
-                          <div className="report-date-cell">
-                            <strong>{formatDate(row.date)}</strong>
-                            <span>Periode {formatMonthYear(row.date)}</span>
-                          </div>
-                        </td>
-                        <td>
-                          <span className="report-category-text">{getCategoryLabel(row.category)}</span>
-                        </td>
-                        <td>
-                          <div className="report-posyandu-cell">
-                            <strong>{row.posyandu}</strong>
-                            <span>{row.name}</span>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="report-detail-cell">
-                            <strong>{row.result}</strong>
-                            {row.notes && row.notes !== '-' && <span>{row.notes}</span>}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <>
+              <div className="lansia-table-wrap report-desktop-results">
+                <table className="stitch-report-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: 48, textAlign: 'center' }}>NO</th>
+                      <th>PERIODE / TANGGAL</th>
+                      <th>KATEGORI &amp; MODUL</th>
+                      <th>POSYANDU &amp; SASARAN</th>
+                      <th>HASIL PEMERIKSAAN</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedRows.map((row, index) => {
+                      return (
+                        <tr key={`${row.category}:${row.id}`}>
+                          <td style={{ textAlign: 'center', color: '#64748b', fontWeight: 600 }}>
+                            {from + index + 1}
+                          </td>
+                          <td>
+                            <div className="report-date-cell">
+                              <strong>{formatDate(row.date)}</strong>
+                              <span>Periode {formatMonthYear(row.date)}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <span className="report-category-text">{getCategoryLabel(row.category)}</span>
+                          </td>
+                          <td>
+                            <div className="report-posyandu-cell">
+                              <strong>{row.posyandu}</strong>
+                              <span>{row.name}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="report-detail-cell">
+                              <strong>{row.result}</strong>
+                              {row.notes && row.notes !== '-' && <span>{row.notes}</span>}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <ul className="report-mobile-list" role="list" aria-label="Catatan laporan">
+                {paginatedRows.map((row) => (
+                  <li className="report-mobile-record" key={`${row.category}:${row.id}`}>
+                    <div className="report-record-identity">
+                      <time dateTime={row.date}>{formatDate(row.date)}</time>
+                      <h3>{row.name}</h3>
+                    </div>
+                    <dl className="report-record-details">
+                      <div>
+                        <dt>Kategori</dt>
+                        <dd>{getCategoryLabel(row.category)}</dd>
+                      </div>
+                      <div>
+                        <dt>Posyandu</dt>
+                        <dd>{row.posyandu}</dd>
+                      </div>
+                      <div>
+                        <dt>Hasil</dt>
+                        <dd>{row.result}</dd>
+                      </div>
+                      {row.notes && row.notes !== '-' && (
+                        <div>
+                          <dt>Catatan</dt>
+                          <dd>{row.notes}</dd>
+                        </div>
+                      )}
+                    </dl>
+                  </li>
+                ))}
+              </ul>
+            </>
           )}
 
           <div className="schedule-footer">

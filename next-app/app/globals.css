@@ -251,6 +251,10 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   border-bottom: 0;
 }
 
+.report-mobile-list {
+  display: none;
+}
+
 .report-date-cell strong {
   display: block;
   font-size: 13px;
