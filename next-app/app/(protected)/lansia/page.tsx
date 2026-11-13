@@ -95,14 +95,6 @@ function getLansiaMockData(id: string, index: number) {
   };
 }
 
-function getInitials(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  }
-  return name.slice(0, 2).toUpperCase() || 'LN';
-}
-
 export default async function ElderlyPeoplePage({ searchParams }: Props) {
   const params = await searchParams;
   const { profile, supabase } = await requireActiveProfile();
@@ -287,23 +279,12 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                   </tr>
                 )}
                 {elderlyPeople.map((person, index) => {
-                  const initial = getInitials(person.name);
                   return (
                     <tr key={person.id}>
                       <td style={{ textAlign: 'center', color: '#64748b', fontWeight: 600 }}>
                         {from + index + 1}
                       </td>
-                      <td>
-                        <div className="cell-avatar-wrap">
-                          <div className={`lansia-avatar ${!person.isMandiri ? 'avatar-warn' : ''}`}>
-                            {initial}
-                          </div>
-                          <div className="lansia-name-cell">
-                            <strong>{person.name}</strong>
-                            <span className="lansia-id-sub">ID: {person.shortId}</span>
-                          </div>
-                        </div>
-                      </td>
+                      <td><Link className="lansia-name-cell" href={`/lansia/${person.id}`}>{person.name}</Link></td>
                       <td>
                         <div style={{ fontWeight: 700, color: '#0f2f2b', marginBottom: 4, fontSize: 13 }}>
                           {person.age} Tahun

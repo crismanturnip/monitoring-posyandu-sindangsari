@@ -1722,44 +1722,16 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   border-bottom: 0;
 }
 
-.cell-avatar-wrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.lansia-name-cell {
+  color: var(--ink);
+  font: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
 }
 
-.lansia-avatar {
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  border-radius: 10px;
-  background: #ccfbf1;
-  color: #0f766e;
-  font-weight: 800;
-  font-size: 13px;
-  display: grid;
-  place-items: center;
-  letter-spacing: -0.02em;
-}
-
-.lansia-avatar.avatar-warn {
-  background: #fef3c7;
-  color: #b45309;
-}
-
-.lansia-name-cell strong {
-  display: block;
-  color: #0f2f2b;
-  font-size: 13px;
-  font-weight: 750;
-  line-height: 1.25;
-}
-
-.lansia-name-cell .lansia-id-sub {
-  display: block;
-  color: #64748b;
-  font-size: 11px;
-  margin-top: 3px;
+.lansia-name-cell:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .lansia-status-pill {
