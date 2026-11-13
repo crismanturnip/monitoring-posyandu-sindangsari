@@ -254,7 +254,7 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 .report-date-cell strong {
   display: block;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   color: #0f2f2b;
 }
 
@@ -275,7 +275,7 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 .report-posyandu-cell strong {
   display: block;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   color: #0f2f2b;
 }
 
@@ -289,15 +289,19 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 .report-detail-cell strong {
   display: block;
   font-size: 13px;
-  font-weight: 800;
-  color: #0f2f2b;
+  font-weight: 400;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
 }
 
 .report-detail-cell span {
   display: block;
-  font-size: 11px;
-  color: #64748b;
-  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--muted);
+  margin-top: 4px;
 }
 
 .report-status-verified {
