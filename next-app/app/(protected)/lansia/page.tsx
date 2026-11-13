@@ -8,7 +8,6 @@ type Props = {
   searchParams: Promise<{
     q?: string;
     posyandu?: string;
-    status?: string;
     page?: string;
     tambah?: string;
     edit?: string;
@@ -22,12 +21,17 @@ type ElderlyPerson = {
   posyandu_id: string;
   posyandu: { name: string } | null;
   created_at?: string;
+  elderly_examinations?: { id: string; examined_at: string; officer_notes: string | null; created_at: string }[];
 };
 
 type Posyandu = { id: string; name: string };
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PAGE_SIZE = 10;
+
+function formatExaminationDate(date: string) {
+  return new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeZone: 'Asia/Jakarta' }).format(new Date(`${date}T00:00:00+07:00`));
+}
 
 function Svg({ children, size = 16 }: { children: React.ReactNode; size?: number }) {
   return (
@@ -44,57 +48,6 @@ const EditIcon = () => <Svg><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 
 const TrashIcon = ({ size }: { size?: number }) => <Svg size={size}><path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="m19 6-1 14H6L5 6" /></Svg>;
 const CloseIcon = () => <Svg size={18}><path d="M18 6 6 18M6 6l12 12" /></Svg>;
 
-// Generate pseudo-consistent mockup data based on UUID/index to match screenshot
-function getLansiaMockData(id: string, index: number) {
-  const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + index;
-  
-  const ages = [68, 72, 65, 70, 75, 63, 67, 74];
-  const age = ages[hash % ages.length];
-  
-  const isPerhatian = hash % 3 === 1;
-  const isMandiri = !isPerhatian;
-  
-  const guardians = [
-    { name: 'Ahmad', rel: 'Anak' },
-    { name: 'Siti', rel: 'Putri' },
-    { name: 'Endang', rel: 'Istri' },
-    { name: 'Budi', rel: 'Anak' },
-    { name: 'Rina', rel: 'Menantu' },
-  ];
-  const guardian = guardians[hash % guardians.length];
-
-  const exams = [
-    {
-      bp: 'TD: 125/80 mmHg',
-      gds: 'GDS: 110 mg/dL',
-      sub: 'BB: 62 kg • TB: 165 cm • Asam Urat: 5.2 mg/dL',
-      isWarn: false,
-    },
-    {
-      bp: 'TD: 150/95 mmHg',
-      gds: 'GDS: 135 mg/dL',
-      sub: 'BB: 54 kg • TB: 150 cm • Kolesterol: 210 mg/dL',
-      isWarn: true,
-    },
-    {
-      bp: 'TD: 120/80 mmHg',
-      gds: 'GDS: 105 mg/dL',
-      sub: 'BB: 68 kg • TB: 168 cm • Asam Urat: 6.0 mg/dL',
-      isWarn: false,
-    },
-  ];
-  const exam = exams[hash % exams.length];
-  const shortId = `LNS-${String((index + 1)).padStart(3, '0')}`;
-
-  return {
-    age,
-    isMandiri,
-    guardian,
-    exam,
-    shortId,
-  };
-}
-
 export default async function ElderlyPeoplePage({ searchParams }: Props) {
   const params = await searchParams;
   const { profile, supabase } = await requireActiveProfile();
@@ -102,14 +55,17 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
 
   const q = (params.q ?? '').replace(/[,()%*\\]/g, ' ').trim().slice(0, 80);
   const posyanduFilter = uuidPattern.test(params.posyandu ?? '') ? String(params.posyandu) : '';
-  const statusFilter = params.status ?? '';
   const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1);
   const from = (page - 1) * PAGE_SIZE;
 
   let query = supabase
     .from('elderly_people')
-    .select('id, name, posyandu_id, posyandu(name), created_at', { count: 'exact' })
-    .is('deleted_at', null);
+    .select('id, name, posyandu_id, posyandu(name), elderly_examinations(id, examined_at, officer_notes, created_at)', { count: 'exact' })
+    .is('deleted_at', null)
+    .order('examined_at', { referencedTable: 'elderly_examinations', ascending: false })
+    .order('created_at', { referencedTable: 'elderly_examinations', ascending: false })
+    .order('id', { referencedTable: 'elderly_examinations', ascending: false })
+    .limit(1, { referencedTable: 'elderly_examinations' });
 
   if (q) {
     query = query.ilike('name', `%${q}%`);
@@ -130,7 +86,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
     deleteId ? supabase.from('elderly_people').select('id, name, posyandu(name)').eq('id', deleteId).maybeSingle() : Promise.resolve({ data: null }),
   ]);
 
-  const rawElderly = (elderlyData ?? []) as unknown as ElderlyPerson[];
+  const elderlyPeople = (elderlyData ?? []) as unknown as ElderlyPerson[];
   const posyandu = (posyanduData ?? []) as Posyandu[];
   const editing = editData as unknown as ElderlyPerson | null;
   const deleting = deleteData as unknown as ElderlyPerson | null;
@@ -141,7 +97,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
 
   const buildHref = (extra: Record<string, string | undefined>) => {
     const search = new URLSearchParams();
-    for (const [key, value] of Object.entries({ q, posyandu: posyanduFilter, status: statusFilter, ...extra })) {
+    for (const [key, value] of Object.entries({ q, posyandu: posyanduFilter, ...extra })) {
       if (value) search.set(key, value);
     }
     const text = search.toString();
@@ -151,22 +107,6 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
   const pageParam = page > 1 ? String(page) : undefined;
   const closeHref = buildHref({ page: pageParam });
   const pageNumbers = Array.from({ length: Math.min(totalPages, 5) }, (_, index) => Math.max(1, Math.min(page - 2, totalPages - 4)) + index);
-
-  // Map mock data and apply status filter client-side if selected
-  const enrichedElderly = rawElderly.map((p, idx) => {
-    const mock = getLansiaMockData(p.id, from + idx);
-    return {
-      ...p,
-      ...mock,
-    };
-  });
-
-  const elderlyPeople = statusFilter
-    ? enrichedElderly.filter(p => (statusFilter === 'perhatian' ? !p.isMandiri : p.isMandiri))
-    : enrichedElderly;
-
-  // Stat count: total and risk
-  const riskCount = Math.max(1, Math.ceil(total * 0.33));
 
   return (
     <div className="stitch-dashboard">
@@ -182,7 +122,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
           )}
         </div>
 
-        {/* 2 Stat Cards matching screenshot */}
+        {/* Ringkasan data tersimpan */}
         <section className="lansia-stats-grid" aria-label="Statistik Lansia">
           {/* Card 1: TOTAL LANSIA */}
           <div className="lansia-stat-card">
@@ -207,26 +147,6 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
             </div>
           </div>
 
-          {/* Card 2: PERLU PERHATIAN / HIPERTENSI & PTM */}
-          <div className="lansia-stat-card">
-            <div className="stitch-stat-header">
-              <span className="stitch-stat-label">PERLU PERHATIAN / HIPERTENSI &amp; PTM</span>
-              <div className="stitch-stat-icon-wrap stat-icon-amber-warn" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-                  <line x1="12" y1="9" x2="12" y2="13" />
-                  <line x1="12" y1="17" x2="12.01" y2="17" />
-                </svg>
-              </div>
-            </div>
-            <div className="stitch-stat-value" style={{ color: '#b45309' }}>{riskCount}</div>
-            <div className="stitch-stat-footer">
-              <span className="stitch-chip">
-                <span className="chip-bullet" style={{ color: '#d97706' }}>•</span> {riskCount} Perlu Pemantauan Khusus
-              </span>
-              <span className="stitch-chip chip-highlight-amber">Risiko Hipertensi &amp; PTM</span>
-            </div>
-          </div>
         </section>
 
         {/* Filter Bar */}
@@ -243,18 +163,13 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
               </option>
             ))}
           </select>
-          <select name="status" defaultValue={statusFilter} aria-label="Filter Status Kesehatan">
-            <option value="">Status Kesehatan (Semua)</option>
-            <option value="sehat">Sehat Terkontrol</option>
-            <option value="perhatian">Perhatian / Hipertensi</option>
-          </select>
           <button className="primary-btn" type="submit">Terapkan</button>
           <Link className="ghost-btn" href="/lansia">
             <ResetIcon /> Reset
           </Link>
         </form>
 
-        {/* Modern Lansia Table Card */}
+        {/* Daftar lansia */}
         <section className="card lansia-table-card">
           <div className="lansia-table-wrap">
             <table className="lansia-table">
@@ -279,32 +194,22 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                   </tr>
                 )}
                 {elderlyPeople.map((person, index) => {
+                  const examination = person.elderly_examinations?.[0];
                   return (
                     <tr key={person.id}>
-                      <td style={{ textAlign: 'center', color: '#64748b', fontWeight: 600 }}>
-                        {from + index + 1}
-                      </td>
+                      <td className="lansia-row-number">{from + index + 1}</td>
                       <td><Link className="lansia-name-cell" href={`/lansia/${person.id}`}>{person.name}</Link></td>
-                      <td>{person.age} Tahun</td>
+                      <td className="lansia-empty-value">Belum dicatat</td>
+                      <td className="lansia-empty-value">Belum dicatat</td>
+                      <td>{person.posyandu?.name ?? 'Belum ditentukan'}</td>
+                      <td className="lansia-empty-value">Belum dinilai</td>
                       <td>
-                        <strong style={{ display: 'block', color: '#0f2f2b', fontSize: 13 }}>
-                          {person.guardian.name}
-                        </strong>
-                        <span style={{ fontSize: 11, color: '#64748b' }}>
-                          Hubungan: {person.guardian.rel}
-                        </span>
-                      </td>
-                      <td>
-                        {person.posyandu?.name ?? 'Posyandu'}
-                      </td>
-                      <td>
-                        {person.isMandiri ? 'Sehat Terkontrol' : 'Perhatian: Hipertensi'}
-                      </td>
-                      <td>
-                        <div className="lansia-examination">
-                          <span>{person.exam.bp} / {person.exam.gds}</span>
-                          <p>{person.exam.sub}</p>
-                        </div>
+                        {examination ? (
+                          <div className="lansia-examination">
+                            <time dateTime={examination.examined_at}>{formatExaminationDate(examination.examined_at)}</time>
+                            {examination.officer_notes?.trim() && <p>{examination.officer_notes}</p>}
+                          </div>
+                        ) : <span className="lansia-empty-value">Belum ada pemeriksaan</span>}
                       </td>
                       {canManage && (
                         <td>
