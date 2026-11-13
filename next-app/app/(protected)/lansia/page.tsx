@@ -67,11 +67,18 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
     .order('id', { referencedTable: 'elderly_examinations', ascending: false })
     .limit(1, { referencedTable: 'elderly_examinations' });
 
+  let examinationCountQuery = supabase
+    .from('elderly_examinations')
+    .select('id, elderly_people!inner(name, posyandu_id, deleted_at)', { count: 'exact', head: true })
+    .is('elderly_people.deleted_at', null);
+
   if (q) {
     query = query.ilike('name', `%${q}%`);
+    examinationCountQuery = examinationCountQuery.ilike('elderly_people.name', `%${q}%`);
   }
   if (posyanduFilter) {
     query = query.eq('posyandu_id', posyanduFilter);
+    examinationCountQuery = examinationCountQuery.eq('elderly_people.posyandu_id', posyanduFilter);
   }
 
   query = query.order('name').range(from, from + PAGE_SIZE - 1);
@@ -79,11 +86,12 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
   const editId = canManage && uuidPattern.test(params.edit ?? '') ? String(params.edit) : '';
   const deleteId = canManage && uuidPattern.test(params.hapus ?? '') ? String(params.hapus) : '';
 
-  const [{ data: elderlyData, count }, { data: posyanduData }, { data: editData }, { data: deleteData }] = await Promise.all([
+  const [{ data: elderlyData, count }, { data: posyanduData }, { data: editData }, { data: deleteData }, { count: examinationCount, error: examinationCountError }] = await Promise.all([
     query,
     supabase.from('posyandu').select('id, name').eq('is_active', true).order('name'),
     editId ? supabase.from('elderly_people').select('id, name, posyandu_id').eq('id', editId).maybeSingle() : Promise.resolve({ data: null }),
     deleteId ? supabase.from('elderly_people').select('id, name, posyandu(name)').eq('id', deleteId).maybeSingle() : Promise.resolve({ data: null }),
+    examinationCountQuery,
   ]);
 
   const elderlyPeople = (elderlyData ?? []) as unknown as ElderlyPerson[];
@@ -147,6 +155,18 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
             </div>
           </div>
 
+          <div className="lansia-stat-card">
+            <div className="stitch-stat-header">
+              <span className="stitch-stat-label">CATATAN PEMERIKSAAN</span>
+              <div className="stitch-stat-icon-wrap stat-icon-teal" aria-hidden="true">
+                <Svg size={20}><path d="M9 3h6v4H9z" /><path d="M9 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3M8 12h8M8 16h5" /></Svg>
+              </div>
+            </div>
+            <div className="stitch-stat-value">{examinationCountError ? '-' : new Intl.NumberFormat('id-ID').format(examinationCount ?? 0)}</div>
+            <div className="stitch-stat-footer">
+              <span className="stitch-chip">Riwayat pemeriksaan tersimpan</span>
+            </div>
+          </div>
         </section>
 
         {/* Filter Bar */}
