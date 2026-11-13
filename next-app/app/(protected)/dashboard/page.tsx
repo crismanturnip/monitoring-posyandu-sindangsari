@@ -198,7 +198,7 @@ export default async function DashboardPage() {
 
       {/* Main Body Content */}
       <main className="stitch-content">
-        {/* Realtime Live Status Notice */}
+        {/* Account access notice */}
         <div className="stitch-notice-card">
           <div className="stitch-notice-left">
             <div className="stitch-notice-icon" aria-hidden="true">
@@ -208,12 +208,6 @@ export default async function DashboardPage() {
               </svg>
             </div>
             <div className="stitch-notice-text">
-              <div className="stitch-notice-title-row">
-                <strong>Data langsung dari sistem</strong>
-                <span className="stitch-live-pill">
-                  <span className="stitch-live-dot" /> LIVE SINDANG SARI
-                </span>
-              </div>
               <p>Statistik dan jadwal mengikuti hak akses Posyandu akun yang sedang masuk</p>
             </div>
           </div>

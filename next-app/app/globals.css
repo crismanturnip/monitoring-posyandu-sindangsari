@@ -1215,42 +1215,6 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   flex-direction: column;
 }
 
-.stitch-notice-title-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.stitch-notice-title-row strong {
-  color: #0B453E;
-  font-size: 13px;
-  font-weight: 750;
-}
-
-.stitch-live-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #E0F5F2;
-  border: 1px solid #B8E8E1;
-  border-radius: 9999px;
-  padding: 3px 9px;
-  color: #0A7267;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-}
-
-.stitch-live-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #0D8377;
-  box-shadow: 0 0 6px #0D8377;
-  animation: stitchPulse 2s infinite;
-}
-
 .stitch-notice-text p {
   margin: 3px 0 0;
   font-size: 12px;
