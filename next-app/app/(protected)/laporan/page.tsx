@@ -17,44 +17,15 @@ function SvgIcon({ children, size = 16 }: { children: React.ReactNode; size?: nu
   );
 }
 
-function getCategoryBadge(category: string) {
+function getCategoryLabel(category: string) {
   const catLower = category.toLowerCase();
   if (catLower.includes('balita') || catLower.includes('anak')) {
-    return {
-      label: 'Balita & Anak',
-      badgeClass: 'report-cat-balita',
-      icon: (
-        <SvgIcon size={14}>
-          <circle cx="12" cy="12" r="9" />
-          <path d="M9 12h.01M15 12h.01" />
-          <path d="M10 16c.5.5 1.2.8 2 .8s1.5-.3 2-.8" />
-        </SvgIcon>
-      ),
-    };
+    return 'Balita & Anak';
   }
   if (catLower.includes('hamil') || catLower.includes('anc')) {
-    return {
-      label: 'Ibu Hamil (ANC)',
-      badgeClass: 'report-cat-ibu',
-      icon: (
-        <SvgIcon size={14}>
-          <circle cx="12" cy="5" r="2.5" />
-          <path d="M10 10h4c1.1 0 2 .9 2 2v2c0 2.2-1.8 4-4 4h-1v4" />
-        </SvgIcon>
-      ),
-    };
+    return 'Ibu Hamil (ANC)';
   }
-  return {
-    label: 'Lansia & PTM',
-    badgeClass: 'report-cat-lansia',
-    icon: (
-      <SvgIcon size={14}>
-        <circle cx="10" cy="4" r="2" />
-        <path d="M10 7v5l-3 4" />
-        <path d="M10 12l3 9" />
-      </SvgIcon>
-    ),
-  };
+  return 'Lansia & PTM';
 }
 
 export default async function ReportsPage({ searchParams }: Props) {
@@ -190,7 +161,6 @@ export default async function ReportsPage({ searchParams }: Props) {
                 </thead>
                 <tbody>
                   {paginatedRows.map((row, index) => {
-                    const catBadge = getCategoryBadge(row.category);
                     return (
                       <tr key={`${row.category}:${row.id}`}>
                         <td style={{ textAlign: 'center', color: '#64748b', fontWeight: 600 }}>
@@ -203,10 +173,7 @@ export default async function ReportsPage({ searchParams }: Props) {
                           </div>
                         </td>
                         <td>
-                          <span className={`report-cat-badge ${catBadge.badgeClass}`}>
-                            {catBadge.icon}
-                            {catBadge.label}
-                          </span>
+                          <span className="report-category-text">{getCategoryLabel(row.category)}</span>
                         </td>
                         <td>
                           <div className="report-posyandu-cell">
