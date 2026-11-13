@@ -3000,11 +3000,6 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   font-size: 11px;
 }
 
-.balita-name-wrap .balita-child-id {
-  color: #6d857d;
-  font-size: 11px;
-}
-
 .balita-gender-stack {
   display: flex;
   flex-direction: column;
@@ -3554,10 +3549,6 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   .balita-name-wrap strong {
     font-size: 16px;
     color: #123832;
-  }
-
-  .balita-name-wrap .balita-child-id {
-    display: none;
   }
 
   .balita-minor-cell .balita-gender-stack {

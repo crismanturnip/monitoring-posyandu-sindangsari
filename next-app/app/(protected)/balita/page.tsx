@@ -196,7 +196,7 @@ export default async function BalitaPage({ searchParams }: Props) {
               <table className="balita-table">
                 <thead>
                   <tr>
-                    <th>Balita &amp; NIK</th>
+                    <th>Nama Balita</th>
                     <th>JK &amp; Usia</th>
                     <th>Nama Ibu</th>
                     <th>Posyandu</th>
@@ -219,7 +219,6 @@ export default async function BalitaPage({ searchParams }: Props) {
                             </span>
                             <span className="balita-child-identity">
                             <strong>{child.name}</strong>
-                            <span className="balita-child-id">NIK: {child.nik ?? 'Belum diisi'}</span>
                             </span>
                           </div>
                         </td>
