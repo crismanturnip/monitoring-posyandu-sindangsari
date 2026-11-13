@@ -1761,6 +1761,72 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   overflow-wrap: anywhere;
 }
 
+@media (max-width: 1000px) {
+  .lansia-table-card {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .lansia-table-card .lansia-table-wrap { overflow: visible; }
+
+  .lansia-table {
+    display: block;
+    min-width: 0;
+  }
+
+  .lansia-table thead { display: none; }
+
+  .lansia-table tbody {
+    display: grid;
+    gap: 12px;
+  }
+
+  .lansia-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+  }
+
+  .lansia-table td {
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr);
+    align-items: start;
+    min-width: 0;
+    gap: 12px;
+    padding: 6px 0;
+    border: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .lansia-table td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .lansia-table .lansia-row-number { display: none; }
+
+  .lansia-table .lansia-name-column {
+    display: block;
+    padding: 0 0 10px;
+  }
+
+  .lansia-table .lansia-name-column::before,
+  .lansia-table .lansia-actions-column::before,
+  .lansia-table td[colspan]::before { content: none; }
+
+  .lansia-table td[colspan] { display: block; padding: 0; }
+  .lansia-examination { min-width: 0; }
+
+}
+
 @media (max-width: 768px) {
   .lansia-stats-grid {
     grid-template-columns: 1fr;

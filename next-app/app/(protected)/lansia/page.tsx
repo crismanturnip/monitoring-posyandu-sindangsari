@@ -195,7 +195,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
         {/* Daftar lansia */}
         <section className="card lansia-table-card">
           <div className="lansia-table-wrap">
-            <table className="lansia-table">
+            <table className="lansia-table" aria-label="Daftar lansia">
               <thead>
                 <tr>
                   <th style={{ width: 48, textAlign: 'center' }}>NO</th>
@@ -221,12 +221,12 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                   return (
                     <tr key={person.id}>
                       <td className="lansia-row-number">{from + index + 1}</td>
-                      <td><Link className="lansia-name-cell" href={`/lansia/${person.id}`}>{person.name}</Link></td>
-                      <td className="lansia-empty-value">Belum dicatat</td>
-                      <td className="lansia-empty-value">Belum dicatat</td>
-                      <td>{person.posyandu?.name ?? 'Belum ditentukan'}</td>
-                      <td className="lansia-empty-value">Belum dinilai</td>
-                      <td>
+                      <td className="lansia-name-column"><Link className="lansia-name-cell" href={`/lansia/${person.id}`}>{person.name}</Link></td>
+                      <td className="lansia-empty-value" data-label="Usia">Belum dicatat</td>
+                      <td className="lansia-empty-value" data-label="Penanggung jawab">Belum dicatat</td>
+                      <td data-label="Posyandu">{person.posyandu?.name ?? 'Belum ditentukan'}</td>
+                      <td className="lansia-empty-value" data-label="Status kesehatan">Belum dinilai</td>
+                      <td data-label="Pemeriksaan terakhir">
                         {examination ? (
                           <div className="lansia-examination">
                             <time dateTime={examination.examined_at}>{formatExaminationDate(examination.examined_at)}</time>
