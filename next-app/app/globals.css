@@ -1216,9 +1216,10 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 }
 
 .stitch-notice-text p {
-  margin: 3px 0 0;
-  font-size: 12px;
-  color: #617a70;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
 }
 
 .dash-refresh-btn {
