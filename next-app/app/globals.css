@@ -290,6 +290,32 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
     overflow-wrap: anywhere;
   }
 
+  .report-record-details {
+    display: grid;
+    gap: 10px;
+    margin: 16px 0 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .report-record-details > div {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .report-record-details dt { color: var(--muted); }
+
+  .report-record-details dd {
+    min-width: 0;
+    margin: 0;
+    color: var(--ink);
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+  }
+
 }
 
 .report-date-cell strong {
