@@ -304,19 +304,6 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   margin-top: 4px;
 }
 
-.report-status-verified {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 750;
-  background: #ecfdf5;
-  color: #047857;
-  border: 1px solid #a7f3d0;
-}
-
 .report-downloads {
   margin-left: auto;
 }

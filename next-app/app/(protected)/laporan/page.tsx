@@ -156,7 +156,6 @@ export default async function ReportsPage({ searchParams }: Props) {
                     <th>KATEGORI &amp; MODUL</th>
                     <th>POSYANDU &amp; SASARAN</th>
                     <th>HASIL PEMERIKSAAN</th>
-                    <th>STATUS REKAPITULASI</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -184,16 +183,8 @@ export default async function ReportsPage({ searchParams }: Props) {
                         <td>
                           <div className="report-detail-cell">
                             <strong>{row.result}</strong>
-                            <span>{row.notes && row.notes !== '-' ? row.notes : 'Pencatatan pemeriksaan terverifikasi'}</span>
+                            {row.notes && row.notes !== '-' && <span>{row.notes}</span>}
                           </div>
-                        </td>
-                        <td>
-                          <span className="report-status-verified">
-                            <SvgIcon size={13}>
-                              <polyline points="20 6 9 17 4 12" />
-                            </SvgIcon>
-                            Lengkap &amp; Terverifikasi
-                          </span>
                         </td>
                       </tr>
                     );
