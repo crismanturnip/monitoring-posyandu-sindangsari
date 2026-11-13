@@ -121,7 +121,6 @@ export default async function ReportsPage({ searchParams }: Props) {
         {report.error && <div className="form-error" role="alert">{report.error}</div>}
         {availability?.error && <div className="form-error" role="alert">{availability.error}</div>}
 
-        {/* Rekap Table Card matching reference image */}
         <section className="stitch-report-card">
           <div className="stitch-report-header">
             <div className="stitch-report-icon" aria-hidden="true">
@@ -132,9 +131,30 @@ export default async function ReportsPage({ searchParams }: Props) {
               </svg>
             </div>
             <div className="stitch-report-title">
-              <h2>Data Rekap Laporan Bulanan</h2>
-              <p>Hasil kompilasi register KMS, form ANC, dan skrining PTM</p>
+              <h2>Data Rekap Laporan</h2>
+              <p>{total} catatan · {formatDate(filters.startDate)} – {formatDate(filters.endDate)}</p>
             </div>
+            {total > 0 && (
+              <div className="report-downloads">
+                <div className="stitch-export-actions">
+                  <a className="stitch-btn-export-csv" href={`/api/laporan/excel?${exportQuery}`} aria-describedby="report-download-scope">
+                    <SvgIcon size={16}>
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <path d="M3 9h18M9 21V9" />
+                    </SvgIcon>
+                    Unduh Excel
+                  </a>
+                  <a className="stitch-btn-export-pdf" href={`/api/laporan/pdf?${exportQuery}`} aria-describedby="report-download-scope">
+                    <SvgIcon size={16}>
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                    </SvgIcon>
+                    Unduh PDF
+                  </a>
+                </div>
+                <p id="report-download-scope">Unduh seluruh {total} catatan sesuai filter, termasuk semua halaman.</p>
+              </div>
+            )}
           </div>
 
           {report.rows.length === 0 ? (
@@ -164,9 +184,8 @@ export default async function ReportsPage({ searchParams }: Props) {
                     <th>PERIODE / TANGGAL</th>
                     <th>KATEGORI &amp; MODUL</th>
                     <th>POSYANDU &amp; SASARAN</th>
-                    <th>TOTAL PESERTA TERLAYANI</th>
+                    <th>HASIL PEMERIKSAAN</th>
                     <th>STATUS REKAPITULASI</th>
-                    <th style={{ textAlign: 'center', width: 220 }}>AKSI</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -209,33 +228,6 @@ export default async function ReportsPage({ searchParams }: Props) {
                             Lengkap &amp; Terverifikasi
                           </span>
                         </td>
-                        <td>
-                          <div className="stitch-export-actions" style={{ justifyContent: 'center' }}>
-                            <a
-                              className="stitch-btn-export-csv"
-                              href={`/api/laporan/excel?${exportQuery}`}
-                              title={`Unduh Excel - ${row.name}`}
-                            >
-                              <SvgIcon size={14}>
-                                <rect x="3" y="3" width="18" height="18" rx="2" />
-                                <path d="M3 9h18" />
-                                <path d="M9 21V9" />
-                              </SvgIcon>
-                              Unduh Excel
-                            </a>
-                            <a
-                              className="stitch-btn-export-pdf"
-                              href={`/api/laporan/pdf?${exportQuery}`}
-                              title={`Unduh PDF - ${row.name}`}
-                            >
-                              <SvgIcon size={14}>
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                              </SvgIcon>
-                              Unduh PDF
-                            </a>
-                          </div>
-                        </td>
                       </tr>
                     );
                   })}
@@ -244,7 +236,6 @@ export default async function ReportsPage({ searchParams }: Props) {
             </div>
           )}
 
-          {/* Table Footer */}
           <div className="schedule-footer">
             <p>
               Menampilkan <strong>{total ? from + 1 : 0}–{from + paginatedRows.length}</strong> dari <strong>{total}</strong> catatan

@@ -186,6 +186,7 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 
 .stitch-report-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 14px;
   padding: 22px 24px;
@@ -193,6 +194,7 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 }
 
 .stitch-report-icon {
+  flex: 0 0 44px;
   width: 44px;
   height: 44px;
   border-radius: 12px;
@@ -333,10 +335,34 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   border: 1px solid #a7f3d0;
 }
 
+.report-downloads {
+  margin-left: auto;
+}
+
+.report-downloads p {
+  max-width: 40ch;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .stitch-export-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+}
+
+.stitch-export-actions a {
+  min-height: 44px;
+  justify-content: center;
+}
+
+@media (max-width: 720px) {
+  .report-downloads { width: 100%; margin-left: 0; }
+  .stitch-export-actions a { flex: 1 1 auto; }
+  .stitch-report-header { padding: 20px 18px; }
+  .stitch-report-title { flex: 1; min-width: 0; }
 }
 
 .stitch-btn-export-csv {
