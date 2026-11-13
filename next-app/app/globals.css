@@ -1700,9 +1700,9 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   border-bottom: 1px solid #e8f0ec;
   background: #fafcfb;
   color: #64748b;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
   text-align: left;
   text-transform: uppercase;
 }
@@ -1710,7 +1710,11 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 .lansia-table td {
   padding: 16px 18px;
   border-bottom: 1px solid #edf4f0;
-  font-size: 13px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
   vertical-align: middle;
 }
 
@@ -1720,6 +1724,11 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 
 .lansia-table tbody tr:last-child td {
   border-bottom: 0;
+}
+
+.lansia-row-number {
+  text-align: center;
+  color: var(--muted);
 }
 
 .lansia-name-cell {
@@ -1734,30 +1743,22 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   text-underline-offset: 3px;
 }
 
-.exam-vitals {
-  font-size: 12px;
-  line-height: 1.45;
-  color: #1e293b;
+.lansia-table .lansia-empty-value {
+  color: var(--muted);
 }
 
-.exam-vitals-primary {
-  font-weight: 800;
-  color: #0f172a;
+.lansia-examination {
+  display: grid;
+  gap: 4px;
+  min-width: 200px;
+  color: var(--ink);
+  font: inherit;
 }
 
-.exam-vitals-warn {
-  color: #b91c1c;
-}
-
-.exam-vitals-sub {
-  margin-top: 3px;
-  font-size: 11px;
-  color: #0d9488;
-  font-weight: 600;
-}
-
-.exam-vitals-sub.warn {
-  color: #d97706;
+.lansia-examination p {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 768px) {

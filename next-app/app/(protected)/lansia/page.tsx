@@ -301,13 +301,9 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                         {person.isMandiri ? 'Sehat Terkontrol' : 'Perhatian: Hipertensi'}
                       </td>
                       <td>
-                        <div className="exam-vitals">
-                          <span className={`exam-vitals-primary ${!person.isMandiri ? 'exam-vitals-warn' : ''}`}>
-                            {person.exam.bp} • {person.exam.gds}
-                          </span>
-                          <div className={`exam-vitals-sub ${!person.isMandiri ? 'warn' : ''}`}>
-                            {person.exam.sub}
-                          </div>
+                        <div className="lansia-examination">
+                          <span>{person.exam.bp} / {person.exam.gds}</span>
+                          <p>{person.exam.sub}</p>
                         </div>
                       </td>
                       {canManage && (
