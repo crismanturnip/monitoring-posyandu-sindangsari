@@ -1734,51 +1734,6 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   text-underline-offset: 3px;
 }
 
-.lansia-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.pill-mandiri {
-  background: #f0fdfa;
-  color: #0d9488;
-  border: 1px solid #99f6e4;
-}
-
-.pill-pendampingan {
-  background: #fffbeb;
-  color: #b45309;
-  border: 1px solid #fde68a;
-}
-
-.pill-posyandu {
-  background: #eff6ff;
-  color: #1d4ed8;
-  border: 1px solid #bfdbfe;
-  padding: 3px 10px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 11px;
-}
-
-.pill-sehat {
-  background: #f0fdf4;
-  color: #15803d;
-  border: 1px solid #bbf7d0;
-}
-
-.pill-perhatian {
-  background: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
-}
-
 .exam-vitals {
   font-size: 12px;
   line-height: 1.45;

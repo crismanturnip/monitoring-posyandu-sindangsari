@@ -262,7 +262,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                 <tr>
                   <th style={{ width: 48, textAlign: 'center' }}>NO</th>
                   <th>NAMA LANSIA</th>
-                  <th>USIA / KEMANDIRIAN</th>
+                  <th>USIA</th>
                   <th>PENANGGUNG JAWAB</th>
                   <th>POSYANDU</th>
                   <th>STATUS KESEHATAN</th>
@@ -285,22 +285,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                         {from + index + 1}
                       </td>
                       <td><Link className="lansia-name-cell" href={`/lansia/${person.id}`}>{person.name}</Link></td>
-                      <td>
-                        <div style={{ fontWeight: 700, color: '#0f2f2b', marginBottom: 4, fontSize: 13 }}>
-                          {person.age} Tahun
-                        </div>
-                        {person.isMandiri ? (
-                          <span className="lansia-status-pill pill-mandiri">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
-                            Mandiri (A)
-                          </span>
-                        ) : (
-                          <span className="lansia-status-pill pill-pendampingan">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                            Pendampingan (B)
-                          </span>
-                        )}
-                      </td>
+                      <td>{person.age} Tahun</td>
                       <td>
                         <strong style={{ display: 'block', color: '#0f2f2b', fontSize: 13 }}>
                           {person.guardian.name}
@@ -310,22 +295,10 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                         </span>
                       </td>
                       <td>
-                        <span className="pill-posyandu">
-                          {person.posyandu?.name ?? 'Posyandu'}
-                        </span>
+                        {person.posyandu?.name ?? 'Posyandu'}
                       </td>
                       <td>
-                        {person.isMandiri ? (
-                          <span className="lansia-status-pill pill-sehat">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
-                            Sehat Terkontrol
-                          </span>
-                        ) : (
-                          <span className="lansia-status-pill pill-perhatian">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /></svg>
-                            Perhatian: Hipertensi
-                          </span>
-                        )}
+                        {person.isMandiri ? 'Sehat Terkontrol' : 'Perhatian: Hipertensi'}
                       </td>
                       <td>
                         <div className="exam-vitals">
