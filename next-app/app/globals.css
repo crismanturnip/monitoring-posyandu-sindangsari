@@ -1761,6 +1761,10 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   overflow-wrap: anywhere;
 }
 
+.lansia-row-actions {
+  justify-content: center;
+}
+
 @media (max-width: 1000px) {
   .lansia-table-card {
     border: 0;
@@ -1825,6 +1829,19 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   .lansia-table td[colspan] { display: block; padding: 0; }
   .lansia-examination { min-width: 0; }
 
+  .lansia-table .lansia-actions-column {
+    display: block;
+    margin-top: 8px;
+    padding: 12px 0 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .lansia-row-actions { justify-content: flex-end; flex-wrap: wrap; }
+  .lansia-row-actions .icon-btn { width: 44px; height: 44px; }
+  .lansia-table-card .schedule-footer { padding: 16px 0; border: 0; }
+  .lansia-table-card .pagination { width: 100%; flex-wrap: wrap; }
+  .lansia-table-card .pagination a,
+  .lansia-table-card .pagination .ghost-btn { min-width: 44px; min-height: 44px; }
 }
 
 @media (max-width: 768px) {

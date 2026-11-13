@@ -235,8 +235,8 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                         ) : <span className="lansia-empty-value">Belum ada pemeriksaan</span>}
                       </td>
                       {canManage && (
-                        <td>
-                          <div className="row-icons" style={{ justifyContent: 'center' }}>
+                        <td className="lansia-actions-column">
+                          <div className="row-icons lansia-row-actions">
                             <Link
                               className="icon-btn"
                               href={buildHref({ edit: person.id, page: pageParam })}
