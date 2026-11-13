@@ -58,7 +58,7 @@ export default async function BalitaPage({ searchParams }: Props) {
   const filteredChildren = children.filter((child) => {
     const matchesSearch = !normalizedQuery ||
       child.name.toLocaleLowerCase('id-ID').includes(normalizedQuery) ||
-      (child.nik ?? '').includes(normalizedQuery);
+      child.mother_name.toLocaleLowerCase('id-ID').includes(normalizedQuery);
     const matchesPosyandu = posyanduFilter === 'semua' || child.posyandu?.name === posyanduFilter;
     const ageMonths = getAgeInMonths(child.birth_date);
     const matchesUsia = usiaFilter === 'semua' ||
@@ -163,7 +163,8 @@ export default async function BalitaPage({ searchParams }: Props) {
           <input
             name="q"
             defaultValue={q}
-            placeholder="Cari nama balita, NIK, atau nama ibu kandung..."
+            placeholder="Cari nama balita atau nama ibu..."
+            aria-label="Cari nama balita atau nama ibu"
             className="balita-search"
           />
 
