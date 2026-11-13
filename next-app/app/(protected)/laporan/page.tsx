@@ -62,9 +62,6 @@ export default async function ReportsPage({ searchParams }: Props) {
   const { profile, supabase } = await requireActiveProfile();
   const filters = normalizeReportFilters(params);
   
-  const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1);
-  const from = (page - 1) * PAGE_SIZE;
-
   const [{ data: posyanduData }, report] = await Promise.all([
     supabase.from('posyandu').select('id, name').eq('is_active', true).order('name'),
     loadReportRows(supabase, filters),
@@ -88,14 +85,12 @@ export default async function ReportsPage({ searchParams }: Props) {
 
   const total = report.rows.length;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const page = Math.min(totalPages, Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1));
+  const from = (page - 1) * PAGE_SIZE;
   const paginatedRows = report.rows.slice(from, from + PAGE_SIZE);
 
   const buildPageHref = (targetPage: number) => {
-    const sp = new URLSearchParams();
-    if (filters.category) sp.set('category', filters.category);
-    if (filters.posyanduId) sp.set('posyandu', filters.posyanduId);
-    if (filters.startDate) sp.set('start', filters.startDate);
-    if (filters.endDate) sp.set('end', filters.endDate);
+    const sp = new URLSearchParams(exportQuery);
     if (targetPage > 1) sp.set('page', String(targetPage));
     const qs = sp.toString();
     return qs ? `/laporan?${qs}` : '/laporan';
@@ -112,15 +107,14 @@ export default async function ReportsPage({ searchParams }: Props) {
       />
 
       <main className="stitch-content laporan-content report-page">
-        {/* Filter Card */}
-        <section className="card" style={{ borderRadius: 20, padding: '22px 24px', border: '1px solid #e2ece7' }}>
+        <section className="card">
           <ReportFiltersForm
-            key={`${filters.category}:${filters.posyanduId}:${filters.startDate}:${filters.endDate}`}
+            key={`${filters.category}:${filters.posyanduId}:${filters.period}:${filters.startDate}:${filters.endDate}`}
             filters={filters}
             posyandu={posyandu}
           />
-          <p className="muted-copy" style={{ marginTop: 12 }}>
-            Periode mengikuti tanggal pengukuran atau pemeriksaan. Setelah mengubah filter, klik Tampilkan sebelum mengunduh.
+          <p className="muted-copy">
+            Rentang dihitung mundur dari tanggal akhir, termasuk tanggal tersebut. Periode mengikuti tanggal pengukuran atau pemeriksaan. Setelah mengubah filter, klik Tampilkan sebelum mengunduh.
           </p>
         </section>
 
@@ -253,7 +247,7 @@ export default async function ReportsPage({ searchParams }: Props) {
           {/* Table Footer */}
           <div className="schedule-footer">
             <p>
-              Menampilkan <strong>{paginatedRows.length}</strong> dari <strong>{total}</strong> laporan periode aktif
+              Menampilkan <strong>{total ? from + 1 : 0}–{from + paginatedRows.length}</strong> dari <strong>{total}</strong> catatan
             </p>
             <nav className="pagination" aria-label="Halaman">
               {page > 1 ? (
