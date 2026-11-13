@@ -1486,11 +1486,8 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   border-color: #B8E8E1;
 }
 .schedule-date-chip {
-  background: #ffffff;
-  border: 1px solid #d5e5db;
-  border-radius: 10px;
-  padding: 6px 10px;
-  text-align: center;
+  flex-shrink: 0;
+  text-align: left;
   min-width: 65px;
 }
 .schedule-date-chip strong {
