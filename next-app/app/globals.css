@@ -255,6 +255,27 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   display: none;
 }
 
+@media (max-width: 1000px) {
+  .report-desktop-results { display: none; }
+
+  .report-mobile-list {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .report-mobile-record {
+    min-width: 0;
+    padding: 20px 18px;
+  }
+
+  .report-mobile-record + .report-mobile-record {
+    border-top: 1px solid var(--line);
+  }
+
+}
+
 .report-date-cell strong {
   display: block;
   font-size: 13px;
