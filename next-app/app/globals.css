@@ -3364,193 +3364,65 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 
   .balita-table tbody tr {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 10px;
-    row-gap: 3px;
-    padding: 14px;
-    border: 1px solid #dfeae3;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 16px;
+    border: 1px solid var(--line);
     border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 4px 16px rgba(13, 131, 119, 0.06);
+    background: var(--surface);
   }
 
   .balita-table td {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr);
+    align-items: start;
     min-width: 0;
-    gap: 8px;
-    padding: 5px 0;
+    gap: 12px;
+    padding: 6px 0;
     border: none;
-    color: #244c45;
-    font-size: 12px;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
   }
 
   .balita-table td::before {
     content: attr(data-label);
-    color: #5d7a73;
-    font-size: 10px;
-    font-weight: 650;
-    letter-spacing: 0;
-    text-transform: none;
-    min-width: 0;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 400;
   }
 
-  .balita-name-cell {
-    grid-column: 1;
-    grid-row: 1;
-    display: flex;
-    align-items: center;
+  .balita-table .balita-name-cell {
+    display: block;
     padding: 0;
   }
 
-  .balita-name-cell::before {
+  .balita-table .balita-name-cell::before,
+  .balita-table .balita-minor-cell::before,
+  .balita-table .balita-actions::before {
     content: none;
   }
 
-  .balita-minor-cell {
-    grid-column: 1;
-    grid-row: 2;
-    justify-content: flex-start;
-    padding: 0 0 5px 48px !important;
-  }
-
-  .balita-minor-cell::before {
-    content: none;
-  }
-
-  .balita-table td:nth-child(3) {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    min-height: 31px;
-    margin-top: 4px;
-    border-radius: 8px 8px 0 0;
-    padding: 6px 9px;
-    background: #f5f8fa;
-  }
-
-  .balita-table td:nth-child(4) {
-    grid-column: 1 / -1;
-    grid-row: 4;
-    min-height: 31px;
-    border-radius: 0 0 8px 8px;
-    padding: 6px 9px;
-    background: #f5f8fa;
-  }
-
-  .balita-table td:nth-child(5) {
-    grid-column: 1;
-    grid-row: 5;
-    justify-content: flex-start;
-    padding-top: 10px;
-    color: #172f2b;
-    font-size: 16px;
-    font-weight: 800;
-  }
-
-  .balita-table td:nth-child(5)::before {
-    content: none;
-  }
-
-  .balita-table td:nth-child(6) {
-    grid-column: 2;
-    grid-row: 1;
-    align-self: start;
-    justify-content: flex-end;
-    padding: 0;
-  }
-
-  .balita-table td:nth-child(6)::before {
-    content: none;
-  }
-
-  .balita-table td:nth-child(7) {
-    grid-column: 2;
-    grid-row: 5;
-    align-self: end;
-    justify-content: flex-end;
-    padding: 4px 0 0;
-  }
-
-  .balita-table td:nth-child(7)::before {
-    content: none;
-  }
-
-  .balita-name-wrap {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 11px;
-    width: 100%;
-  }
-
-  .balita-child-avatar {
-    width: 42px;
-    height: 42px;
-    flex-basis: 42px;
-    border-radius: 50%;
-    background: #dceeff;
-    color: #07608b;
-    font-size: 14px;
-  }
-
-  .balita-child-avatar.amber {
-    background: #fff7e2;
-    color: #9b6700;
-  }
-
-  .balita-child-identity {
-    gap: 2px;
-  }
-
-  .balita-name-wrap strong {
-    font-size: 16px;
-    color: #123832;
+  .balita-table .balita-minor-cell {
+    display: block;
+    padding: 4px 0 12px;
   }
 
   .balita-minor-cell .balita-gender-stack {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 5px;
-  }
-
-  .balita-gender,
-  .balita-age {
-    font-size: 11px;
-    color: #176f9c;
+    gap: 8px;
   }
 
   .balita-age::before {
-    content: "·";
-    margin-right: 5px;
-    color: #8a9a96;
+    content: "\00b7";
+    margin-right: 8px;
   }
 
-  .balita-table td:nth-child(3)::before {
-    content: "♟  Ibu";
-  }
-
-  .balita-table td:nth-child(4)::before {
-    content: "⌖  Lokasi Posyandu";
-  }
-
-  .balita-table td:nth-child(3),
-  .balita-table td:nth-child(4) {
-    font-size: 11px;
-    color: #526a64;
-  }
-
-  .balita-table td:nth-child(3) > *,
-  .balita-table td:nth-child(4) > * {
-    text-align: right;
-    color: #1c3f39;
-    font-weight: 700;
-  }
-
-  .balita-gender,
-  .balita-age {
-    font-size: 12px;
-    color: #224b44;
+  .balita-table .balita-measurement {
+    white-space: normal;
   }
 
   .balita-status {
@@ -3559,21 +3431,20 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
     font-size: 10px;
   }
 
-  .balita-table td:nth-child(6) .balita-status {
-    min-height: 24px;
-    padding: 4px 9px;
-    white-space: nowrap;
-  }
-
-  .balita-actions {
+  .balita-table .balita-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: flex-end;
     gap: 8px;
-    padding-top: 6px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
   }
 
   .balita-action-btn {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 10px;
     border-color: #dfeae3;
   }
