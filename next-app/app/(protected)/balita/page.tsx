@@ -31,9 +31,6 @@ const getAgeInMonths = (birthDate: string) => {
 
 const getGenderLabel = (gender: string) => (gender === 'LAKI_LAKI' ? 'Laki-laki' : 'Perempuan');
 
-const getInitials = (name: string) =>
-  name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase() ?? '').join('');
-
 const getStatusMeta = (kmsStatus: string | null) => {
   if (kmsStatus === 'GIZI_BAIK') return { label: 'Gizi Baik', className: 'good' };
   if (kmsStatus === 'PERLU_PANTAUAN') return { label: 'Perlu Pantauan', className: 'warning' };
@@ -206,21 +203,14 @@ export default async function BalitaPage({ searchParams }: Props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {tableRows.map((child, index) => {
+                  {tableRows.map((child) => {
                     const ageMonths = getAgeInMonths(child.birth_date);
                     const status = getStatusMeta(child.kms_status);
                     const measurement = latestMeasurementByChild.get(child.id);
                     return (
                       <tr key={child.id}>
                         <td className="balita-name-cell" data-label="Balita">
-                          <div className="balita-name-wrap">
-                            <span className={`balita-child-avatar ${index % 2 === 0 ? 'teal' : 'amber'}`} aria-hidden="true">
-                              {getInitials(child.name)}
-                            </span>
-                            <span className="balita-child-identity">
-                            <strong>{child.name}</strong>
-                            </span>
-                          </div>
+                          <span className="balita-child-name">{child.name}</span>
                         </td>
                         <td className="balita-minor-cell" data-label="JK &amp; Usia">
                           <div className="balita-gender-stack">

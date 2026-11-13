@@ -2955,49 +2955,11 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 .balita-name-cell { min-width: 210px; }
 .balita-minor-cell { min-width: 140px; }
 
-.balita-name-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.balita-child-avatar {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.balita-child-avatar.teal {
-  color: #00796f;
-  background: #effbf8;
-}
-
-.balita-child-avatar.amber {
-  color: #a66a00;
-  background: #fff9e9;
-}
-
-.balita-child-identity {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.balita-name-wrap strong {
-  color: #123832;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.balita-name-wrap span {
-  color: #6d857d;
-  font-size: 11px;
+.balita-child-name,
+.balita-kms-text {
+  font: inherit;
+  color: inherit;
+  overflow-wrap: anywhere;
 }
 
 .balita-gender-stack {
