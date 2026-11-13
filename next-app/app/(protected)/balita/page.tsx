@@ -183,7 +183,6 @@ export default async function BalitaPage({ searchParams }: Props) {
           </select>
 
           <button type="submit" className="balita-filter-btn">Cari</button>
-          <button type="reset" className="balita-reset-btn">Reset</button>
         </form>
 
         <div className="balita-table-card">

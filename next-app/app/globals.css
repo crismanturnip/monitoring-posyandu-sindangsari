@@ -2874,8 +2874,7 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 
 .balita-search,
 .balita-select,
-.balita-filter-btn,
-.balita-reset-btn {
+.balita-filter-btn {
   min-height: 40px;
   border: 1px solid #d5e2d8;
   border-radius: 10px;
@@ -2894,8 +2893,7 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   padding: 9px 12px;
 }
 
-.balita-filter-btn,
-.balita-reset-btn {
+.balita-filter-btn {
   padding: 9px 14px;
   cursor: pointer;
   font-weight: 800;
@@ -2906,11 +2904,6 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   background: linear-gradient(135deg, #0c6a61 0%, #0d8377 100%);
   color: white;
   box-shadow: 0 10px 18px rgba(13, 131, 119, 0.18);
-}
-
-.balita-reset-btn {
-  background: #f5faf7;
-  color: #0d8377;
 }
 
 .balita-table-card {
@@ -3298,8 +3291,7 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 
   .balita-search,
   .balita-select,
-  .balita-filter-btn,
-  .balita-reset-btn {
+  .balita-filter-btn {
     width: 100%;
     min-height: 42px;
     border: 1px solid #d8e3dc;
@@ -3325,13 +3317,6 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
     color: #fff;
     font-weight: 800;
     box-shadow: 0 10px 20px rgba(13, 131, 119, 0.18);
-  }
-
-  .balita-reset-btn {
-    background: #f1f7f4;
-    border-color: #d5e4dc;
-    color: #0d8377;
-    font-weight: 700;
   }
 
   .balita-table-card {
