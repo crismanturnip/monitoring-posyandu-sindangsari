@@ -173,7 +173,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
         <form className="card filter-bar" action="/lansia" method="get">
           <label className="filter-search">
             <SearchIcon />
-            <input name="q" defaultValue={q} placeholder="Cari nama lansia atau penanggung jawab..." />
+            <input name="q" defaultValue={q} placeholder="Cari nama lansia..." aria-label="Cari nama lansia" />
           </label>
           <select name="posyandu" defaultValue={posyanduFilter} aria-label="Filter Posyandu">
             <option value="">Semua Posyandu</option>
