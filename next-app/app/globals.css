@@ -316,6 +316,16 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
     white-space: pre-line;
   }
 
+  .report-page .pagination {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .report-page .pagination a,
+  .report-page .pagination .ghost-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 .report-date-cell strong {
