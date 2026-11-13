@@ -1379,16 +1379,6 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   color: #0D8377;
 }
 
-.stitch-tag-posyandu {
-  background: #E0F5F2;
-  color: #0A7267;
-  border: 1px solid #B8E8E1;
-  border-radius: 9999px;
-  padding: 3px 10px;
-  font-size: 11px;
-  font-weight: 700;
-}
-
 .stitch-header-meta {
   font-size: 11px;
   color: #799287;

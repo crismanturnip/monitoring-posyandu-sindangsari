@@ -327,7 +327,6 @@ export default async function DashboardPage() {
                 </svg>
                 <h2>Jadwal kegiatan mendatang</h2>
               </div>
-              <span className="stitch-tag-posyandu">Posyandu</span>
             </div>
 
             <div className="stitch-card-body">
