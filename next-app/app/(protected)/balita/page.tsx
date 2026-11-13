@@ -31,10 +31,10 @@ const getAgeInMonths = (birthDate: string) => {
 
 const getGenderLabel = (gender: string) => (gender === 'LAKI_LAKI' ? 'Laki-laki' : 'Perempuan');
 
-const getStatusMeta = (kmsStatus: string | null) => {
-  if (kmsStatus === 'GIZI_BAIK') return { label: 'Gizi Baik', className: 'good' };
-  if (kmsStatus === 'PERLU_PANTAUAN') return { label: 'Perlu Pantauan', className: 'warning' };
-  return { label: 'Belum diisi', className: 'unknown' };
+const getStatusLabel = (kmsStatus: string | null) => {
+  if (kmsStatus === 'GIZI_BAIK') return 'Gizi Baik';
+  if (kmsStatus === 'PERLU_PANTAUAN') return 'Perlu Pantauan';
+  return 'Belum diisi';
 };
 
 export default async function BalitaPage({ searchParams }: Props) {
@@ -205,7 +205,6 @@ export default async function BalitaPage({ searchParams }: Props) {
                 <tbody>
                   {tableRows.map((child) => {
                     const ageMonths = getAgeInMonths(child.birth_date);
-                    const status = getStatusMeta(child.kms_status);
                     const measurement = latestMeasurementByChild.get(child.id);
                     return (
                       <tr key={child.id}>
@@ -224,7 +223,7 @@ export default async function BalitaPage({ searchParams }: Props) {
                           {measurement ? `${measurement.weight_kg} kg / ${measurement.height_cm} cm` : 'Belum diukur'}
                         </td>
                         <td data-label="Status Gizi KMS">
-                          <span className={`balita-status ${status.className}`}>{status.label}</span>
+                          <span className="balita-kms-text">{getStatusLabel(child.kms_status)}</span>
                         </td>
                         <td className="balita-actions" data-label="Aksi">
                           <BalitaEditModal
