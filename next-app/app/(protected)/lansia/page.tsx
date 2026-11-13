@@ -86,7 +86,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
   const editId = canManage && uuidPattern.test(params.edit ?? '') ? String(params.edit) : '';
   const deleteId = canManage && uuidPattern.test(params.hapus ?? '') ? String(params.hapus) : '';
 
-  const [{ data: elderlyData, count }, { data: posyanduData }, { data: editData }, { data: deleteData }, { count: examinationCount, error: examinationCountError }] = await Promise.all([
+  const [{ data: elderlyData, count, error: elderlyError }, { data: posyanduData }, { data: editData }, { data: deleteData }, { count: examinationCount, error: examinationCountError }] = await Promise.all([
     query,
     supabase.from('posyandu').select('id, name').eq('is_active', true).order('name'),
     editId ? supabase.from('elderly_people').select('id, name, posyandu_id').eq('id', editId).maybeSingle() : Promise.resolve({ data: null }),
@@ -146,7 +146,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                 </svg>
               </div>
             </div>
-            <div className="stitch-stat-value">{new Intl.NumberFormat('id-ID').format(total)}</div>
+            <div className="stitch-stat-value">{elderlyError ? '-' : new Intl.NumberFormat('id-ID').format(total)}</div>
             <div className="stitch-stat-footer">
               <span className="stitch-chip">
                 <span className="chip-bullet">•</span> {total} Terdaftar
@@ -189,6 +189,9 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
           </Link>
         </form>
 
+        {elderlyError && <p className="form-error" role="alert">Data lansia dan pemeriksaan terakhir gagal dimuat. Coba muat ulang halaman.</p>}
+        {examinationCountError && <p className="form-error" role="alert">Jumlah catatan pemeriksaan belum dapat dimuat.</p>}
+
         {/* Daftar lansia */}
         <section className="card lansia-table-card">
           <div className="lansia-table-wrap">
@@ -209,7 +212,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                 {elderlyPeople.length === 0 && (
                   <tr>
                     <td colSpan={canManage ? 8 : 7}>
-                      <div className="empty">Belum ada data lansia yang cocok dengan pencarian Anda.</div>
+                      <div className="empty">{elderlyError ? 'Daftar lansia belum dapat ditampilkan.' : 'Belum ada data lansia yang cocok dengan pencarian Anda.'}</div>
                     </td>
                   </tr>
                 )}
