@@ -168,14 +168,14 @@ export default async function BalitaPage({ searchParams }: Props) {
             className="balita-search"
           />
 
-          <select name="posyandu" defaultValue={posyanduFilter} className="balita-select">
+          <select name="posyandu" defaultValue={posyanduFilter} className="balita-select" aria-label="Filter Posyandu">
             <option value="semua">Semua Posyandu</option>
             {posyandu.map((item) => (
               <option value={item.name} key={item.id}>{item.name}</option>
             ))}
           </select>
 
-          <select name="usia" defaultValue={usiaFilter} className="balita-select">
+          <select name="usia" defaultValue={usiaFilter} className="balita-select" aria-label="Filter usia balita">
             <option value="semua">Semua Kategori Usia</option>
             <option value="0-12">0 - 12 bulan</option>
             <option value="12-24">12 - 24 bulan</option>
