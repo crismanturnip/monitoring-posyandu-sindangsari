@@ -296,72 +296,678 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
         </section>
       </main>
 
-      {/* Modal Tambah / Edit Lansia */}
+      {/* Modal Tambah / Edit Lansia Sesuai Referensi Gambar */}
       {showForm && (
-        <Modal closeHref={closeHref} labelledBy="lansia-modal-title">
-          <div className="modal-head">
-            <div className="modal-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="10" cy="4" r="2" />
-                <path d="M10 7v5l-3 4" />
-                <path d="M10 12l3 9" />
-                <path d="M14 10l2 2v9" />
-              </svg>
-            </div>
-            <div className="modal-titles">
-              <div className="modal-tags">
-                <p className="modal-eyebrow">Data Register Lansia</p>
+        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="lansia-modal-title">
+          <div className="anc-modal lansia-modal">
+            {/* Header Modal */}
+            <div className="anc-modal-header">
+              <div className={`anc-modal-icon ${editing ? 'icon-edit' : ''}`}>
+                {editing ? (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                  </svg>
+                ) : (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="10" cy="4" r="2" />
+                    <path d="M10 7v5l-3 4" />
+                    <path d="M10 12l3 9" />
+                    <path d="M14 10l2 2v9" />
+                    <path d="M7 10h5" />
+                  </svg>
+                )}
               </div>
-              <h2 id="lansia-modal-title">
-                {editing ? 'Edit Data Lansia' : 'Tambah Data Lansia'}
-              </h2>
-              <p className="modal-desc">
-                {editing
-                  ? 'Perbarui informasi lansia di wilayah binaan Posyandu.'
-                  : 'Catat data lansia baru untuk pemantauan pemeriksaan kesehatan rutin.'}
-              </p>
-            </div>
-            <Link className="modal-close" href={closeHref} aria-label="Tutup">
-              <CloseIcon />
-            </Link>
-          </div>
-
-          <form action={editing ? updateElderlyPerson : createElderlyPerson} className="sch-form">
-            {editing && <input type="hidden" name="id" value={editing.id} />}
-            <div className="sch-step">
-              <label>
-                Posyandu Binaan
-                <select name="posyanduId" required defaultValue={editing?.posyandu_id ?? ''}>
-                  <option value="" disabled>Pilih Posyandu</option>
-                  {posyandu.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label>
-                Nama Lengkap Lansia
-                <input
-                  name="name"
-                  required
-                  defaultValue={editing?.name ?? ''}
-                  placeholder="Contoh: Tn. Suherman"
-                />
-              </label>
-            </div>
-
-            <div className="sch-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, padding: '16px 0 24px' }}>
-              <Link className="ghost-btn" href={closeHref}>
-                Batal
+              <div className="anc-modal-heading">
+                <div className="anc-modal-heading-row">
+                  <h2 id="lansia-modal-title">
+                    {editing ? 'Edit Data Lansia' : 'Tambah Data Lansia Baru'}
+                  </h2>
+                  <span className={`anc-badge ${editing ? 'anc-badge-pill' : 'anc-badge-pill'}`} style={{ color: '#0d8377', borderColor: '#99d6cc' }}>
+                    {editing ? 'LANSIA REGISTRY • UPDATE' : 'POSYANDU LANSIA'}
+                  </span>
+                  {editing && (
+                    <span className="anc-badge" style={{ background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1' }}>
+                      ID: LNS-001
+                    </span>
+                  )}
+                </div>
+                <p>
+                  {editing
+                    ? 'Perbarui data skrining berkala, tingkat kemandirian, dan catatan kesehatan lansia Desa Sindang Sari.'
+                    : 'Pencatatan skrining kesehatan lansia, deteksi faktor risiko PTM, dan pemantauan kemandirian Desa Sindang Sari.'}
+                </p>
+              </div>
+              <Link className="anc-modal-close" href={closeHref} aria-label="Tutup form">
+                <CloseIcon />
               </Link>
-              <button className="primary-btn" type="submit">
-                {editing ? 'Simpan Perubahan' : 'Simpan Data Lansia'}
-              </button>
             </div>
-          </form>
-        </Modal>
+
+            {/* Form Modal Sesuai Layout Referensi */}
+            <form action={editing ? updateElderlyPerson : createElderlyPerson} className="anc-modal-form">
+              {editing && <input type="hidden" name="id" value={editing.id} />}
+
+              {/* ===================================================
+                  KONDISI EDIT DATA LANSIA
+                  =================================================== */}
+              {editing ? (
+                <>
+                  {/* Bagian 1: Identitas Lansia & Penanggung Jawab */}
+                  <div className="anc-section-card">
+                    <div className="anc-section-head">
+                      <div className="anc-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0d8377" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="4" width="18" height="16" rx="3" />
+                          <path d="M7 8h10M7 12h10M7 16h6" />
+                        </svg>
+                        <h3>1. Identitas Lansia &amp; Penanggung Jawab</h3>
+                      </div>
+                    </div>
+
+                    <div className="anc-grid-2">
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Nama Lengkap Lansia <span className="req">*</span></span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input
+                            name="name"
+                            required
+                            defaultValue={editing.name || 'Tn. Suherman'}
+                            placeholder="cth. Tn. Suherman"
+                            className="anc-input no-icon"
+                          />
+                          <span className="anc-input-append" style={{ right: 12 }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a8.38 8.38 0 0 1 13 0"/></svg>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Jenis Kelamin <span className="req">*</span></span>
+                        </label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 20, minHeight: 42 }}>
+                          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 700, color: '#096d62', cursor: 'pointer' }}>
+                            <input type="radio" name="gender" value="Laki-laki" defaultChecked style={{ accentColor: '#096d62', width: 16, height: 16 }} />
+                            Laki-laki
+                          </label>
+                          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 600, color: '#475569', cursor: 'pointer' }}>
+                            <input type="radio" name="gender" value="Perempuan" style={{ accentColor: '#096d62', width: 16, height: 16 }} />
+                            Perempuan
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="lansia-edit-grid-3" style={{ marginTop: 4 }}>
+                      <div className="anc-field">
+                        <label className="anc-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8 }}>
+                          <span>Tanggal Lahir &amp; Usia</span>
+                          <span style={{ background: '#e6f6f4', color: '#0d8377', borderRadius: 999, padding: '2px 8px', fontSize: 11, fontWeight: 700 }}>
+                            68 Tahun
+                          </span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input
+                            name="birthDateDisplay"
+                            defaultValue="12/04/1956 (68 Thn)"
+                            className="anc-input no-icon"
+                          />
+                          <span className="anc-input-append">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Nama Penanggung Jawab (Keluarga)</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input
+                            name="guardianName"
+                            defaultValue="Ahmad"
+                            className="anc-input no-icon"
+                          />
+                          <span className="anc-input-append">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Hubungan Keluarga</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <select name="guardianRelation" defaultValue="Anak Kandung" className="anc-select" style={{ paddingLeft: 14 }}>
+                            <option value="Anak Kandung">Anak Kandung</option>
+                            <option value="Pasangan (Suami/Istri)">Pasangan (Suami/Istri)</option>
+                            <option value="Cucu">Cucu</option>
+                            <option value="Kerabat / Lainnya">Kerabat / Lainnya</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="anc-grid-2" style={{ marginTop: 4 }}>
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Nomor HP Penanggung Jawab</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input
+                            name="guardianPhone"
+                            defaultValue="081234567890"
+                            className="anc-input no-icon"
+                          />
+                          <span className="anc-input-append">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Alamat Domisili Desa Sindang Sari</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input
+                            name="address"
+                            defaultValue="Dusun Sindanghurip RT 01 / RW 03"
+                            className="anc-input no-icon"
+                          />
+                          <span className="anc-input-append">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bagian 2: Hasil Pemeriksaan Kesehatan & Skrining Kemandirian */}
+                  <div className="anc-section-card" style={{ borderTop: '1px dashed #d9e6e0', paddingTop: 16 }}>
+                    <div className="anc-section-head">
+                      <div className="anc-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0d8377" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                        </svg>
+                        <h3>2. Hasil Pemeriksaan Kesehatan &amp; Skrining Kemandirian</h3>
+                      </div>
+                      <span style={{ color: '#0d8377', background: '#e6f6f4', border: '1px solid #99d6cc', borderRadius: 999, padding: '4px 12px', fontSize: 11, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg> Kondisi Terkontrol
+                      </span>
+                    </div>
+
+                    <div className="anc-field">
+                      <label className="anc-label">
+                        <span>Posyandu Lansia Pembina</span>
+                      </label>
+                      <div className="anc-input-group">
+                        <select
+                          name="posyanduId"
+                          defaultValue={editing.posyandu_id ?? ''}
+                          className="anc-select"
+                          style={{ paddingLeft: 14 }}
+                        >
+                          {posyandu.map((item) => (
+                            <option key={item.id} value={item.id}>
+                              {item.name} {item.name.toLowerCase().includes('dusun') ? '' : '(Dusun Sindanghurip)'}
+                            </option>
+                          ))}
+                        </select>
+                        <span className="anc-input-append">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="lansia-vitals-4">
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Tekanan Darah (TD)</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input name="bloodPressure" defaultValue="125/80" className="anc-input no-icon" />
+                          <span className="anc-input-append">mmHg</span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Gula Darah (GDS)</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input name="bloodSugar" defaultValue="110" className="anc-input no-icon" />
+                          <span className="anc-input-append">mg/dL</span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Asam Urat</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input name="uricAcid" defaultValue="5.2" className="anc-input no-icon" />
+                          <span className="anc-input-append">mg/dL</span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>BB &amp; TB</span>
+                        </label>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                          <div className="anc-input-group">
+                            <input name="weight" defaultValue="62" className="anc-input no-icon" />
+                            <span className="anc-input-append">kg</span>
+                          </div>
+                          <div className="anc-input-group">
+                            <input name="height" defaultValue="165" className="anc-input no-icon" />
+                            <span className="anc-input-append">cm</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="anc-grid-2">
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Tingkat Kemandirian (Aktivitas Sehari-hari)</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input
+                            name="aks"
+                            defaultValue="Mandiri (Kategori A) - Tidak Butuh Bantuan"
+                            className="anc-input no-icon"
+                            style={{ color: '#0d8377', fontWeight: 700 }}
+                          />
+                          <span className="anc-input-append">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="5" r="2"/><path d="m9 20 3-6 3 6"/><path d="m6 8 6 2 6-2"/><path d="M12 10v4"/></svg>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Status Risiko Kesehatan</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input
+                            name="healthRisk"
+                            defaultValue="Sehat Terkontrol"
+                            className="anc-input no-icon"
+                            style={{ color: '#0f2f2b', fontWeight: 600 }}
+                          />
+                          <span className="anc-input-append">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="anc-field full">
+                      <label className="anc-label">
+                        <span>Catatan Petugas / Evaluasi Bidan Desa</span>
+                      </label>
+                      <textarea
+                        name="notes"
+                        rows={2}
+                        defaultValue="Kondisi fisik lansia prima, aktivitas mandiri jalan pagi rutin, tekanan darah dan gula darah stabil terkontrol."
+                        className="anc-input no-icon"
+                        style={{ minHeight: 64, paddingTop: 10, resize: 'vertical' }}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* ===================================================
+                   KONDISI TAMBAH DATA LANSIA BARU
+                   =================================================== */
+                <>
+                  {/* Bagian 1: Identitas & Informasi Lansia */}
+                  <div className="anc-section-card">
+                    <div className="anc-section-head">
+                      <div className="anc-section-title">
+                        <span className="lansia-step-num">1</span>
+                        <div>
+                          <h3>Identitas &amp; Informasi Lansia</h3>
+                          <div className="lansia-section-desc">Kelengkapan data pokok warga binaan lansia tanpa NIK</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="anc-grid-2">
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Nama Lengkap Lansia <span className="req">*</span></span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input
+                            name="name"
+                            required
+                            placeholder="cth. Tn. Suherman"
+                            className="anc-input no-icon"
+                          />
+                          <span className="anc-input-append">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a8.38 8.38 0 0 1 13 0"/></svg>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Jenis Kelamin <span className="req">*</span></span>
+                        </label>
+                        <div className="lansia-gender-group">
+                          <label className="lansia-gender-option active">
+                            <input type="radio" name="gender" value="Laki-laki" defaultChecked />
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="5" r="3"/><path d="M12 8v8M9 12h6M9 20l3-4 3 4"/></svg>
+                            Laki-laki
+                          </label>
+                          <label className="lansia-gender-option">
+                            <input type="radio" name="gender" value="Perempuan" />
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="5" r="3"/><path d="M12 8v8M9 13h6M12 16v5"/></svg>
+                            Perempuan
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="anc-grid-2" style={{ marginTop: 4 }}>
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Tanggal Lahir <span className="req">*</span></span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input
+                            type="date"
+                            name="birthDate"
+                            defaultValue="1956-03-12"
+                            className="anc-input no-icon"
+                          />
+                          <span className="anc-input-append">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Usia Saat Ini (Kalkulasi)</span>
+                        </label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div className="lansia-calc-box" style={{ flex: 1, justifyContent: 'space-between' }}>
+                            <span>68 Thn</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><path d="M12 11v6"/></svg>
+                          </div>
+                          <span className="anc-badge anc-badge-pill" style={{ color: '#0d8377', borderColor: '#99d6cc', padding: '9px 14px', fontSize: 12 }}>
+                            Lansia Madya
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="lansia-edit-grid-3" style={{ marginTop: 4 }}>
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Penanggung Jawab / Keluarga <span className="req">*</span></span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input
+                            name="guardianName"
+                            placeholder="cth. Ahmad Fauzi"
+                            className="anc-input no-icon"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Hubungan Keluarga <span className="req">*</span></span>
+                        </label>
+                        <div className="anc-input-group">
+                          <select name="guardianRelation" defaultValue="Anak Kandung" className="anc-select" style={{ paddingLeft: 14 }}>
+                            <option value="Anak Kandung">Anak Kandung</option>
+                            <option value="Pasangan (Suami/Istri)">Pasangan (Suami/Istri)</option>
+                            <option value="Cucu">Cucu</option>
+                            <option value="Kerabat / Keluarga Lainnya">Kerabat / Keluarga Lainnya</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>No. WhatsApp / HP Keluarga</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input
+                            name="guardianPhone"
+                            placeholder="0812xxxxxxxx"
+                            className="anc-input no-icon"
+                          />
+                          <span className="anc-input-append">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0d8377" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="anc-field full" style={{ marginTop: 4 }}>
+                      <label className="anc-label">
+                        <span>Alamat Domisili / RT-RW <span className="req">*</span></span>
+                      </label>
+                      <div className="anc-input-group">
+                        <input
+                          name="address"
+                          defaultValue="Dusun Sindanghurip RT 01 / RW 03"
+                          placeholder="Dusun Sindanghurip RT 01 / RW 03"
+                          className="anc-input no-icon"
+                        />
+                        <span className="anc-input-append">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bagian 2: Skrining Kesehatan Awal & Tingkat Kemandirian */}
+                  <div className="anc-section-card" style={{ borderTop: '1px dashed #d9e6e0', paddingTop: 16 }}>
+                    <div className="anc-section-head">
+                      <div className="anc-section-title">
+                        <span className="lansia-step-num">2</span>
+                        <div>
+                          <h3>Skrining Kesehatan Awal &amp; Tingkat Kemandirian</h3>
+                          <div className="lansia-section-desc">Pemeriksaan tanda vital, risiko metabolik, dan kemandirian AKS</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="anc-field">
+                      <label className="anc-label">
+                        <span>Posyandu Pembina Domisili <span className="req">*</span></span>
+                      </label>
+                      <div className="anc-input-group">
+                        <select
+                          name="posyanduId"
+                          required
+                          defaultValue={posyandu[0]?.id ?? ''}
+                          className="anc-select"
+                          style={{ paddingLeft: 14 }}
+                        >
+                          <option value="" disabled>Pilih Posyandu Pembina</option>
+                          {posyandu.map((item) => (
+                            <option key={item.id} value={item.id}>
+                              {item.name} - Dusun Sindang Sari (Bina Lansia Rutin)
+                            </option>
+                          ))}
+                        </select>
+                        <span className="anc-input-append">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="lansia-vitals-4">
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Tekanan Darah (TD)</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input name="bloodPressure" defaultValue="120/80" placeholder="120/80" className="anc-input no-icon" />
+                          <span className="anc-input-append">mmHg</span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Gula Darah (GDS)</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input name="bloodSugar" defaultValue="110" placeholder="110" className="anc-input no-icon" />
+                          <span className="anc-input-append">mg/dL</span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Kolesterol</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input name="cholesterol" defaultValue="180" placeholder="180" className="anc-input no-icon" />
+                          <span className="anc-input-append">mg/dL</span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Asam Urat</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input name="uricAcid" defaultValue="5.2" placeholder="5.2" className="anc-input no-icon" />
+                          <span className="anc-input-append">mg/dL</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="lansia-antropo-row">
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Berat Badan (BB)</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input name="weight" defaultValue="58.5" placeholder="58.5" className="anc-input no-icon" />
+                          <span className="anc-input-append">kg</span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Tinggi Badan (TB)</span>
+                        </label>
+                        <div className="anc-input-group">
+                          <input name="height" defaultValue="162" placeholder="162" className="anc-input no-icon" />
+                          <span className="anc-input-append">cm</span>
+                        </div>
+                      </div>
+
+                      <div className="anc-field">
+                        <label className="anc-label">
+                          <span>Estimasi Status IMT Lansia</span>
+                        </label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div className="lansia-calc-box" style={{ flex: 1 }}>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg>
+                            <span>22.3 kg/m²</span>
+                          </div>
+                          <span className="lansia-badge-tag">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                            Gizi Normal / Baik
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="anc-field full">
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                        <label className="anc-label" style={{ margin: 0 }}>
+                          <span>Tingkat Kemandirian Aktivitas Keseharian (AKS) <span className="req">*</span></span>
+                        </label>
+                        <span style={{ fontSize: 11, color: '#64748b' }}>Kategori Penilaian Kemenkes</span>
+                      </div>
+
+                      <div className="lansia-aks-cards">
+                        <label className="lansia-aks-card active">
+                          <input type="radio" name="aks" value="Mandiri (Kategori A)" defaultChecked style={{ display: 'none' }} />
+                          <h4>Mandiri (Kategori A)</h4>
+                          <p>Mampu makan, mandi, berpakaian, dan mobilisasi tanpa bantuan orang lain.</p>
+                        </label>
+
+                        <label className="lansia-aks-card">
+                          <input type="radio" name="aks" value="Pendampingan Ringan (B)" style={{ display: 'none' }} />
+                          <h4>Pendampingan Ringan (B)</h4>
+                          <p>Perlu sedikit bantuan dalam berjalan, mengambil obat, atau membersihkan diri.</p>
+                        </label>
+
+                        <label className="lansia-aks-card">
+                          <input type="radio" name="aks" value="Ketergantungan Total (C)" style={{ display: 'none' }} />
+                          <h4>Ketergantungan Total (C)</h4>
+                          <p>Tirah baring (bedridden), memerlukan asuhan menyeluruh dari pendamping.</p>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="anc-field full">
+                      <label className="anc-label">
+                        <span>Catatan Keluhan / Terapi Obat Rutin (Opsional)</span>
+                      </label>
+                      <textarea
+                        name="notes"
+                        rows={2}
+                        placeholder="cth. Riwayat rutin minum Amlodipine 5mg dari Puskesmas, nyeri sendi lutut kanan saat berdiri lama."
+                        className="anc-input no-icon"
+                        style={{ minHeight: 64, paddingTop: 10, resize: 'vertical' }}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Footer Modal */}
+              <div className="anc-modal-footer">
+                {editing ? (
+                  <div className="anc-officer-meta">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0d8377" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                    <span>Pembaruan data tersinkronisasi dengan Kohort Lansia Sindang Sari</span>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div className="lansia-avatar-badge">
+                      {((profile.full_name || 'Crisman Turnip').split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase()) || 'CT'}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, color: '#64748b' }}>Petugas Pencatat</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#0f2f2b' }}>
+                        Bidan Desa: {profile.full_name || 'Crisman Turnip'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="anc-footer-actions">
+                  <Link className="anc-btn-cancel" href={closeHref}>
+                    Batal
+                  </Link>
+                  <button className="anc-btn-submit" type="submit">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    {editing ? 'Simpan Perubahan' : '+ Simpan Data Lansia'}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {/* Modal Hapus Lansia */}
