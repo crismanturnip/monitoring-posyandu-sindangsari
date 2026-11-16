@@ -2201,6 +2201,13 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   filter: saturate(1.05);
 }
 
+.balita-content {
+  padding-top: 28px;
+  display: grid;
+  gap: 20px;
+  max-width: 1500px;
+}
+
 .balita-page-shell {
   padding: 14px 18px 30px;
 }

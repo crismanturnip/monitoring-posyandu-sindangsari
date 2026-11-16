@@ -96,7 +96,7 @@ export default async function BalitaPage({ searchParams }: Props) {
         pageTitle="Data Bayi & Balita"
         pageDescription="Pencatatan data antropometri, penimbangan bulanan, status gizi, dan pemantauan kurva KMS balita di wilayah kerja Desa Sindang Sari."
       />
-      <main className="balita-page-shell balita-page-wrap">
+      <main className="stitch-content balita-content">
         <div className="balita-topbar">
           <BalitaCreateModal posyandu={posyandu} />
         </div>
