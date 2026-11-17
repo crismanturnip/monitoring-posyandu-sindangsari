@@ -3,6 +3,7 @@ import { createElderlyPerson, updateElderlyPerson, softDeleteElderlyPerson } fro
 import { requireActiveProfile } from '@/lib/auth';
 import { PageHero } from '@/components/page-hero';
 import { Modal } from '@/components/modal';
+import { jakartaDate } from '@/lib/health-record-dates';
 
 type Props = {
   searchParams: Promise<{
@@ -346,6 +347,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
             {/* Form Modal Sesuai Layout Referensi */}
             <form action={editing ? updateElderlyPerson : createElderlyPerson} className="anc-modal-form">
               {editing && <input type="hidden" name="id" value={editing.id} />}
+              <div className="anc-field full"><label className="anc-label" htmlFor="elderly-exam-date">Tanggal pemeriksaan baru</label><input id="elderly-exam-date" name="examinedAt" type="date" defaultValue={jakartaDate()} className="anc-input no-icon" /><p className="muted-copy">Isi hasil pemeriksaan untuk menambah riwayat dan laporan pada tanggal ini. Kosongkan hasil jika hanya menyimpan identitas.</p></div>
 
               {/* ===================================================
                   KONDISI EDIT DATA LANSIA
@@ -529,7 +531,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                           <span>Tekanan Darah (TD)</span>
                         </label>
                         <div className="anc-input-group">
-                          <input name="bloodPressure" defaultValue="125/80" className="anc-input no-icon" />
+                          <input name="bloodPressure" className="anc-input no-icon" />
                           <span className="anc-input-append">mmHg</span>
                         </div>
                       </div>
@@ -539,7 +541,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                           <span>Gula Darah (GDS)</span>
                         </label>
                         <div className="anc-input-group">
-                          <input name="bloodSugar" defaultValue="110" className="anc-input no-icon" />
+                          <input name="bloodSugar" className="anc-input no-icon" />
                           <span className="anc-input-append">mg/dL</span>
                         </div>
                       </div>
@@ -549,7 +551,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                           <span>Asam Urat</span>
                         </label>
                         <div className="anc-input-group">
-                          <input name="uricAcid" defaultValue="5.2" className="anc-input no-icon" />
+                          <input name="uricAcid" className="anc-input no-icon" />
                           <span className="anc-input-append">mg/dL</span>
                         </div>
                       </div>
@@ -560,11 +562,11 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                         </label>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                           <div className="anc-input-group">
-                            <input name="weight" defaultValue="62" className="anc-input no-icon" />
+                            <input name="weight" className="anc-input no-icon" />
                             <span className="anc-input-append">kg</span>
                           </div>
                           <div className="anc-input-group">
-                            <input name="height" defaultValue="165" className="anc-input no-icon" />
+                            <input name="height" className="anc-input no-icon" />
                             <span className="anc-input-append">cm</span>
                           </div>
                         </div>
@@ -579,7 +581,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                         <div className="anc-input-group">
                           <input
                             name="aks"
-                            defaultValue="Mandiri (Kategori A) - Tidak Butuh Bantuan"
+                            placeholder="Isi hasil penilaian kemandirian baru"
                             className="anc-input no-icon"
                             style={{ color: '#0d8377', fontWeight: 700 }}
                           />
@@ -596,7 +598,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                         <div className="anc-input-group">
                           <input
                             name="healthRisk"
-                            defaultValue="Sehat Terkontrol"
+                            placeholder="Isi hasil penilaian kesehatan baru"
                             className="anc-input no-icon"
                             style={{ color: '#0f2f2b', fontWeight: 600 }}
                           />
@@ -609,12 +611,12 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
 
                     <div className="anc-field full">
                       <label className="anc-label">
-                        <span>Catatan Petugas / Evaluasi Bidan Desa</span>
+                        <span>Catatan pemeriksaan baru (opsional)</span>
                       </label>
                       <textarea
                         name="notes"
                         rows={2}
-                        defaultValue="Kondisi fisik lansia prima, aktivitas mandiri jalan pagi rutin, tekanan darah dan gula darah stabil terkontrol."
+                        placeholder="Isi untuk menambahkan riwayat pemeriksaan baru. Kosongkan jika hanya mengubah identitas."
                         className="anc-input no-icon"
                         style={{ minHeight: 64, paddingTop: 10, resize: 'vertical' }}
                       />
@@ -815,7 +817,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                           <span>Tekanan Darah (TD)</span>
                         </label>
                         <div className="anc-input-group">
-                          <input name="bloodPressure" defaultValue="120/80" placeholder="120/80" className="anc-input no-icon" />
+                          <input name="bloodPressure" placeholder="120/80" className="anc-input no-icon" />
                           <span className="anc-input-append">mmHg</span>
                         </div>
                       </div>
@@ -825,7 +827,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                           <span>Gula Darah (GDS)</span>
                         </label>
                         <div className="anc-input-group">
-                          <input name="bloodSugar" defaultValue="110" placeholder="110" className="anc-input no-icon" />
+                          <input name="bloodSugar" placeholder="110" className="anc-input no-icon" />
                           <span className="anc-input-append">mg/dL</span>
                         </div>
                       </div>
@@ -835,7 +837,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                           <span>Kolesterol</span>
                         </label>
                         <div className="anc-input-group">
-                          <input name="cholesterol" defaultValue="180" placeholder="180" className="anc-input no-icon" />
+                          <input name="cholesterol" placeholder="180" className="anc-input no-icon" />
                           <span className="anc-input-append">mg/dL</span>
                         </div>
                       </div>
@@ -845,7 +847,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                           <span>Asam Urat</span>
                         </label>
                         <div className="anc-input-group">
-                          <input name="uricAcid" defaultValue="5.2" placeholder="5.2" className="anc-input no-icon" />
+                          <input name="uricAcid" placeholder="5.2" className="anc-input no-icon" />
                           <span className="anc-input-append">mg/dL</span>
                         </div>
                       </div>
@@ -857,7 +859,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                           <span>Berat Badan (BB)</span>
                         </label>
                         <div className="anc-input-group">
-                          <input name="weight" defaultValue="58.5" placeholder="58.5" className="anc-input no-icon" />
+                          <input name="weight" placeholder="58.5" className="anc-input no-icon" />
                           <span className="anc-input-append">kg</span>
                         </div>
                       </div>
@@ -867,7 +869,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                           <span>Tinggi Badan (TB)</span>
                         </label>
                         <div className="anc-input-group">
-                          <input name="height" defaultValue="162" placeholder="162" className="anc-input no-icon" />
+                          <input name="height" placeholder="162" className="anc-input no-icon" />
                           <span className="anc-input-append">cm</span>
                         </div>
                       </div>
@@ -879,11 +881,11 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <div className="lansia-calc-box" style={{ flex: 1 }}>
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg>
-                            <span>22.3 kg/m²</span>
+                            <span>Belum dihitung</span>
                           </div>
                           <span className="lansia-badge-tag">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-                            Gizi Normal / Baik
+                            Belum dinilai
                           </span>
                         </div>
                       </div>
@@ -898,8 +900,8 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
                       </div>
 
                       <div className="lansia-aks-cards">
-                        <label className="lansia-aks-card active">
-                          <input type="radio" name="aks" value="Mandiri (Kategori A)" defaultChecked style={{ display: 'none' }} />
+                        <label className="lansia-aks-card">
+                          <input type="radio" name="aks" value="Mandiri (Kategori A)" style={{ display: 'none' }} />
                           <h4>Mandiri (Kategori A)</h4>
                           <p>Mampu makan, mandi, berpakaian, dan mobilisasi tanpa bantuan orang lain.</p>
                         </label>
