@@ -9,14 +9,15 @@
     "lint": "next lint",
     "test:reports": "node tests/reports.test.cjs && node tests/report-mutations.test.cjs && node tests/report-tables.test.cjs && node tests/mothers.test.cjs",
     "test:lansia": "node tests/lansia.test.cjs",
-    "test:registers": "node tests/register-pages.test.cjs"
+    "test:registers": "node tests/register-pages.test.cjs",
+    "check:report-schema": "node scripts/check-report-schema.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.76.1",
     "exceljs": "^4.4.0",
-    "next": "^16.0.0",
+    "next": "^16.4.6",
     "pdf-lib": "^1.17.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

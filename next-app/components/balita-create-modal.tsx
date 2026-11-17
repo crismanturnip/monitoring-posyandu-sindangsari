@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { createChild } from '@/app/(protected)/balita/actions';
 import { jakartaDate } from '@/lib/health-record-dates';
+import { ChildReportIdentityFields, ChildReportMeasurementFields } from '@/components/child-report-fields';
 
 type Posyandu = { id: string; name: string };
 
@@ -16,6 +17,12 @@ export function BalitaCreateModal({ posyandu, group = 'balita' }: { posyandu: Po
     const values = new FormData(event.currentTarget);
     const weight = String(values.get('weightKg') ?? '').trim();
     const height = String(values.get('heightCm') ?? '').trim();
+    const extra = ['headCircumferenceCm', 'lilaCm', 'notes'].some(key => String(values.get(key) ?? '').trim());
+    if (extra && !weight && !height) {
+      event.preventDefault();
+      setFormError('Isi berat dan tinggi badan untuk menyimpan hasil pemeriksaan.');
+      return;
+    }
     if ((weight || height) && (!weight || !height || !values.get('measuredAt'))) {
       event.preventDefault();
       setFormError('Isi tanggal pengukuran, berat dan tinggi badan bersama-sama, atau kosongkan kedua hasil pengukuran.');
@@ -118,6 +125,7 @@ export function BalitaCreateModal({ posyandu, group = 'balita' }: { posyandu: Po
                   <span className="balita-modal-label">Nama Ibu Kandung <span>*</span></span>
                   <input name="motherName" required placeholder="Nama lengkap ibu" />
                 </label>
+                <ChildReportIdentityFields group={group} />
 
                 <div className="balita-measurement-row">
                   <label className="balita-modal-field balita-modal-posyandu">
@@ -141,6 +149,11 @@ export function BalitaCreateModal({ posyandu, group = 'balita' }: { posyandu: Po
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label">Tanggal pengukuran</span>
                   <input name="measuredAt" type="date" defaultValue={jakartaDate()} aria-describedby="balita-initial-measurement-help" />
+                </label>
+                <ChildReportMeasurementFields group={group} />
+                <label className="balita-modal-field full">
+                  <span className="balita-modal-label">Catatan pemeriksaan</span>
+                  <textarea name="notes" rows={2} />
                 </label>
                 <p id="balita-initial-measurement-help" className="balita-modal-field full muted-copy">
                   Opsional. Isi BB, TB dan tanggal pengukuran untuk mencatat hasil ke laporan. Pendaftaran identitas saja belum masuk rekap pemeriksaan.

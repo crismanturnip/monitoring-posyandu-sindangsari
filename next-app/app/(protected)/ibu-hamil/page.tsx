@@ -4,6 +4,7 @@ import { requireActiveProfile } from '@/lib/auth';
 import { PageHero } from '@/components/page-hero';
 import { Modal } from '@/components/modal';
 import { jakartaDate } from '@/lib/health-record-dates';
+import { reportAge } from '@/lib/report-age';
 
 type Props = {
   searchParams: Promise<{
@@ -20,6 +21,12 @@ type Props = {
 type Mother = {
   id: string;
   name: string;
+  nik: string | null;
+  birth_date: string | null;
+  husband_name: string | null;
+  husband_nik: string | null;
+  phone_number: string | null;
+  gestational_age_weeks: number | null;
   posyandu_id: string;
   posyandu: { name: string } | null;
   created_at?: string;
@@ -59,7 +66,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
 
   let query = supabase
     .from('pregnant_mothers')
-    .select('id, name, posyandu_id, posyandu(name), created_at, pregnancy_visits(id, visited_at, officer_notes, created_at)', { count: 'exact' })
+    .select('id, name, nik, birth_date, husband_name, husband_nik, phone_number, gestational_age_weeks, posyandu_id, posyandu(name), created_at, pregnancy_visits(id, visited_at, officer_notes, created_at)', { count: 'exact' })
     .is('deleted_at', null)
     .order('visited_at', { referencedTable: 'pregnancy_visits', ascending: false })
     .order('created_at', { referencedTable: 'pregnancy_visits', ascending: false })
@@ -67,7 +74,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
     .limit(1, { referencedTable: 'pregnancy_visits' });
 
   if (q) {
-    query = query.ilike('name', `%${q}%`);
+    query = query.or(`name.ilike.%${q}%,husband_name.ilike.%${q}%`);
   }
   if (posyanduFilter) {
     query = query.eq('posyandu_id', posyanduFilter);
@@ -81,7 +88,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
   const [{ data: mothersData, count, error: mothersError }, { data: posyanduData }, { data: editData }, { data: deleteData }] = await Promise.all([
     query,
     supabase.from('posyandu').select('id, name').eq('is_active', true).order('name'),
-    editId ? supabase.from('pregnant_mothers').select('id, name, posyandu_id').eq('id', editId).maybeSingle() : Promise.resolve({ data: null }),
+    editId ? supabase.from('pregnant_mothers').select('id, name, nik, birth_date, husband_name, husband_nik, phone_number, gestational_age_weeks, posyandu_id').eq('id', editId).maybeSingle() : Promise.resolve({ data: null }),
     deleteId ? supabase.from('pregnant_mothers').select('id, name, posyandu(name)').eq('id', deleteId).maybeSingle() : Promise.resolve({ data: null }),
   ]);
 
@@ -225,15 +232,15 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                       </td>
                       <td>
                         <div style={{ fontWeight: 700, color: '#0f2f2b', fontSize: 13, marginBottom: 3 }}>
-                          Belum dicatat
+                          {mother.birth_date ? reportAge(mother.birth_date, jakartaDate(), false) : 'Belum dicatat'}
                         </div>
                         <div style={{ fontSize: 12, color: '#64748b', display: 'flex', alignItems: 'center', gap: 6 }}>
-                          Usia kehamilan belum dicatat
+                          {mother.gestational_age_weeks ? `${mother.gestational_age_weeks} minggu kehamilan` : 'Usia kehamilan belum dicatat'}
                         </div>
                       </td>
                       <td>
                         <div style={{ color: '#0f2f2b', fontSize: 13, fontWeight: 600 }}>
-                          Belum dicatat
+                          {mother.husband_name || 'Belum dicatat'}
                         </div>
                       </td>
                       <td>
@@ -376,7 +383,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                     </h3>
                   </div>
                   <span className="anc-section-hint">
-                    {editing ? 'Kerahasiaan data terlindungi' : '* Wajib dilengkapi kader'}
+                    {editing ? 'Kerahasiaan data terlindungi' : 'Isi data sesuai dokumen dan hasil pemeriksaan'}
                   </span>
                 </div>
 
@@ -401,7 +408,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
 
                   <div className="anc-field">
                     <label className="anc-label">
-                      <span>Tanggal Lahir &amp; Usia Ibu <span className="req">*</span></span>
+                      <span>Tanggal Lahir Ibu</span>
                     </label>
                     <div className="anc-input-group">
                       <span className="anc-input-icon">
@@ -410,11 +417,15 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                       <input
                         type="date"
                         name="birthDate"
-                        defaultValue={editing ? '1998-05-14' : ''}
+                        defaultValue={editing?.birth_date ?? ''}
                         className="anc-input"
                       />
-                      <span className="anc-input-append">26 Thn</span>
                     </div>
+                  </div>
+
+                  <div className="anc-field">
+                    <label className="anc-label">NIK Ibu</label>
+                    <input name="nik" inputMode="numeric" pattern="[0-9]{16}" maxLength={16} defaultValue={editing?.nik ?? ''} placeholder="16 digit NIK" className="anc-input no-icon" />
                   </div>
 
                   <div className="anc-field">
@@ -427,7 +438,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                       </span>
                       <input
                         name="husbandName"
-                        defaultValue={editing ? 'Tn. Hendra Gunawan' : ''}
+                        defaultValue={editing?.husband_name ?? ''}
                         placeholder="cth. Tn. Hendra Gunawan"
                         className="anc-input"
                       />
@@ -435,8 +446,13 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                   </div>
 
                   <div className="anc-field">
+                    <label className="anc-label">NIK Suami</label>
+                    <input name="husbandNik" inputMode="numeric" pattern="[0-9]{16}" maxLength={16} defaultValue={editing?.husband_nik ?? ''} placeholder="16 digit NIK" className="anc-input no-icon" />
+                  </div>
+
+                  <div className="anc-field">
                     <label className="anc-label">
-                      <span>Nomor HP / WhatsApp Aktif <span className="req">*</span></span>
+                      <span>Nomor HP / WhatsApp Aktif</span>
                     </label>
                     <div className="anc-input-group">
                       <span className="anc-input-icon">
@@ -444,34 +460,13 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                       </span>
                       <input
                         name="phoneNumber"
-                        defaultValue={editing ? '081234567890' : ''}
+                        defaultValue={editing?.phone_number ?? ''}
                         placeholder="08xxxxxxxxxx"
                         className="anc-input"
                       />
                     </div>
                   </div>
 
-                  <div className="anc-field full">
-                    <label className="anc-label">
-                      <span>
-                        {editing
-                          ? 'Alamat Domisili Tempat Tinggal'
-                          : 'Alamat Domisili / Dusun / RT-RW'}{' '}
-                        <span className="req">*</span>
-                      </span>
-                    </label>
-                    <div className="anc-input-group">
-                      <span className="anc-input-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                      </span>
-                      <input
-                        name="address"
-                        defaultValue={editing ? 'Dusun Sindanghurip RT 02 / RW 04' : ''}
-                        placeholder="Dusun Sindanghurip RT 02 / RW 04"
-                        className="anc-input"
-                      />
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -520,44 +515,12 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                     </div>
                   </div>
 
-                  <div className="anc-field">
-                    <label className="anc-label">
-                      <span>HPHT &amp; Estimasi Usia Kehamilan <span className="req">*</span></span>
-                    </label>
-                    <div className="anc-input-group">
-                      <span className="anc-input-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                      </span>
-                      <input
-                        type="date"
-                        name="hpht"
-                        defaultValue={editing ? '2024-11-10' : ''}
-                        className="anc-input"
-                      />
-                      <span className="anc-input-append">{editing ? '24 Mgg / T2' : '18 Mgg'}</span>
-                    </div>
-                  </div>
 
                   <div className="anc-field">
-                    <label className="anc-label">
-                      <span>{editing ? 'Riwayat Obstetri (G - P - A)' : 'Gravida / Paritas / Abortus (G-P-A)'} <span className="req">*</span></span>
-                      <span className="hint">Riwayat kehamilan</span>
-                    </label>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-                      <div className="anc-input-group">
-                        <span className="anc-input-icon" style={{ left: 8, fontSize: 11, fontWeight: 700 }}>G</span>
-                        <input name="gravida" defaultValue="2" className="anc-input" style={{ paddingLeft: 24, textAlign: 'center' }} />
-                      </div>
-                      <div className="anc-input-group">
-                        <span className="anc-input-icon" style={{ left: 8, fontSize: 11, fontWeight: 700 }}>P</span>
-                        <input name="paritas" defaultValue="1" className="anc-input" style={{ paddingLeft: 24, textAlign: 'center' }} />
-                      </div>
-                      <div className="anc-input-group">
-                        <span className="anc-input-icon" style={{ left: 8, fontSize: 11, fontWeight: 700 }}>A</span>
-                        <input name="abortus" defaultValue="0" className="anc-input" style={{ paddingLeft: 24, textAlign: 'center' }} />
-                      </div>
-                    </div>
+                    <label className="anc-label">Usia kehamilan (minggu)</label>
+                    <input name="gestationalWeeks" type="number" step="0.1" min="0.1" defaultValue={editing?.gestational_age_weeks ?? ''} className="anc-input no-icon" />
                   </div>
+
 
                   <div className="anc-field full">
                     <label className="anc-label" htmlFor="mother-visit-date">Tanggal pemeriksaan baru</label>
@@ -581,7 +544,6 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                     </div>
                   </div>
 
-                  {editing && (
                     <div className="anc-field">
                       <label className="anc-label">
                         <span>Tekanan Darah (TD)</span>
@@ -594,11 +556,10 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                         <span className="anc-input-append">mmHg</span>
                       </div>
                     </div>
-                  )}
 
                   <div className="anc-field full">
                     <label className="anc-label">
-                      <span>Lingkar Lengan Atas (LiLA) dalam cm <span className="req">*</span></span>
+                      <span>Lingkar Lengan Atas (LiLA) dalam cm</span>
                       <span className="hint">ⓘ Batas Normal Kemenkes: ≥ 23.5 cm</span>
                     </label>
                     <div style={{ display: 'grid', gridTemplateColumns: editing ? '160px 1fr' : '180px 1fr', gap: 14, alignItems: 'center' }}>

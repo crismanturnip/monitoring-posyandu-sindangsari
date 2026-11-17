@@ -5,6 +5,7 @@ import { requireActiveProfile } from '@/lib/auth';
 import { LogoutButton } from '@/components/logout-button';
 import { jakartaDate } from '@/lib/health-record-dates';
 import { childRegisterGroup } from '@/lib/child-register';
+import { ChildReportIdentityFields, ChildReportMeasurementFields } from '@/components/child-report-fields';
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ measurement?: string }> };
 type Measurement = {
@@ -40,6 +41,9 @@ export default async function ChildDetailPage({ params, searchParams }: Props) {
   const group = childRegisterGroup(child.birth_date, jakartaDate()) ?? 'balita';
   const basePath = `/${group}`;
   const measurements = (measurementsData ?? []) as Measurement[];
+  const reportDate = measurements[0]?.measured_at ?? jakartaDate(new Date(child.created_at));
+  const reportCategory = childRegisterGroup(child.birth_date, reportDate) ?? group;
+  const reportHref = `/laporan?${new URLSearchParams({ category: reportCategory, period: 'custom', start: reportDate, end: reportDate, posyandu: child.posyandu_id })}`;
   const formatDate = (date: string) =>
     new Intl.DateTimeFormat('id-ID', { dateStyle: 'long' }).format(
       new Date(`${date}T00:00:00`),
@@ -55,6 +59,7 @@ export default async function ChildDetailPage({ params, searchParams }: Props) {
           <p className="eyebrow">Detail monitoring</p>
           <h1>{child.name}</h1>
           <p>Riwayat baru selalu ditambahkan sebagai catatan terpisah.</p>
+          <Link className="ghost-btn" href={reportHref}>Lihat di laporan</Link>
         </div>
         <div className="profile">
           <div className="avatar">{profile.full_name[0]}</div>
@@ -83,6 +88,7 @@ export default async function ChildDetailPage({ params, searchParams }: Props) {
             Nama ibu
             <input name="motherName" required defaultValue={child.mother_name} />
           </label>
+          <ChildReportIdentityFields child={child} group={group} />
           <label>
             Tempat lahir
             <input name="birthPlace" defaultValue={child.birth_place ?? ''} />
@@ -131,6 +137,7 @@ export default async function ChildDetailPage({ params, searchParams }: Props) {
             <label>Tanggal pengukuran<input name="measuredAt" type="date" required defaultValue={jakartaDate()} /></label>
             <label>Berat badan (kg)<input name="weightKg" type="number" step="0.01" min="0.01" required /></label>
             <label>Tinggi / panjang badan (cm)<input name="heightCm" type="number" step="0.01" min="0.01" required /></label>
+            <ChildReportMeasurementFields group={group} />
             <label>Catatan petugas<textarea name="notes" rows={3} /></label>
             <button type="submit">Simpan sebagai riwayat baru</button>
           </form>

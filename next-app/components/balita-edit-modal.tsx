@@ -2,12 +2,18 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { updateChildFromModal } from '@/app/(protected)/balita/actions';
+import { ChildReportIdentityFields, ChildReportMeasurementFields } from '@/components/child-report-fields';
 
 type Child = {
   id: string;
   name: string;
   nik: string | null;
   mother_name: string;
+  mother_nik: string | null;
+  father_name: string | null;
+  father_nik: string | null;
+  phone_number: string | null;
+  gestational_age_weeks: number | null;
   birth_date: string;
   gender: string;
   birth_place: string | null;
@@ -57,6 +63,12 @@ export function BalitaEditModal({
     const formData = new FormData(event.currentTarget);
     const weight = String(formData.get('weightKg') ?? '').trim();
     const height = String(formData.get('heightCm') ?? '').trim();
+    const extra = ['headCircumferenceCm', 'lilaCm', 'notes'].some(key => String(formData.get(key) ?? '').trim());
+    if (extra && !weight && !height) {
+      event.preventDefault();
+      setFormError('Isi berat dan tinggi badan untuk menyimpan hasil pemeriksaan.');
+      return;
+    }
     if (Boolean(weight) !== Boolean(height)) {
       event.preventDefault();
       setFormError('Isi berat dan tinggi badan bersama-sama, atau kosongkan keduanya jika tidak mencatat pengukuran.');
@@ -111,6 +123,7 @@ export function BalitaEditModal({
               <input type="hidden" name="id" value={child.id} />
               <input type="hidden" name="returnPath" value={`/${group}`} />
               <div className="balita-edit-fields">
+                {measurement && <p className="muted-copy">Pengukuran terakhir: {measurement.weight_kg} kg, {measurement.height_cm} cm ({measurement.measured_at}). Isi hasil di bawah hanya untuk mencatat pengukuran baru.</p>}
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label">Nama Lengkap {label} <span>*</span></span>
                   <input name="name" required defaultValue={child.name} />
@@ -144,6 +157,7 @@ export function BalitaEditModal({
                   <span className="balita-modal-label">Nama Ibu Kandung <span>*</span></span>
                   <input name="motherName" required defaultValue={child.mother_name} />
                 </label>
+                <ChildReportIdentityFields child={child} group={group} />
 
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label">Posyandu Binaan <span>*</span></span>
@@ -155,12 +169,17 @@ export function BalitaEditModal({
 
                 <label className="balita-modal-field">
                   <span className="balita-modal-label">Berat Badan (kg)</span>
-                  <input name="weightKg" type="number" step="0.1" min="0.1" defaultValue={measurement?.weight_kg ?? ''} />
+                  <input name="weightKg" type="number" step="0.01" min="0.01" />
                 </label>
                 <label className="balita-modal-field">
                   <span className="balita-modal-label">Tinggi Badan (cm)</span>
-                  <input name="heightCm" type="number" step="0.1" min="0.1" defaultValue={measurement?.height_cm ?? ''} />
+                  <input name="heightCm" type="number" step="0.01" min="0.01" />
                 </label>
+                <label className="balita-modal-field full">
+                  <span className="balita-modal-label">Tanggal pengukuran baru</span>
+                  <input name="measuredAt" type="date" defaultValue={new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' })} />
+                </label>
+                <ChildReportMeasurementFields group={group} />
 
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label">Status Gizi KMS</span>
@@ -180,7 +199,7 @@ export function BalitaEditModal({
                   <span className="balita-modal-label balita-notes-label">
                     Catatan Petugas <span>(Opsional)</span>
                   </span>
-                  <textarea name="notes" rows={3} defaultValue={measurement?.officer_notes ?? ''} />
+                  <textarea name="notes" rows={3} />
                 </label>
               </div>
 

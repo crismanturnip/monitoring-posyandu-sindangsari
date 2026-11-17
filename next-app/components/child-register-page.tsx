@@ -15,6 +15,11 @@ type Child = {
   name: string;
   nik: string | null;
   mother_name: string;
+  mother_nik: string | null;
+  father_name: string | null;
+  father_nik: string | null;
+  phone_number: string | null;
+  gestational_age_weeks: number | null;
   birth_date: string;
   gender: string;
   birth_place: string | null;
@@ -46,7 +51,7 @@ export async function ChildRegisterPage({ searchParams, group }: Props) {
     const rows: Child[] = [];
     while (true) {
       const { data, count, error } = await supabase.from('children')
-        .select('id, name, nik, mother_name, birth_date, gender, birth_place, delivery_type, posyandu_id, kms_status, posyandu(name)', { count: 'exact' })
+        .select('id, name, nik, mother_name, mother_nik, father_name, father_nik, phone_number, gestational_age_weeks, birth_date, gender, birth_place, delivery_type, posyandu_id, kms_status, posyandu(name)', { count: 'exact' })
         .is('deleted_at', null)
         .order('name').order('id')
         .range(rows.length, rows.length + 499);

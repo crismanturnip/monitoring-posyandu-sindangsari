@@ -5,6 +5,19 @@ import { redirect } from 'next/navigation';
 import { requireActiveProfile, requireBidan } from '@/lib/auth';
 import { isValidRecordDate, jakartaDate } from '@/lib/health-record-dates';
 import { childRegisterGroup } from '@/lib/child-register';
+import { optionalNik, optionalPositiveNumber, optionalText } from '@/lib/report-input';
+
+const childReportFields = (formData: FormData) => ({
+  mother_nik: optionalNik(formData, 'motherNik'),
+  father_name: optionalText(formData, 'fatherName'),
+  father_nik: optionalNik(formData, 'fatherNik'),
+  phone_number: optionalText(formData, 'phoneNumber'),
+  ...(formData.has('gestationalWeeks') ? { gestational_age_weeks: optionalPositiveNumber(formData, 'gestationalWeeks') } : {}),
+});
+const measurementReportFields = (formData: FormData) => ({
+  head_circumference_cm: optionalPositiveNumber(formData, 'headCircumferenceCm'),
+  lila_cm: optionalPositiveNumber(formData, 'lilaCm'),
+});
 
 const returnPath = (formData: FormData) => formData.get('returnPath') === '/bayi' ? '/bayi' : '/balita';
 
@@ -29,6 +42,7 @@ export async function createChild(formData: FormData) {
   const height = optionalNumber(formData.get('heightCm'));
   const measuredAt = String(formData.get('measuredAt') ?? '');
   const hasMeasurement = Boolean(weightValue || heightValue);
+  const hasOtherMeasurement = ['headCircumferenceCm', 'lilaCm', 'notes'].some(key => optionalText(formData, key));
   if (!name || !isValidNik(nik) || !motherName || !posyanduId || !birthDate ||
       !['LAKI_LAKI', 'PEREMPUAN'].includes(gender) ||
       !['NONE', 'GIZI_BAIK', 'PERLU_PANTAUAN'].includes(kmsStatus)) {
@@ -37,9 +51,10 @@ export async function createChild(formData: FormData) {
   if (hasMeasurement && (!weight || !height || !isValidRecordDate(measuredAt))) {
     throw new Error('Isi tanggal pengukuran, berat dan tinggi badan dengan lengkap dan valid, atau kosongkan kedua hasil pengukuran.');
   }
+  if (hasOtherMeasurement && !hasMeasurement) throw new Error('Isi berat dan tinggi badan untuk menyimpan hasil pemeriksaan.');
   const { profile, supabase } = await requireActiveProfile();
   const { data, error } = await supabase.from('children').insert({
-    name, nik, mother_name: motherName, posyandu_id: posyanduId, birth_date: birthDate, gender,
+    name, nik, mother_name: motherName, ...childReportFields(formData), posyandu_id: posyanduId, birth_date: birthDate, gender,
     kms_status: kmsStatus === 'NONE' ? null : kmsStatus,
     birth_place: String(formData.get('birthPlace') ?? '').trim() || null,
     child_order: optionalNumber(formData.get('childOrder')),
@@ -56,6 +71,7 @@ export async function createChild(formData: FormData) {
   if (hasMeasurement) {
     const { error: measurementError } = await supabase.from('child_measurements').insert({
       child_id: data.id, measured_at: measuredAt, weight_kg: weight, height_cm: height,
+      ...measurementReportFields(formData), officer_notes: optionalText(formData, 'notes'),
       recorded_by: profile.id,
     });
     // Keep the saved identity and allow retrying only the measurement, without a duplicate child.
@@ -75,7 +91,7 @@ export async function updateChild(formData: FormData) {
   }
   const { supabase } = await requireActiveProfile();
   const { error } = await supabase.from('children').update({
-    name, nik, mother_name: motherName, birth_place: String(formData.get('birthPlace') ?? '').trim() || null,
+    name, nik, mother_name: motherName, ...childReportFields(formData), birth_place: String(formData.get('birthPlace') ?? '').trim() || null,
     birth_date: String(formData.get('birthDate') ?? ''), gender: String(formData.get('gender') ?? ''),
     child_order: optionalNumber(formData.get('childOrder')), delivery_type: String(formData.get('deliveryType') ?? '').trim() || null,
     birth_weight_kg: optionalNumber(formData.get('birthWeight')), birth_length_cm: optionalNumber(formData.get('birthLength')),
@@ -111,6 +127,9 @@ export async function updateChildFromModal(formData: FormData) {
   if (Boolean(weightValue) !== Boolean(heightValue)) {
     throw new Error('Isi berat dan tinggi badan bersama-sama, atau kosongkan keduanya jika tidak mencatat pengukuran.');
   }
+  if (['headCircumferenceCm', 'lilaCm', 'notes'].some(key => optionalText(formData, key)) && !weightValue) {
+    throw new Error('Isi berat dan tinggi badan untuk menyimpan hasil pemeriksaan.');
+  }
   if ((weightValue && !weight) || (heightValue && !height)) {
     throw new Error('Berat dan tinggi badan harus berupa angka lebih besar dari 0.');
   }
@@ -123,6 +142,11 @@ export async function updateChildFromModal(formData: FormData) {
     name: string;
     nik: string;
     mother_name: string;
+    mother_nik: string | null;
+    father_name: string | null;
+    father_nik: string | null;
+    phone_number: string | null;
+    gestational_age_weeks?: number | null;
     posyandu_id: string;
     birth_place: string | null;
     birth_date: string;
@@ -133,6 +157,7 @@ export async function updateChildFromModal(formData: FormData) {
     name,
     nik,
     mother_name: motherName,
+    ...childReportFields(formData),
     posyandu_id: posyanduId,
     birth_place: birthPlace || null,
     birth_date: birthDate,
@@ -155,11 +180,14 @@ export async function updateChildFromModal(formData: FormData) {
   }
 
   if (weight && height) {
+    const measuredAt = String(formData.get('measuredAt') ?? '') || jakartaDate();
+    if (!isValidRecordDate(measuredAt)) throw new Error('Tanggal pengukuran tidak valid.');
     const { error: measurementError } = await supabase.from('child_measurements').insert({
       child_id: id,
-      measured_at: jakartaDate(),
+      measured_at: measuredAt,
       weight_kg: weight,
       height_cm: height,
+      ...measurementReportFields(formData),
       officer_notes: String(formData.get('notes') ?? '').trim() || null,
       recorded_by: profile.id,
     });
@@ -186,6 +214,7 @@ export async function addMeasurement(formData: FormData) {
   const { profile, supabase } = await requireActiveProfile();
   const { error } = await supabase.from('child_measurements').insert({
     child_id: childId, measured_at: measuredAt, weight_kg: weight, height_cm: height,
+    ...measurementReportFields(formData),
     officer_notes: String(formData.get('notes') ?? '').trim() || null, recorded_by: profile.id,
   });
   if (error) throw new Error(`Gagal menyimpan pengukuran balita: ${error.message}`);

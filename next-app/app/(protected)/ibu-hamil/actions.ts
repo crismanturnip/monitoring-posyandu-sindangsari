@@ -5,6 +5,18 @@ import { redirect } from 'next/navigation';
 import { requireActiveProfile, requireBidan } from '@/lib/auth';
 import { isValidRecordDate } from '@/lib/health-record-dates';
 import { examinationNotes } from '@/lib/examination-notes';
+import { optionalNik, optionalPositiveNumber, optionalText } from '@/lib/report-input';
+
+function motherFields(formData: FormData) {
+  const birthDate = optionalText(formData, 'birthDate');
+  if (birthDate && !isValidRecordDate(birthDate)) throw new Error('Tanggal lahir ibu tidak valid.');
+  return {
+    nik: optionalNik(formData, 'nik'), birth_date: birthDate,
+    husband_name: optionalText(formData, 'husbandName'), husband_nik: optionalNik(formData, 'husbandNik'),
+    phone_number: optionalText(formData, 'phoneNumber'),
+    gestational_age_weeks: optionalPositiveNumber(formData, 'gestationalWeeks'),
+  };
+}
 
 export async function createPregnantMother(formData: FormData) {
   const name = String(formData.get('name') ?? '').trim();
@@ -14,7 +26,7 @@ export async function createPregnantMother(formData: FormData) {
   const visitedAt = String(formData.get('visitedAt') ?? '');
   if (notes && !isValidRecordDate(visitedAt)) throw new Error('Isi tanggal pemeriksaan yang valid.');
   const { profile, supabase } = await requireActiveProfile();
-  const { data, error } = await supabase.from('pregnant_mothers').insert({ name, posyandu_id: posyanduId }).select('id').single();
+  const { data, error } = await supabase.from('pregnant_mothers').insert({ name, posyandu_id: posyanduId, ...motherFields(formData) }).select('id').single();
   if (error) throw new Error(`Gagal menyimpan data ibu hamil: ${error.message}`);
   if (!data) throw new Error('Data ibu hamil tidak berhasil disimpan.');
   revalidatePath('/ibu-hamil');
@@ -39,7 +51,7 @@ export async function updatePregnantMother(formData: FormData) {
   const { profile, supabase } = await requireActiveProfile();
   const posyanduId = String(formData.get('posyanduId') ?? '');
   const { data: updated, error } = await supabase.from('pregnant_mothers')
-    .update({ name, ...(posyanduId ? { posyandu_id: posyanduId } : {}) }).eq('id', id).select('id').maybeSingle();
+    .update({ name, ...motherFields(formData), ...(posyanduId ? { posyandu_id: posyanduId } : {}) }).eq('id', id).select('id').maybeSingle();
   if (error) throw new Error(`Gagal memperbarui data ibu hamil: ${error.message}`);
   if (!updated) throw new Error('Data ibu hamil tidak ditemukan atau tidak dapat diakses.');
   if (notes) {
@@ -58,7 +70,7 @@ export async function addPregnancyVisit(formData: FormData) {
   const visitedAt = String(formData.get('visitedAt') ?? '');
   if (!pregnantMotherId || !isValidRecordDate(visitedAt)) throw new Error('Pilih ibu hamil dan tanggal kunjungan yang valid.');
   const { profile, supabase } = await requireActiveProfile();
-  const { error } = await supabase.from('pregnancy_visits').insert({ pregnant_mother_id: pregnantMotherId, visited_at: visitedAt, officer_notes: String(formData.get('notes') ?? '').trim() || null, recorded_by: profile.id });
+  const { error } = await supabase.from('pregnancy_visits').insert({ pregnant_mother_id: pregnantMotherId, visited_at: visitedAt, officer_notes: examinationNotes(formData, 'ibu-hamil'), recorded_by: profile.id });
   if (error) throw new Error(`Gagal menyimpan kunjungan ibu hamil: ${error.message}`);
   revalidatePath(`/ibu-hamil/${pregnantMotherId}`);
   revalidatePath('/ibu-hamil');

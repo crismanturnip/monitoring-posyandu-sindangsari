@@ -39,6 +39,7 @@ async function renderPage(params = {}, options = {}) {
     '@/components/page-hero': { PageHero: ({ pageTitle }) => React.createElement('h1', null, pageTitle) },
     '@/components/modal': { Modal: ({ children }) => children },
     '@/lib/health-record-dates': { jakartaDate: () => '2026-11-17' },
+    '@/lib/report-age': { reportAge: () => '28 tahun' },
   };
   pageModule.require = name => mocks[name] ?? Module.prototype.require.call(pageModule, name);
   const { outputText } = ts.transpileModule(readFileSync(filename, 'utf8'), {

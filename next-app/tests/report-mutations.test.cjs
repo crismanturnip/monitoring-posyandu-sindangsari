@@ -142,6 +142,8 @@ test('creating a balita with an initial measurement adds that measurement to rep
   const app = fixture();
   await assert.rejects(app.actions('balita').createChild(form({
     ...childForm, measuredAt: '2026-11-17', weightKg: '10.5', heightCm: '80',
+    motherNik: '1111222233334444', fatherName: 'Ayah pengujian', fatherNik: '5555666677778888',
+    phoneNumber: '081234567890', headCircumferenceCm: '46.2', lilaCm: '15.5', notes: 'Sehat',
   })), (error) => error.destination?.startsWith('/balita/'));
   const report = await loadReportRows(app.supabase, filters());
   assert.equal(report.error, null);
@@ -149,6 +151,12 @@ test('creating a balita with an initial measurement adds that measurement to rep
   assert.equal(report.rows[0].name, childForm.name);
   assert.equal(report.rows[0].result, 'BB 10.5 kg; TB/PB 80 cm');
   assert.equal(report.rows[0].date, '2026-11-17');
+  assert.equal(report.rows[0].motherNik, '1111222233334444');
+  assert.equal(report.rows[0].fatherName, 'Ayah pengujian');
+  assert.equal(report.rows[0].phone, '081234567890');
+  assert.equal(report.rows[0].headCircumferenceCm, 46.2);
+  assert.equal(report.rows[0].lilaCm, 15.5);
+  assert.equal(report.rows[0].notes, 'Sehat');
   assert(app.invalidated.includes('/laporan'));
   // Current measurements must never be stored as birth measurements.
   const created = app.tables.children.at(-1);
@@ -173,19 +181,21 @@ test('newborn registration opens baby details and refreshes both registers', asy
   const app = fixture();
   const { jakartaDate } = require('../lib/health-record-dates.ts');
   await assert.rejects(app.actions('balita').createChild(form({
-    ...childForm, birthDate: jakartaDate(),
+    ...childForm, birthDate: jakartaDate(), gestationalWeeks: '38',
   })), error => error.destination === '/bayi/children-2');
   assert.equal(app.tables.children.length, 2);
+  assert.equal(app.tables.children.at(-1).gestational_age_weeks, 38);
   assert(app.invalidated.includes('/bayi'));
   assert(app.invalidated.includes('/balita'));
   assert(app.invalidated.includes('/laporan'));
 });
 
 test('saving and archiving from the baby register retain local navigation and refresh both categories', async () => {
-  const app = fixture();
+  const app = fixture({ existing: { children: [{ id: 'child-1', name: 'Balita tersimpan', posyandu_id: 'pos-a', gestational_age_weeks: 38 }] } });
   await assert.rejects(app.actions('balita').updateChildFromModal(form({
     ...childForm, id: 'child-1', returnPath: '/bayi',
   })), error => error.destination === '/bayi');
+  assert.equal(app.tables.children[0].gestational_age_weeks, 38);
   await assert.rejects(app.actions('balita').addMeasurement(form({
     childId: 'child-1', returnPath: '/bayi', measuredAt: '2026-11-17', weightKg: '4', heightCm: '54',
   })), error => error.destination === '/bayi/child-1');
@@ -299,6 +309,8 @@ test('the mother registration form preserves clinical fields in a dated report v
   const app = fixture();
   await assert.rejects(app.actions('ibu-hamil').createPregnantMother(form({
     name: 'Ibu baru', posyanduId: 'pos-a', visitedAt: '2026-11-17', weight: '52.5', height: '158', lila: '24,0',
+    nik: '1111222233334444', birthDate: '1998-05-14', husbandName: 'Suami pengujian',
+    husbandNik: '5555666677778888', phoneNumber: '081234567890', gestationalWeeks: '24',
   })), (error) => error.destination?.startsWith('/ibu-hamil/') && !error.destination.includes('failed'));
   const report = await loadReportRows(app.supabase, filters());
   assert.equal(report.rows.length, 1);
@@ -306,6 +318,11 @@ test('the mother registration form preserves clinical fields in a dated report v
   assert.match(report.rows[0].notes, /TB: 158 cm/);
   assert.match(report.rows[0].notes, /LiLA: 24.0 cm/);
   assert.equal(report.rows[0].date, '2026-11-17');
+  assert.equal(report.rows[0].nik, '1111222233334444');
+  assert.equal(report.rows[0].birthDate, '1998-05-14');
+  assert.equal(report.rows[0].husbandName, 'Suami pengujian');
+  assert.equal(report.rows[0].phone, '081234567890');
+  assert.equal(report.rows[0].gestationalWeeks, 24);
 });
 
 test('mother registration without clinical results does not fabricate a visit', async () => {

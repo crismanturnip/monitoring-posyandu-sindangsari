@@ -24,6 +24,15 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 - `npm run dev` — menjalankan server pengembangan
 - `npm run build` — memeriksa dan membuat build produksi
 - `npm run start` — menjalankan build produksi
+- `npm run check:report-schema` — memastikan kolom formulir bayi, balita, dan ibu hamil tersedia di Supabase yang terhubung
+
+## Urutan rilis perubahan formulir dan laporan
+
+1. Jalankan migrasi SQL terbaru di `supabase/migrations/` pada proyek Supabase yang dipakai aplikasi.
+2. Pastikan Supabase CLI sudah login dan tertaut ke proyek yang benar, lalu jalankan `npm run check:report-schema`. Lanjutkan hanya jika ketiga tabel dinyatakan siap.
+3. Jalankan pengujian dan rilis kode aplikasi. Setelah rilis, isi satu data contoh per kategori dan pastikan nilainya muncul di laporan pada tanggal serta Posyandu yang sama.
+
+Laporan memakai tanggal pendaftaran untuk warga tanpa pemeriksaan, atau tanggal pemeriksaan untuk riwayat. Sesuaikan filter periode laporan dengan tanggal yang dipakai saat mengisi formulir.
 
 ## Folder penting
 
