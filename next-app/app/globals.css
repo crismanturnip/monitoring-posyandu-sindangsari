@@ -1192,10 +1192,10 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   animation: stitchSpin 0.75s linear infinite;
 }
 
-/* 4 Stat Cards */
+/* 3 Stat Cards */
 .stitch-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }

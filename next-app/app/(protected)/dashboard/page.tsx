@@ -22,8 +22,6 @@ const activityLabels: Record<string, string> = {
   child_measurements: 'pengukuran bayi/balita',
   pregnant_mothers: 'data ibu hamil',
   pregnancy_visits: 'kunjungan ibu hamil',
-  elderly_people: 'data lansia',
-  elderly_examinations: 'pemeriksaan lansia',
   schedules: 'jadwal kegiatan',
   posyandu: 'data posyandu',
   kader_assignments: 'penugasan kader',
@@ -34,8 +32,6 @@ const activityDescriptions: Record<string, string> = {
   child_measurements: 'Pengukuran berat & tinggi badan balita',
   pregnant_mothers: 'Pencatatan data ibu hamil wilayah binaan',
   pregnancy_visits: 'Skrining ANC dan pemeriksaan berkala',
-  elderly_people: 'Pencatatan data lansia dan rekam kesehatan',
-  elderly_examinations: 'Skrining tekanan darah dan gula darah',
   schedules: 'Jadwal pelayanan posyandu penimbangan',
   posyandu: 'Pembaruan informasi posyandu wilayah',
   kader_assignments: 'Verifikasi dan penugasan kader',
@@ -68,10 +64,9 @@ export default async function DashboardPage() {
   const { profile, supabase } = await requireActiveProfile();
   const now = new Date().toISOString();
 
-  const [children, mothers, elderly, posyandu, schedules, activities] = await Promise.all([
+  const [children, mothers, posyandu, schedules, activities] = await Promise.all([
     supabase.from('children').select('*', { count: 'exact', head: true }).is('deleted_at', null),
     supabase.from('pregnant_mothers').select('*', { count: 'exact', head: true }).is('deleted_at', null),
-    supabase.from('elderly_people').select('*', { count: 'exact', head: true }).is('deleted_at', null),
     supabase.from('posyandu').select('*', { count: 'exact', head: true }).eq('is_active', true),
     supabase
       .from('schedules')
@@ -91,7 +86,6 @@ export default async function DashboardPage() {
 
   const childCount = children.count ?? 0;
   const motherCount = mothers.count ?? 0;
-  const elderlyCount = elderly.count ?? 0;
   const posyanduCount = posyandu.count ?? 0;
   const upcoming = (schedules.data ?? []) as unknown as Schedule[];
   const activityData = (activities.data ?? []) as Activity[];
@@ -190,7 +184,7 @@ export default async function DashboardPage() {
               {profile.full_name}! <span className="stitch-wave-icon">👋</span>
             </h1>
             <p className="stitch-greeting-desc">
-              Ringkasan operasional dan monitoring kesehatan ibu, anak, dan lansia hari ini.
+              Ringkasan operasional dan monitoring kesehatan ibu, bayi, dan balita hari ini.
             </p>
           </div>
         </div>
@@ -216,7 +210,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* 4 Stat Cards */}
+        {/* 3 Stat Cards */}
         <section className="stitch-stats-grid" aria-label="Statistik Utama">
           {/* Card 1: Bayi & Balita */}
           <Link href="/balita" className="stitch-stat-card">
@@ -261,30 +255,7 @@ export default async function DashboardPage() {
             </div>
           </Link>
 
-          {/* Card 3: Lansia */}
-          <Link href="/lansia" className="stitch-stat-card">
-            <div className="stitch-stat-header">
-              <span className="stitch-stat-label">LANSIA</span>
-              <div className="stitch-stat-icon-wrap stat-icon-blue" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="10" cy="4" r="2" />
-                  <path d="M10 7v5l-3 4" />
-                  <path d="M10 12l3 9" />
-                  <path d="M14 10l2 2v9" />
-                  <path d="M7 10h5" />
-                </svg>
-              </div>
-            </div>
-            <div className="stitch-stat-value">{new Intl.NumberFormat('id-ID').format(elderlyCount)}</div>
-            <div className="stitch-stat-footer">
-              <span className="stitch-chip">
-                <span className="chip-bullet">•</span> {elderlyCount} Lansia
-              </span>
-              <span className="stitch-chip chip-highlight-blue">Pos Lansia</span>
-            </div>
-          </Link>
-
-          {/* Card 4: Posyandu Aktif */}
+          {/* Card 3: Posyandu Aktif */}
           <Link href={profile.role === 'BIDAN' ? '/admin/posyandu' : '/jadwal'} className="stitch-stat-card">
             <div className="stitch-stat-header">
               <span className="stitch-stat-label">POSYANDU AKTIF</span>
