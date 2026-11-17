@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:reports": "node tests/reports.test.cjs",
-    "test:lansia": "node tests/lansia.test.cjs"
+    "test:reports": "node tests/reports.test.cjs && node tests/report-mutations.test.cjs && node tests/report-tables.test.cjs && node tests/mothers.test.cjs",
+    "test:lansia": "node tests/lansia.test.cjs",
+    "test:registers": "node tests/register-pages.test.cjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
