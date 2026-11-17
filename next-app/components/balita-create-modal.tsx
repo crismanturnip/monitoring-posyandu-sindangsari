@@ -1,14 +1,28 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { createChild } from '@/app/(protected)/balita/actions';
+import { jakartaDate } from '@/lib/health-record-dates';
 
 type Posyandu = { id: string; name: string };
 
-export function BalitaCreateModal({ posyandu }: { posyandu: Posyandu[] }) {
+export function BalitaCreateModal({ posyandu, group = 'balita' }: { posyandu: Posyandu[]; group?: 'bayi' | 'balita' }) {
+  const label = group === 'bayi' ? 'Bayi' : 'Balita';
   const [isOpen, setIsOpen] = useState(false);
+  const [formError, setFormError] = useState('');
   const dialogRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const validateMeasurement = (event: FormEvent<HTMLFormElement>) => {
+    const values = new FormData(event.currentTarget);
+    const weight = String(values.get('weightKg') ?? '').trim();
+    const height = String(values.get('heightCm') ?? '').trim();
+    if ((weight || height) && (!weight || !height || !values.get('measuredAt'))) {
+      event.preventDefault();
+      setFormError('Isi tanggal pengukuran, berat dan tinggi badan bersama-sama, atau kosongkan kedua hasil pengukuran.');
+    } else {
+      setFormError('');
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -36,7 +50,7 @@ export function BalitaCreateModal({ posyandu }: { posyandu: Posyandu[] }) {
         className="balita-add-btn"
         onClick={() => setIsOpen(true)}
       >
-        + Tambah Data Balita
+        + Tambah Data {label}
       </button>
       {isOpen && (
         <div
@@ -56,8 +70,8 @@ export function BalitaCreateModal({ posyandu }: { posyandu: Posyandu[] }) {
             <header className="balita-modal-header">
               <span className="balita-modal-icon" aria-hidden="true">♙</span>
               <div className="balita-modal-heading">
-                <h2 id="balita-create-title">Tambah Data Bayi &amp; Balita Baru</h2>
-                <p>Masukkan identitas balita dan data orang tua sesuai kartu keluarga / KMS</p>
+                <h2 id="balita-create-title">Tambah Data {label} Baru</h2>
+                <p>Masukkan identitas {label.toLowerCase()} dan data orang tua sesuai kartu keluarga / KMS</p>
               </div>
               <button
                 type="button"
@@ -69,15 +83,15 @@ export function BalitaCreateModal({ posyandu }: { posyandu: Posyandu[] }) {
               </button>
             </header>
 
-            <form action={createChild} className="balita-modal-form">
+            <form action={createChild} onSubmit={validateMeasurement} className="balita-modal-form">
               <div className="balita-modal-fields">
                 <label className="balita-modal-field full">
-                  <span className="balita-modal-label">Nama Lengkap Balita <span>*</span></span>
+                  <span className="balita-modal-label">Nama Lengkap {label} <span>*</span></span>
                   <input name="name" required placeholder="Nama lengkap anak" />
                 </label>
 
                 <label className="balita-modal-field full">
-                  <span className="balita-modal-label">NIK Balita <span>*</span></span>
+                  <span className="balita-modal-label">NIK {label} <span>*</span></span>
                   <input name="nik" type="text" inputMode="numeric" pattern="[0-9]{16}" minLength={16} maxLength={16} required placeholder="16 digit NIK" title="NIK harus terdiri dari 16 digit angka" />
                 </label>
 
@@ -117,13 +131,20 @@ export function BalitaCreateModal({ posyandu }: { posyandu: Posyandu[] }) {
                   </label>
                   <label className="balita-modal-field balita-modal-weight">
                     <span className="balita-modal-label">Berat Badan (kg)</span>
-                    <input name="birthWeight" type="number" step="0.01" min="0.01" placeholder="Contoh: 3.1" />
+                    <input name="weightKg" type="number" step="0.01" min="0.01" placeholder="Contoh: 10.5" aria-describedby="balita-initial-measurement-help" />
                   </label>
                   <label className="balita-modal-field balita-modal-height">
-                    <span className="balita-modal-label">Tinggi Badan (cm)</span>
-                    <input name="birthLength" type="number" step="0.01" min="0.01" placeholder="Contoh: 49.5" />
+                    <span className="balita-modal-label">{group === 'bayi' ? 'Panjang Badan (cm)' : 'Tinggi Badan (cm)'}</span>
+                    <input name="heightCm" type="number" step="0.01" min="0.01" placeholder="Contoh: 80" aria-describedby="balita-initial-measurement-help" />
                   </label>
                 </div>
+                <label className="balita-modal-field full">
+                  <span className="balita-modal-label">Tanggal pengukuran</span>
+                  <input name="measuredAt" type="date" defaultValue={jakartaDate()} aria-describedby="balita-initial-measurement-help" />
+                </label>
+                <p id="balita-initial-measurement-help" className="balita-modal-field full muted-copy">
+                  Opsional. Isi BB, TB dan tanggal pengukuran untuk mencatat hasil ke laporan. Pendaftaran identitas saja belum masuk rekap pemeriksaan.
+                </p>
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label">Status Gizi KMS <span>*</span></span>
                   <select name="kmsStatus" required defaultValue="NONE">
@@ -148,12 +169,13 @@ export function BalitaCreateModal({ posyandu }: { posyandu: Posyandu[] }) {
                 </label>
               </div>
 
+              {formError && <p className="balita-modal-form-error" role="alert">{formError}</p>}
               <footer className="balita-modal-footer">
                 <button type="button" className="balita-modal-cancel" onClick={() => setIsOpen(false)}>
                   Batal
                 </button>
                 <button type="submit" className="balita-modal-submit" disabled={posyandu.length === 0}>
-                  <span aria-hidden="true">✓</span> Simpan Data Balita
+                  <span aria-hidden="true">✓</span> Simpan Data {label}
                 </button>
               </footer>
               {posyandu.length === 0 && (
