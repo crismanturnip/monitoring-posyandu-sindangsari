@@ -18,7 +18,8 @@ const getStatusLabel = (status: string | null) => {
   return 'Belum diisi';
 };
 
-export function BalitaDeleteModal({ child, ageMonths }: { child: Child; ageMonths: number }) {
+export function BalitaDeleteModal({ child, ageMonths, group = 'balita' }: { child: Child; ageMonths: number; group?: 'bayi' | 'balita' }) {
+  const label = group === 'bayi' ? 'bayi' : 'balita';
   const [isOpen, setIsOpen] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -72,8 +73,8 @@ export function BalitaDeleteModal({ child, ageMonths }: { child: Child; ageMonth
             <header className="balita-delete-header">
               <span className="balita-delete-icon" aria-hidden="true">⚠</span>
               <div className="balita-delete-heading">
-                <h2 id={`balita-delete-title-${child.id}`}>Hapus Data Balita?</h2>
-                <p>Konfirmasi penghapusan data pasien balita</p>
+                <h2 id={`balita-delete-title-${child.id}`}>Hapus Data {label}?</h2>
+                <p>Konfirmasi penghapusan data {label}</p>
               </div>
               <button
                 type="button"
@@ -87,7 +88,7 @@ export function BalitaDeleteModal({ child, ageMonths }: { child: Child; ageMonth
 
             <div className="balita-delete-body">
               <p>
-                Apakah Anda yakin ingin menghapus data balita ini? Data akan dikeluarkan dari daftar aktif.
+                Apakah Anda yakin ingin menghapus data {label} ini? Data akan dikeluarkan dari daftar aktif.
                 Riwayat pemeriksaan tetap tersimpan.
               </p>
               <div className="balita-delete-summary">
@@ -116,6 +117,7 @@ export function BalitaDeleteModal({ child, ageMonths }: { child: Child; ageMonth
               </button>
               <form action={softDeleteChild}>
                 <input type="hidden" name="id" value={child.id} />
+                <input type="hidden" name="returnPath" value={`/${group}`} />
                 <button type="submit" className="balita-delete-confirm">
                   <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
                     <path d="M4.5 6h11M8 6V4.5h4V6m2.5 0-.6 9.5H6.1L5.5 6m3 2.5v4.5m3-4.5v4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
