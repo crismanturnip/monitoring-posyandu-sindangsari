@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireActiveProfile, requireBidan } from '@/lib/auth';
-import { isValidRecordDate } from '@/lib/health-record-dates';
+import { jakartaDate, isValidRecordDate } from '@/lib/health-record-dates';
 import { examinationNotes } from '@/lib/examination-notes';
 import { optionalNik, optionalPositiveNumber, optionalText } from '@/lib/report-input';
 
@@ -23,7 +23,9 @@ export async function createPregnantMother(formData: FormData) {
   const posyanduId = String(formData.get('posyanduId') ?? '');
   if (!name || !posyanduId) throw new Error('Nama ibu hamil dan Posyandu wajib diisi.');
   const notes = examinationNotes(formData, 'ibu-hamil');
-  const visitedAt = String(formData.get('visitedAt') ?? '');
+  const visitedAtRaw = String(formData.get('visitedAt') ?? '').trim();
+  if (visitedAtRaw && !isValidRecordDate(visitedAtRaw)) throw new Error('Isi tanggal pemeriksaan yang valid.');
+  const visitedAt = visitedAtRaw || jakartaDate();
   if (notes && !isValidRecordDate(visitedAt)) throw new Error('Isi tanggal pemeriksaan yang valid.');
   const { profile, supabase } = await requireActiveProfile();
   const { data, error } = await supabase.from('pregnant_mothers').insert({ name, posyandu_id: posyanduId, ...motherFields(formData) }).select('id').single();
@@ -38,6 +40,8 @@ export async function createPregnantMother(formData: FormData) {
     if (visitError) redirect(`/ibu-hamil/${data.id}?visit=failed`);
     revalidatePath('/laporan');
   }
+  const returnTo = String(formData.get('returnTo') ?? '').trim();
+  if (returnTo) redirect(returnTo);
   redirect(`/ibu-hamil/${data.id}`);
 }
 
@@ -46,7 +50,9 @@ export async function updatePregnantMother(formData: FormData) {
   const name = String(formData.get('name') ?? '').trim();
   if (!id || !name) throw new Error('Pilih ibu hamil dan isi nama lengkap.');
   const notes = examinationNotes(formData, 'ibu-hamil');
-  const visitedAt = String(formData.get('visitedAt') ?? '');
+  const visitedAtRaw = String(formData.get('visitedAt') ?? '').trim();
+  if (visitedAtRaw && !isValidRecordDate(visitedAtRaw)) throw new Error('Isi tanggal pemeriksaan yang valid.');
+  const visitedAt = visitedAtRaw || jakartaDate();
   if (notes && !isValidRecordDate(visitedAt)) throw new Error('Isi tanggal pemeriksaan yang valid.');
   const { profile, supabase } = await requireActiveProfile();
   const posyanduId = String(formData.get('posyanduId') ?? '');
@@ -63,6 +69,8 @@ export async function updatePregnantMother(formData: FormData) {
   revalidatePath('/ibu-hamil');
   revalidatePath(`/ibu-hamil/${id}`);
   revalidatePath('/laporan');
+  const returnTo = String(formData.get('returnTo') ?? '').trim();
+  if (returnTo) redirect(returnTo);
 }
 
 export async function addPregnancyVisit(formData: FormData) {

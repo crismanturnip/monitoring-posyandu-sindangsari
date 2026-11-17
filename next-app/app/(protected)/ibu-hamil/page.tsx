@@ -365,6 +365,8 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
 
             {/* Form Modal Sesuai Layout Referensi */}
             <form action={editing ? updatePregnantMother : createPregnantMother} className="anc-modal-form">
+              <input type="hidden" name="returnTo" value={closeHref || '/ibu-hamil'} />
+              <input type="hidden" name="visitedAt" value={jakartaDate()} />
               {editing && <input type="hidden" name="id" value={editing.id} />}
 
               {/* Bagian 1: Identitas Ibu & Informasi Domisili */}
@@ -521,12 +523,6 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                     <input name="gestationalWeeks" type="number" step="0.1" min="0.1" defaultValue={editing?.gestational_age_weeks ?? ''} className="anc-input no-icon" />
                   </div>
 
-
-                  <div className="anc-field full">
-                    <label className="anc-label" htmlFor="mother-visit-date">Tanggal pemeriksaan baru</label>
-                    <input id="mother-visit-date" name="visitedAt" type="date" defaultValue={jakartaDate()} className="anc-input no-icon" />
-                    <p className="muted-copy">Isi hasil pemeriksaan di bawah untuk menambah riwayat dan laporan pada tanggal ini. Kosongkan hasil jika hanya menyimpan identitas.</p>
-                  </div>
                   <div className="anc-field">
                     <label className="anc-label">
                       <span>Berat dan tinggi badan saat pemeriksaan</span>
