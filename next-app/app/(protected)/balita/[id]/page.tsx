@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { softDeleteChild, updateChild } from '../actions';
+import { addMeasurement, softDeleteChild, updateChild } from '../actions';
 import { requireActiveProfile } from '@/lib/auth';
 import { LogoutButton } from '@/components/logout-button';
+import { jakartaDate } from '@/lib/health-record-dates';
+import { childRegisterGroup } from '@/lib/child-register';
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ measurement?: string }> };
 type Measurement = {
   id: string;
   measured_at: string;
@@ -16,8 +18,9 @@ type Measurement = {
 
 const deliveryTypes = ['Normal', 'Operasi Caesar', 'Vakum', 'Forsep'];
 
-export default async function ChildDetailPage({ params }: Props) {
+export default async function ChildDetailPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { measurement } = await searchParams;
   const { profile, supabase } = await requireActiveProfile();
   const [{ data: child }, { data: measurementsData }] = await Promise.all([
     supabase
@@ -34,6 +37,8 @@ export default async function ChildDetailPage({ params }: Props) {
       .order('created_at', { ascending: false }),
   ]);
   if (!child) notFound();
+  const group = childRegisterGroup(child.birth_date, jakartaDate()) ?? 'balita';
+  const basePath = `/${group}`;
   const measurements = (measurementsData ?? []) as Measurement[];
   const formatDate = (date: string) =>
     new Intl.DateTimeFormat('id-ID', { dateStyle: 'long' }).format(
@@ -42,8 +47,8 @@ export default async function ChildDetailPage({ params }: Props) {
 
   return (
     <main className="admin-page">
-      <Link className="back-link" href="/balita">
-        ← Kembali ke bayi &amp; balita
+      <Link className="back-link" href={basePath}>
+        ← Kembali ke {group}
       </Link>
       <header className="admin-header">
         <div>
@@ -57,6 +62,11 @@ export default async function ChildDetailPage({ params }: Props) {
           <LogoutButton />
         </div>
       </header>
+      {measurement === 'failed' && (
+        <p className="form-error" role="alert">
+          Identitas balita sudah tersimpan, tetapi pengukuran gagal disimpan. Isi ulang pengukurannya pada form di bawah; tidak perlu mendaftarkan balita lagi.
+        </p>
+      )}
       <section className="admin-grid detail-grid">
         <form action={updateChild} className="card stacked-form">
           <h2>Identitas</h2>
@@ -66,7 +76,7 @@ export default async function ChildDetailPage({ params }: Props) {
             <input name="name" required defaultValue={child.name} />
           </label>
           <label>
-            NIK balita
+            NIK {group}
             <input name="nik" type="text" inputMode="numeric" pattern="[0-9]{16}" minLength={16} maxLength={16} required defaultValue={child.nik ?? ''} placeholder="16 digit NIK" title="NIK harus terdiri dari 16 digit angka" />
           </label>
           <label>
@@ -107,12 +117,23 @@ export default async function ChildDetailPage({ params }: Props) {
             <input name="birthWeight" type="number" step="0.01" min="0.01" defaultValue={child.birth_weight_kg ?? ''} />
           </label>
           <label>
-            Tinggi badan (cm)
+            Panjang lahir (cm)
             <input name="birthLength" type="number" step="0.01" min="0.01" defaultValue={child.birth_length_cm ?? ''} />
           </label>
           <button type="submit">Simpan perubahan</button>
         </form>
         <div>
+          <form action={addMeasurement} className="card stacked-form">
+            <h2>Catat pengukuran baru</h2>
+            <p className="muted-copy">Hasil akan masuk laporan sesuai tanggal pengukuran dan Posyandu balita.</p>
+            <input type="hidden" name="childId" value={id} />
+            <input type="hidden" name="returnPath" value={basePath} />
+            <label>Tanggal pengukuran<input name="measuredAt" type="date" required defaultValue={jakartaDate()} /></label>
+            <label>Berat badan (kg)<input name="weightKg" type="number" step="0.01" min="0.01" required /></label>
+            <label>Tinggi / panjang badan (cm)<input name="heightCm" type="number" step="0.01" min="0.01" required /></label>
+            <label>Catatan petugas<textarea name="notes" rows={3} /></label>
+            <button type="submit">Simpan sebagai riwayat baru</button>
+          </form>
           <section className="card history-card">
             <h2>Riwayat pengukuran</h2>
             {measurements.length === 0 ? (
@@ -133,6 +154,7 @@ export default async function ChildDetailPage({ params }: Props) {
           </section>
           {profile.role === 'BIDAN' && (
             <form action={softDeleteChild} className="delete-form">
+              <input type="hidden" name="returnPath" value={basePath} />
               <input type="hidden" name="id" value={id} />
               <button className="danger" type="submit">Hapus data (soft delete)</button>
             </form>
