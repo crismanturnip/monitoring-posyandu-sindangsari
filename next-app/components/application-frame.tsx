@@ -15,7 +15,6 @@ const primaryItems = [
   { href: '/bayi', label: 'Bayi', icon: 'baby' },
   { href: '/balita', label: 'Balita', icon: 'baby' },
   { href: '/ibu-hamil', label: 'Ibu Hamil', icon: 'pregnancy' },
-  { href: '/jadwal', label: 'Jadwal Kegiatan', icon: 'calendar' },
   { href: '/laporan', label: 'Laporan', icon: 'report' },
   { href: '/akun', label: 'Akun Saya', icon: 'account' },
 ] as const;

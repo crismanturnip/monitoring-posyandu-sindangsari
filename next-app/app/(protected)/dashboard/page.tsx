@@ -3,13 +3,6 @@ import { requireActiveProfile } from '@/lib/auth';
 import { LogoutButton } from '@/components/logout-button';
 import { RefreshButton } from '@/components/refresh-button';
 
-type Schedule = {
-  id: string;
-  starts_at: string;
-  location: string;
-  posyandu: { name: string } | null;
-};
-
 type Activity = {
   id: string;
   action: string;
@@ -22,7 +15,6 @@ const activityLabels: Record<string, string> = {
   child_measurements: 'pengukuran bayi/balita',
   pregnant_mothers: 'data ibu hamil',
   pregnancy_visits: 'kunjungan ibu hamil',
-  schedules: 'jadwal kegiatan',
   posyandu: 'data posyandu',
   kader_assignments: 'penugasan kader',
 };
@@ -32,7 +24,6 @@ const activityDescriptions: Record<string, string> = {
   child_measurements: 'Pengukuran berat & tinggi badan balita',
   pregnant_mothers: 'Pencatatan data ibu hamil wilayah binaan',
   pregnancy_visits: 'Skrining ANC dan pemeriksaan berkala',
-  schedules: 'Jadwal pelayanan posyandu penimbangan',
   posyandu: 'Pembaruan informasi posyandu wilayah',
   kader_assignments: 'Verifikasi dan penugasan kader',
 };
@@ -53,28 +44,13 @@ function formatRelativeTime(dateInput: string): string {
   return new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeZone: 'Asia/Jakarta' }).format(date);
 }
 
-function formatScheduleDate(dateInput: string): { dayMonth: string; time: string } {
-  const date = new Date(dateInput);
-  const dayMonth = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', timeZone: 'Asia/Jakarta' }).format(date);
-  const time = new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' }).format(date);
-  return { dayMonth, time: `${time} WIB` };
-}
-
 export default async function DashboardPage() {
   const { profile, supabase } = await requireActiveProfile();
-  const now = new Date().toISOString();
 
-  const [children, mothers, posyandu, schedules, activities] = await Promise.all([
+  const [children, mothers, posyandu, activities] = await Promise.all([
     supabase.from('children').select('*', { count: 'exact', head: true }).is('deleted_at', null),
     supabase.from('pregnant_mothers').select('*', { count: 'exact', head: true }).is('deleted_at', null),
     supabase.from('posyandu').select('*', { count: 'exact', head: true }).eq('is_active', true),
-    supabase
-      .from('schedules')
-      .select('id, starts_at, location, posyandu(name)')
-      .gte('starts_at', now)
-      .neq('status', 'DIBATALKAN')
-      .order('starts_at')
-      .limit(5),
     profile.role === 'BIDAN'
       ? supabase
           .from('activity_logs')
@@ -87,7 +63,6 @@ export default async function DashboardPage() {
   const childCount = children.count ?? 0;
   const motherCount = mothers.count ?? 0;
   const posyanduCount = posyandu.count ?? 0;
-  const upcoming = (schedules.data ?? []) as unknown as Schedule[];
   const activityData = (activities.data ?? []) as Activity[];
 
   const todayFormatted = new Intl.DateTimeFormat('id-ID', {
@@ -256,8 +231,7 @@ export default async function DashboardPage() {
           </Link>
 
           {/* Card 3: Posyandu Aktif */}
-          <Link href={profile.role === 'BIDAN' ? '/admin/posyandu' : '/jadwal'} className="stitch-stat-card">
-            <div className="stitch-stat-header">
+          <Link href="/admin/posyandu" className="stitch-stat-card">            <div className="stitch-stat-header">
               <span className="stitch-stat-label">POSYANDU AKTIF</span>
               <div className="stitch-stat-icon-wrap stat-icon-emerald" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -278,133 +252,69 @@ export default async function DashboardPage() {
           </Link>
         </section>
 
-        {/* Section Grid: Schedules & Activities */}
-        <div className="stitch-section-grid">
-          {/* Left Column: Upcoming Schedules */}
-          <section className="stitch-card">
-            <div className="stitch-card-header">
-              <div className="stitch-card-title-group">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="title-icon">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-                <h2>Jadwal kegiatan mendatang</h2>
+        {/* Recent Activities */}
+        <section className="stitch-card">
+          <div className="stitch-card-header">
+            <div className="stitch-card-title-group">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="title-icon">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <h2>Aktivitas terbaru</h2>
+            </div>
+            <span className="stitch-header-meta">Terakhir diperbarui</span>
+          </div>
+
+          <div className="stitch-card-body">
+            {profile.role !== 'BIDAN' ? (
+              <div className="stitch-empty-state">
+                <div className="stitch-empty-icon" aria-hidden="true">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </div>
+                <strong>Aktivitas Terbatas</strong>
+                <p>Aktivitas administrasi hanya tersedia untuk bidan penanggung jawab.</p>
               </div>
-            </div>
-
-            <div className="stitch-card-body">
-              {upcoming.length === 0 ? (
-                <div className="stitch-empty-state">
-                  <div className="stitch-empty-icon" aria-hidden="true">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M11 20A7 7 0 0 1 4 13C4 8.5 7 4 12 3c1.5 3 2 6.5 1 9.5" />
-                      <path d="M12 12.5C14.5 10 17.5 9 20 9c0 5-3.5 8-8 8.5" />
-                      <path d="M8 17c1.5 1.5 3.5 2 6 2" />
-                    </svg>
-                  </div>
-                  <strong>Belum ada jadwal mendatang</strong>
-                  <p>Jadwal pemeriksaan penimbangan dan posyandu berikutnya akan muncul di sini.</p>
+            ) : activityData.length === 0 ? (
+              <div className="stitch-empty-state">
+                <div className="stitch-empty-icon" aria-hidden="true">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
                 </div>
-              ) : (
-                <div className="stitch-schedule-list">
-                  {upcoming.map((schedule) => {
-                    const { dayMonth, time } = formatScheduleDate(schedule.starts_at);
-                    return (
-                      <div className="stitch-schedule-item" key={schedule.id}>
-                        <div className="schedule-date-chip">
-                          <strong>{dayMonth}</strong>
-                          <small>{time}</small>
-                        </div>
-                        <div className="schedule-info">
-                          <strong>{schedule.posyandu?.name ?? 'Posyandu'}</strong>
-                          <span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                              <circle cx="12" cy="10" r="3" />
-                            </svg>
-                            {schedule.location}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            <div className="stitch-card-footer">
-              <Link href="/jadwal" className="stitch-link-arrow">
-                Lihat seluruh jadwal <span></span>
-              </Link>
-            </div>
-          </section>
-
-          {/* Right Column: Recent Activities */}
-          <section className="stitch-card">
-            <div className="stitch-card-header">
-              <div className="stitch-card-title-group">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="title-icon">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                <h2>Aktivitas terbaru</h2>
+                <strong>Belum ada aktivitas tercatat</strong>
+                <p>Catatan kegiatan atau perubahan data posyandu akan tercantum di sini.</p>
               </div>
-              <span className="stitch-header-meta">Terakhir diperbarui</span>
-            </div>
+            ) : (
+              <div className="stitch-activity-timeline">
+                {activityData.map((activity) => {
+                  const actionWord = activity.action === 'insert' ? 'Menambahkan' : activity.action === 'delete' ? 'Menghapus' : 'Memperbarui';
+                  const objectName = activityLabels[activity.object_type] ?? activity.object_type;
+                  const contextText = activityDescriptions[activity.object_type] ?? 'Pembaruan data operasional Posyandu';
+                  const timeAgo = formatRelativeTime(activity.created_at);
 
-            <div className="stitch-card-body">
-              {profile.role !== 'BIDAN' ? (
-                <div className="stitch-empty-state">
-                  <div className="stitch-empty-icon" aria-hidden="true">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                    </svg>
-                  </div>
-                  <strong>Aktivitas Terbatas</strong>
-                  <p>Aktivitas administrasi hanya tersedia untuk bidan penanggung jawab.</p>
-                </div>
-              ) : activityData.length === 0 ? (
-                <div className="stitch-empty-state">
-                  <div className="stitch-empty-icon" aria-hidden="true">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                      <polyline points="14 2 14 8 20 8" />
-                    </svg>
-                  </div>
-                  <strong>Belum ada aktivitas tercatat</strong>
-                  <p>Catatan kegiatan atau perubahan data posyandu akan tercantum di sini.</p>
-                </div>
-              ) : (
-                <div className="stitch-activity-timeline">
-                  {activityData.map((activity) => {
-                    const actionWord = activity.action === 'insert' ? 'Menambahkan' : activity.action === 'delete' ? 'Menghapus' : 'Memperbarui';
-                    const objectName = activityLabels[activity.object_type] ?? activity.object_type;
-                    const contextText = activityDescriptions[activity.object_type] ?? 'Pembaruan data operasional Posyandu';
-                    const timeAgo = formatRelativeTime(activity.created_at);
-
-                    return (
-                      <div className="stitch-activity-item" key={activity.id}>
-                        <span className="stitch-activity-dot" aria-hidden="true" />
-                        <div className="stitch-activity-content">
-                          <div className="activity-main">
-                            <strong className="activity-title">
-                              {actionWord} {objectName}
-                            </strong>
-                            <p className="activity-desc">{contextText}</p>
-                          </div>
-                          <span className="activity-time">{timeAgo}</span>
+                  return (
+                    <div className="stitch-activity-item" key={activity.id}>
+                      <span className="stitch-activity-dot" aria-hidden="true" />
+                      <div className="stitch-activity-content">
+                        <div className="activity-main">
+                          <strong className="activity-title">
+                            {actionWord} {objectName}
+                          </strong>
+                          <p className="activity-desc">{contextText}</p>
                         </div>
+                        <span className="activity-time">{timeAgo}</span>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </section>
-        </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
       </main>
     </div>
   );
