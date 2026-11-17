@@ -12,7 +12,8 @@ const publicPaths = new Set(['/', '/login', '/register', '/forgot-password', '/u
 
 const primaryItems = [
   { href: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
-  { href: '/balita', label: 'Bayi & Balita', icon: 'baby' },
+  { href: '/bayi', label: 'Bayi', icon: 'baby' },
+  { href: '/balita', label: 'Balita', icon: 'baby' },
   { href: '/ibu-hamil', label: 'Ibu Hamil', icon: 'pregnancy' },
   { href: '/lansia', label: 'Lansia', icon: 'elderly' },
   { href: '/jadwal', label: 'Jadwal Kegiatan', icon: 'calendar' },
