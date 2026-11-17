@@ -74,7 +74,7 @@ export function reportTables(rows: ReportRow[], filters: ReportFilters): ReportT
   ];
   return definitions.filter(item => filters.category === 'semua' ? item.key !== 'lansia' : item.key === filters.category)
     .map(item => ({ key: item.key, title: item.title, columns: item.columns,
-      rows: rows.filter(item.matches).sort((a, b) => a.date.localeCompare(b.date) || a.name.localeCompare(b.name) || a.id.localeCompare(b.id)),
+      rows: rows.filter(item.matches).sort((a, b) => b.date.localeCompare(a.date) || a.name.localeCompare(b.name) || a.id.localeCompare(b.id)),
     }));
 }
 

@@ -11,7 +11,7 @@ require.extensions['.ts'] = (module, filename) => {
   module._compile(outputText, filename);
 };
 const { reportAge } = require('../lib/report-age.ts');
-const { reportTables } = require('../lib/report-tables.ts');
+const { reportTables, reportTablePages } = require('../lib/report-tables.ts');
 const { createReportPdf } = require('../lib/report-export.ts');
 const { createReportExcel } = require('../lib/report-excel.ts');
 const { normalizeReportFilters } = require('../lib/reports.ts');
@@ -64,6 +64,24 @@ test('each category has its agreed columns without duplicate BB/PB or a record-t
     assert(tables[1].columns.some(column => column.label === label));
   }
   assert(tables[2].columns.some(column => column.label === 'Nama suami'));
+});
+
+test('report tables and pagination show newest dates first in every category', () => {
+  const datedRows = ['Bayi', 'Balita', 'Ibu Hamil'].flatMap(category => [
+    { id: `${category}-old`, category, date: '2026-11-01', name: 'Lama', notes: '' },
+    { id: `${category}-new`, category, date: '2026-11-17', name: 'Baru', notes: '' },
+    { id: `${category}-middle`, category, date: '2026-11-09', name: 'Tengah', notes: '' },
+  ]);
+  for (const table of reportTables(datedRows, filters)) {
+    assert.deepEqual(table.rows.map(row => row.date), ['2026-11-17', '2026-11-09', '2026-11-01']);
+  }
+  const firstPages = reportTablePages(datedRows, filters, {}, 2);
+  for (const table of firstPages) {
+    assert.deepEqual(table.rows.map(row => row.date), ['2026-11-17', '2026-11-09']);
+    const second = reportTablePages(datedRows, filters, { [table.pageParam]: '2' }, 2)
+      .find(page => page.key === table.key);
+    assert.deepEqual(second.rows.map(row => row.date), ['2026-11-01']);
+  }
 });
 
 function section(sheet, title) {
