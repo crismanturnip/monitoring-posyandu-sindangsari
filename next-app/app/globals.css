@@ -2700,9 +2700,10 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 .security-card-title {
   margin: 0;
   font-size: 17px;
-  font-weight: 800;
+  font-weight: 500;
+  line-height: 1.5;
   color: #0b453e;
-  letter-spacing: -0.015em;
+  letter-spacing: normal;
 }
 
 .security-card-sub {
