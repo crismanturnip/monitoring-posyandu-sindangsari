@@ -3,6 +3,10 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireActiveProfile, requireBidan } from '@/lib/auth';
+import { isValidRecordDate, jakartaDate } from '@/lib/health-record-dates';
+import { childRegisterGroup } from '@/lib/child-register';
+
+const returnPath = (formData: FormData) => formData.get('returnPath') === '/bayi' ? '/bayi' : '/balita';
 
 const optionalNumber = (value: FormDataEntryValue | null) => {
   const parsed = Number(String(value ?? '').trim());
@@ -19,12 +23,21 @@ export async function createChild(formData: FormData) {
   const birthDate = String(formData.get('birthDate') ?? '');
   const gender = String(formData.get('gender') ?? '');
   const kmsStatus = String(formData.get('kmsStatus') ?? '');
+  const weightValue = String(formData.get('weightKg') ?? '').trim();
+  const heightValue = String(formData.get('heightCm') ?? '').trim();
+  const weight = optionalNumber(formData.get('weightKg'));
+  const height = optionalNumber(formData.get('heightCm'));
+  const measuredAt = String(formData.get('measuredAt') ?? '');
+  const hasMeasurement = Boolean(weightValue || heightValue);
   if (!name || !isValidNik(nik) || !motherName || !posyanduId || !birthDate ||
       !['LAKI_LAKI', 'PEREMPUAN'].includes(gender) ||
       !['NONE', 'GIZI_BAIK', 'PERLU_PANTAUAN'].includes(kmsStatus)) {
     throw new Error('Lengkapi semua data wajib dengan nilai yang valid.');
   }
-  const { supabase } = await requireActiveProfile();
+  if (hasMeasurement && (!weight || !height || !isValidRecordDate(measuredAt))) {
+    throw new Error('Isi tanggal pengukuran, berat dan tinggi badan dengan lengkap dan valid, atau kosongkan kedua hasil pengukuran.');
+  }
+  const { profile, supabase } = await requireActiveProfile();
   const { data, error } = await supabase.from('children').insert({
     name, nik, mother_name: motherName, posyandu_id: posyanduId, birth_date: birthDate, gender,
     kms_status: kmsStatus === 'NONE' ? null : kmsStatus,
@@ -37,7 +50,19 @@ export async function createChild(formData: FormData) {
   if (error) throw new Error(`Gagal menyimpan data balita: ${error.message}`);
   if (!data) throw new Error('Data balita tidak berhasil disimpan.');
   revalidatePath('/balita');
-  redirect(`/balita/${data.id}`);
+  revalidatePath('/bayi');
+  revalidatePath('/laporan');
+  const detailPath = `/${childRegisterGroup(birthDate, jakartaDate()) ?? 'balita'}/${data.id}`;
+  if (hasMeasurement) {
+    const { error: measurementError } = await supabase.from('child_measurements').insert({
+      child_id: data.id, measured_at: measuredAt, weight_kg: weight, height_cm: height,
+      recorded_by: profile.id,
+    });
+    // Keep the saved identity and allow retrying only the measurement, without a duplicate child.
+    if (measurementError) redirect(`${detailPath}?measurement=failed`);
+    revalidatePath('/laporan');
+  }
+  redirect(detailPath);
 }
 
 export async function updateChild(formData: FormData) {
@@ -57,7 +82,10 @@ export async function updateChild(formData: FormData) {
   }).eq('id', id);
   if (error) throw new Error(`Gagal memperbarui data balita: ${error.message}`);
   revalidatePath('/balita');
+  revalidatePath('/bayi');
   revalidatePath(`/balita/${id}`);
+  revalidatePath(`/bayi/${id}`);
+  revalidatePath('/laporan');
 }
 
 export async function updateChildFromModal(formData: FormData) {
@@ -129,7 +157,7 @@ export async function updateChildFromModal(formData: FormData) {
   if (weight && height) {
     const { error: measurementError } = await supabase.from('child_measurements').insert({
       child_id: id,
-      measured_at: new Date().toISOString().slice(0, 10),
+      measured_at: jakartaDate(),
       weight_kg: weight,
       height_cm: height,
       officer_notes: String(formData.get('notes') ?? '').trim() || null,
@@ -140,8 +168,11 @@ export async function updateChildFromModal(formData: FormData) {
   }
 
   revalidatePath('/balita');
+  revalidatePath('/bayi');
   revalidatePath(`/balita/${id}`);
-  redirect('/balita');
+  revalidatePath(`/bayi/${id}`);
+  revalidatePath('/laporan');
+  redirect(returnPath(formData));
 }
 
 export async function addMeasurement(formData: FormData) {
@@ -149,13 +180,21 @@ export async function addMeasurement(formData: FormData) {
   const measuredAt = String(formData.get('measuredAt') ?? '');
   const weight = optionalNumber(formData.get('weightKg'));
   const height = optionalNumber(formData.get('heightCm'));
-  if (!childId || !measuredAt || !weight || !height) return;
+  if (!childId || !isValidRecordDate(measuredAt) || !weight || !height) {
+    throw new Error('Isi tanggal pengukuran, berat dan tinggi badan dengan nilai yang valid.');
+  }
   const { profile, supabase } = await requireActiveProfile();
-  await supabase.from('child_measurements').insert({
+  const { error } = await supabase.from('child_measurements').insert({
     child_id: childId, measured_at: measuredAt, weight_kg: weight, height_cm: height,
     officer_notes: String(formData.get('notes') ?? '').trim() || null, recorded_by: profile.id,
   });
+  if (error) throw new Error(`Gagal menyimpan pengukuran balita: ${error.message}`);
   revalidatePath(`/balita/${childId}`);
+  revalidatePath(`/bayi/${childId}`);
+  revalidatePath('/balita');
+  revalidatePath('/bayi');
+  revalidatePath('/laporan');
+  redirect(`${returnPath(formData)}/${childId}`);
 }
 
 export async function softDeleteChild(formData: FormData) {
@@ -168,5 +207,7 @@ export async function softDeleteChild(formData: FormData) {
     .eq('id', id);
   if (error) throw new Error(`Gagal menghapus data balita: ${error.message}`);
   revalidatePath('/balita');
-  redirect('/balita');
+  revalidatePath('/bayi');
+  revalidatePath('/laporan');
+  redirect(returnPath(formData));
 }
