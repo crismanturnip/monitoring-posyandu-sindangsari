@@ -3,6 +3,7 @@ import { createPregnantMother, updatePregnantMother, softDeletePregnantMother } 
 import { requireActiveProfile } from '@/lib/auth';
 import { PageHero } from '@/components/page-hero';
 import { Modal } from '@/components/modal';
+import { jakartaDate } from '@/lib/health-record-dates';
 
 type Props = {
   searchParams: Promise<{
@@ -45,60 +46,6 @@ const EditIcon = () => <Svg><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 
 const TrashIcon = ({ size }: { size?: number }) => <Svg size={size}><path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="m19 6-1 14H6L5 6" /></Svg>;
 const CloseIcon = () => <Svg size={18}><path d="M18 6 6 18M6 6l12 12" /></Svg>;
 
-// Generate consistent data sesuai screenshot referensi
-function getMotherMockData(id: string, index: number) {
-  const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + index;
-  
-  const ages = [26, 31, 28, 24, 29, 33];
-  const age = ages[hash % ages.length];
-  
-  const gestationalWeeks = [24, 14, 20, 32, 16, 28];
-  const gWeeks = gestationalWeeks[hash % gestationalWeeks.length];
-  const trimester = gWeeks <= 13 ? 'Trimester 1' : gWeeks <= 27 ? 'Trimester 2' : 'Trimester 3';
-  
-  // Pola risiko: index ganjil berisiko KEK, genap sehat
-  const isKek = hash % 2 === 1;
-
-  const husbands = ['Tn. Hendra Gunawan', 'Tn. Asep Sunandar', 'Tn. Dedi Kusnadi', 'Tn. Rudi Hartono', 'Tn. Agus Salim'];
-  const husbandName = husbands[hash % husbands.length];
-
-  const exams = [
-    {
-      primary: 'BB: 58 kg • TD: 110/70',
-      lila: 'LiLA: 25.5 cm (Aman)',
-      isWarn: false,
-    },
-    {
-      primary: 'BB: 44 kg • TD: 100/65',
-      lila: 'LiLA: 22.0 cm (Peringatan < 23.5 cm)',
-      isWarn: true,
-    },
-    {
-      primary: 'BB: 52 kg • TD: 115/75',
-      lila: 'LiLA: 26.0 cm (Aman)',
-      isWarn: false,
-    },
-  ];
-  const exam = isKek ? exams[1] : exams[hash % exams.length === 1 ? 0 : hash % exams.length];
-
-  return {
-    age,
-    gWeeks,
-    trimester,
-    husbandName,
-    isKek,
-    exam,
-  };
-}
-
-function getInitials(name: string) {
-  const clean = name.replace(/^(Ny\.|Ibu|Nn\.)\s+/i, '').trim();
-  const parts = clean.split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  }
-  return clean.slice(0, 2).toUpperCase() || 'IH';
-}
 
 export default async function PregnantMothersPage({ searchParams }: Props) {
   const params = await searchParams;
@@ -107,7 +54,6 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
 
   const q = (params.q ?? '').replace(/[,()%*\\]/g, ' ').trim().slice(0, 80);
   const posyanduFilter = uuidPattern.test(params.posyandu ?? '') ? String(params.posyandu) : '';
-  const kategoriFilter = params.kategori ?? '';
   const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1);
   const from = (page - 1) * PAGE_SIZE;
 
@@ -150,7 +96,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
 
   const buildHref = (extra: Record<string, string | undefined>) => {
     const search = new URLSearchParams();
-    for (const [key, value] of Object.entries({ q, posyandu: posyanduFilter, kategori: kategoriFilter, ...extra })) {
+    for (const [key, value] of Object.entries({ q, posyandu: posyanduFilter, ...extra })) {
       if (value) search.set(key, value);
     }
     const text = search.toString();
@@ -161,21 +107,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
   const closeHref = buildHref({ page: pageParam });
   const pageNumbers = Array.from({ length: Math.min(totalPages, 5) }, (_, index) => Math.max(1, Math.min(page - 2, totalPages - 4)) + index);
 
-  // Enriched mockup fields sesuai screenshot
-  const enrichedMothers = rawMothers.map((m, idx) => {
-    const mock = getMotherMockData(m.id, from + idx);
-    return {
-      ...m,
-      ...mock,
-    };
-  });
-
-  const mothers = kategoriFilter
-    ? enrichedMothers.filter((m) => (kategoriFilter === 'kek' ? m.isKek : !m.isKek))
-    : enrichedMothers;
-
-  // Hitung jumlah berisiko
-  const kekCount = Math.max(1, Math.ceil(total * 0.5));
+  const mothers = rawMothers;
 
   return (
     <div className="stitch-dashboard">
@@ -214,10 +146,10 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
             </div>
           </div>
 
-          {/* Card 2: PERLU PERHATIAN / KEK */}
+          {/* Card 2: PENILAIAN RISIKO */}
           <div className="ibu-hamil-stat-card">
             <div className="stitch-stat-header">
-              <span className="stitch-stat-label">PERLU PERHATIAN / KEK</span>
+              <span className="stitch-stat-label">PENILAIAN RISIKO</span>
               <div className="stitch-stat-icon-wrap stat-icon-amber-warn" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
@@ -226,12 +158,12 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                 </svg>
               </div>
             </div>
-            <div className="stitch-stat-value" style={{ color: '#b45309' }}>{kekCount}</div>
+            <div className="maternal-risk-value">Belum tersedia</div>
             <div className="stitch-stat-footer">
               <span className="stitch-chip">
-                <span className="chip-bullet" style={{ color: '#d97706' }}>•</span> {kekCount} Berisiko
+                <span className="chip-bullet" style={{ color: '#d97706' }}>•</span> Penilaian belum dicatat
               </span>
-              <span className="stitch-chip chip-highlight-amber">Risiko KEK / Anemia</span>
+              <span className="stitch-chip chip-highlight-amber">Menunggu penilaian petugas</span>
             </div>
           </div>
         </section>
@@ -250,11 +182,6 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
               </option>
             ))}
           </select>
-          <select name="kategori" defaultValue={kategoriFilter} aria-label="Filter Kategori Risiko">
-            <option value="">Kategori Risiko (Semua)</option>
-            <option value="normal">Gizi Normal &amp; Sehat</option>
-            <option value="kek">Perlu Pantauan KEK</option>
-          </select>
           <button className="primary-btn" type="submit">Terapkan</button>
           <Link className="ghost-btn" href="/ibu-hamil">
             <ResetIcon /> Reset
@@ -265,7 +192,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
 
         {/* Tabel Data Ibu Hamil Sesuai Screenshot */}
         <section className="card ibu-hamil-table-card">
-          <div className="ibu-hamil-table-wrap">
+          <div className="ibu-hamil-table-wrap horizontal-data-scroll" role="region" aria-label="Tabel ibu hamil, geser untuk melihat kolom lainnya" tabIndex={0}>
             <table className="ibu-hamil-table" aria-label="Daftar ibu hamil">
               <thead>
                 <tr>
@@ -288,65 +215,42 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                   </tr>
                 )}
                 {mothers.map((mother, index) => {
-                  const initial = getInitials(mother.name);
                   return (
                     <tr key={mother.id}>
                       <td style={{ textAlign: 'center', color: '#64748b', fontWeight: 600 }}>
                         {from + index + 1}
                       </td>
                       <td>
-                        <div className="cell-avatar-wrap">
-                          <div className={`table-avatar-pill ${mother.isKek ? 'avatar-warn' : ''}`}>
-                            {initial}
-                          </div>
-                          <div className="table-name-cell">
-                            <strong>
-                              <Link href={`/ibu-hamil/${mother.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-                                {mother.name}
-                              </Link>
-                            </strong>
-                          </div>
-                        </div>
+                        <Link className="maternal-name" href={`/ibu-hamil/${mother.id}`}>{mother.name}</Link>
                       </td>
                       <td>
                         <div style={{ fontWeight: 700, color: '#0f2f2b', fontSize: 13, marginBottom: 3 }}>
-                          {mother.age} Tahun
+                          Belum dicatat
                         </div>
                         <div style={{ fontSize: 12, color: '#64748b', display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: mother.isKek ? '#d97706' : '#0d9488' }} />
-                          {mother.gWeeks} Minggu ({mother.trimester})
+                          Usia kehamilan belum dicatat
                         </div>
                       </td>
                       <td>
                         <div style={{ color: '#0f2f2b', fontSize: 13, fontWeight: 600 }}>
-                          {mother.husbandName}
+                          Belum dicatat
                         </div>
                       </td>
                       <td>
-                        <span className="pill-posyandu">
+                        <span>
                           {mother.posyandu?.name ?? 'Posyandu'}
                         </span>
                       </td>
                       <td>
-                        {!mother.isKek ? (
-                          <span className="table-status-pill pill-good">
-                            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#16a34a' }} />
-                            Gizi Normal &amp; Sehat
-                          </span>
-                        ) : (
-                          <span className="table-status-pill pill-warn">
-                            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#d97706' }} />
-                            Perlu Pantauan KEK
-                          </span>
-                        )}
+                        <span>Belum dinilai</span>
                       </td>
                       <td>
                         <div className="exam-vitals">
                           <span className="exam-vitals-primary">
-                            {mother.exam.primary}
+                            {mother.pregnancy_visits?.[0]?.officer_notes || 'Belum ada hasil pemeriksaan'}
                           </span>
-                          <div className={`exam-vitals-sub ${mother.exam.isWarn ? 'warn' : ''}`}>
-                            {mother.exam.lila}
+                          <div className="exam-vitals-sub">
+                            {mother.pregnancy_visits?.[0]?.visited_at ? new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeZone: 'Asia/Jakarta' }).format(new Date(`${mother.pregnancy_visits[0].visited_at}T00:00:00+07:00`)) : 'Belum ada riwayat kunjungan'}
                           </div>
                         </div>
                       </td>
@@ -655,18 +559,23 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                     </div>
                   </div>
 
+                  <div className="anc-field full">
+                    <label className="anc-label" htmlFor="mother-visit-date">Tanggal pemeriksaan baru</label>
+                    <input id="mother-visit-date" name="visitedAt" type="date" defaultValue={jakartaDate()} className="anc-input no-icon" />
+                    <p className="muted-copy">Isi hasil pemeriksaan di bawah untuk menambah riwayat dan laporan pada tanggal ini. Kosongkan hasil jika hanya menyimpan identitas.</p>
+                  </div>
                   <div className="anc-field">
                     <label className="anc-label">
-                      <span>{editing ? 'Antropometri (BB & TB)' : 'Berat Badan Pra-Hamil & Tinggi Badan'} <span className="req">*</span></span>
+                      <span>Berat dan tinggi badan saat pemeriksaan</span>
                       <span className="hint">Antropometri</span>
                     </label>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                       <div className="anc-input-group">
-                        <input name="weight" defaultValue={editing ? '58' : '52.5'} className="anc-input no-icon" placeholder="BB" />
+                        <input name="weight" className="anc-input no-icon" placeholder="BB" inputMode="decimal" />
                         <span className="anc-input-append">kg</span>
                       </div>
                       <div className="anc-input-group">
-                        <input name="height" defaultValue="158" className="anc-input no-icon" placeholder="TB" />
+                        <input name="height" className="anc-input no-icon" placeholder="TB" inputMode="decimal" />
                         <span className="anc-input-append">cm</span>
                       </div>
                     </div>
@@ -681,7 +590,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                         <span className="anc-input-icon">
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
                         </span>
-                        <input name="bloodPressure" defaultValue="110/70" className="anc-input" />
+                        <input name="bloodPressure" placeholder="Contoh: 110/70" className="anc-input" />
                         <span className="anc-input-append">mmHg</span>
                       </div>
                     </div>
@@ -697,27 +606,11 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                         <span className="anc-input-icon">
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
                         </span>
-                        <input name="lila" defaultValue={editing ? '25,5' : '24,0'} className="anc-input" style={{ fontWeight: 800, fontSize: 15 }} />
+                        <input name="lila" inputMode="decimal" placeholder="Contoh: 24,0" className="anc-input" />
                         <span className="anc-input-append">cm</span>
                       </div>
 
-                      {editing ? (
-                        <div style={{ display: 'grid', gap: 6 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, color: '#0d8377', fontWeight: 700 }}>
-                            <span>✓ Status Gizi Baik (Bukan KEK) - LiLA ≥ 23.5 cm</span>
-                            <span style={{ color: '#64748b' }}>Zona Normal</span>
-                          </div>
-                          <div className="anc-lila-track" />
-                        </div>
-                      ) : (
-                        <div className="anc-lila-banner">
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                          <div>
-                            <strong>Status Gizi Baik (Bukan KEK)</strong>
-                            <p>Ukuran LiLA memenuhi standar gizi optimal untuk pertumbuhan janin.</p>
-                          </div>
-                        </div>
-                      )}
+                      <p className="muted-copy">Hasil penilaian gizi dicatat oleh petugas berdasarkan pemeriksaan.</p>
                     </div>
                   </div>
                 </div>
