@@ -91,7 +91,7 @@ export default async function ReportsPage({ searchParams }: Props) {
             <div className="stitch-report-title">
               <h2>Data Rekap Laporan</h2>
               <p>{categoryLabel} · {total} catatan · {formatDate(filters.startDate)} – {formatDate(filters.endDate)}</p>
-              <p>Diurutkan dari tanggal terbaru ke terlama.</p>
+              <p>Tabel di halaman ini diurutkan dari tanggal terbaru ke terlama.</p>
             </div>
             {total > 0 && (
               <div className="report-downloads">

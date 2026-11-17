@@ -66,14 +66,14 @@ test('each category has its agreed columns without duplicate BB/PB or a record-t
   assert(tables[2].columns.some(column => column.label === 'Nama suami'));
 });
 
-test('report tables and pagination show newest dates first in every category', () => {
+test('screen pagination shows newest dates first while export tables stay oldest first', async () => {
   const datedRows = ['Bayi', 'Balita', 'Ibu Hamil'].flatMap(category => [
     { id: `${category}-old`, category, date: '2026-11-01', name: 'Lama', notes: '' },
     { id: `${category}-new`, category, date: '2026-11-17', name: 'Baru', notes: '' },
     { id: `${category}-middle`, category, date: '2026-11-09', name: 'Tengah', notes: '' },
   ]);
   for (const table of reportTables(datedRows, filters)) {
-    assert.deepEqual(table.rows.map(row => row.date), ['2026-11-17', '2026-11-09', '2026-11-01']);
+    assert.deepEqual(table.rows.map(row => row.date), ['2026-11-01', '2026-11-09', '2026-11-17']);
   }
   const firstPages = reportTablePages(datedRows, filters, {}, 2);
   for (const table of firstPages) {
@@ -81,6 +81,14 @@ test('report tables and pagination show newest dates first in every category', (
     const second = reportTablePages(datedRows, filters, { [table.pageParam]: '2' }, 2)
       .find(page => page.key === table.key);
     assert.deepEqual(second.rows.map(row => row.date), ['2026-11-01']);
+  }
+  const workbook = new Workbook();
+  await workbook.xlsx.load(await createReportExcel(datedRows, filters, 'Petugas Contoh', generatedAt));
+  const sheet = workbook.getWorksheet('Laporan');
+  for (const category of ['Bayi', 'Balita', 'Ibu Hamil']) {
+    const first = section(sheet, category).firstRow.number;
+    assert.deepEqual([0, 1, 2].map(index => sheet.getRow(first + index).getCell(2).value.toISOString().slice(0, 10)),
+      ['2026-11-01', '2026-11-09', '2026-11-17']);
   }
 });
 

@@ -74,18 +74,19 @@ export function reportTables(rows: ReportRow[], filters: ReportFilters): ReportT
   ];
   return definitions.filter(item => filters.category === 'semua' ? item.key !== 'lansia' : item.key === filters.category)
     .map(item => ({ key: item.key, title: item.title, columns: item.columns,
-      rows: rows.filter(item.matches).sort((a, b) => b.date.localeCompare(a.date) || a.name.localeCompare(b.name) || a.id.localeCompare(b.id)),
+      rows: rows.filter(item.matches).sort((a, b) => a.date.localeCompare(b.date) || a.name.localeCompare(b.name) || a.id.localeCompare(b.id)),
     }));
 }
 
 export function reportTablePages(rows: ReportRow[], filters: ReportFilters, params: Record<string, string | undefined>, pageSize = 10) {
   return reportTables(rows, filters).map(table => {
+    const newestFirst = [...table.rows].sort((a, b) => b.date.localeCompare(a.date) || a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
     const pageParam = `page_${table.key}`;
-    const total = table.rows.length;
+    const total = newestFirst.length;
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
     const page = Math.min(totalPages, Math.max(1, Number.parseInt(params[pageParam] ?? '1', 10) || 1));
     const offset = (page - 1) * pageSize;
-    return { ...table, total, totalPages, page, pageParam, offset, rows: table.rows.slice(offset, offset + pageSize) };
+    return { ...table, total, totalPages, page, pageParam, offset, rows: newestFirst.slice(offset, offset + pageSize) };
   });
 }
 
