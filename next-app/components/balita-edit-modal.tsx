@@ -22,11 +22,14 @@ export function BalitaEditModal({
   child,
   posyandu,
   measurement,
+  group = 'balita',
 }: {
   child: Child;
   posyandu: Posyandu[];
   measurement: Measurement | null;
+  group?: 'bayi' | 'balita';
 }) {
+  const label = group === 'bayi' ? 'Bayi' : 'Balita';
   const [isOpen, setIsOpen] = useState(false);
   const [formError, setFormError] = useState('');
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -91,8 +94,8 @@ export function BalitaEditModal({
             <header className="balita-modal-header">
               <span className="balita-modal-icon" aria-hidden="true">☷</span>
               <div className="balita-modal-heading">
-                <h2 id={`balita-edit-title-${child.id}`}>Edit Data Balita</h2>
-                <p>Perbarui informasi data balita dan orang tua</p>
+                <h2 id={`balita-edit-title-${child.id}`}>Edit Data {label}</h2>
+                <p>Perbarui informasi data {label.toLowerCase()} dan orang tua</p>
               </div>
               <button
                 type="button"
@@ -106,14 +109,15 @@ export function BalitaEditModal({
 
             <form action={updateChildFromModal} className="balita-modal-form" onSubmit={validateMeasurements}>
               <input type="hidden" name="id" value={child.id} />
+              <input type="hidden" name="returnPath" value={`/${group}`} />
               <div className="balita-edit-fields">
                 <label className="balita-modal-field full">
-                  <span className="balita-modal-label">Nama Lengkap Balita <span>*</span></span>
+                  <span className="balita-modal-label">Nama Lengkap {label} <span>*</span></span>
                   <input name="name" required defaultValue={child.name} />
                 </label>
 
                 <label className="balita-modal-field full">
-                  <span className="balita-modal-label">NIK Balita <span>*</span></span>
+                  <span className="balita-modal-label">NIK {label} <span>*</span></span>
                   <input name="nik" type="text" inputMode="numeric" pattern="[0-9]{16}" minLength={16} maxLength={16} required defaultValue={child.nik ?? ''} placeholder="16 digit NIK" title="NIK harus terdiri dari 16 digit angka" />
                 </label>
 
