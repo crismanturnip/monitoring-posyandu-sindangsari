@@ -3,8 +3,9 @@ import Link from 'next/link';
 import { loadReportAvailability, loadReportRows, normalizeReportFilters } from '@/lib/reports';
 import { PageHero } from '@/components/page-hero';
 import { ReportFiltersForm } from '@/components/report-filters';
+import { reportTablePages, reportCellText } from '@/lib/report-tables';
 
-type Props = { searchParams: Promise<{ category?: string; period?: string; posyandu?: string; start?: string; end?: string; page?: string }> };
+type Props = { searchParams: Promise<{ category?: string; period?: string; posyandu?: string; start?: string; end?: string; page_bayi?: string; page_balita?: string; 'page_ibu-hamil'?: string; page_lansia?: string }> };
 type Posyandu = { id: string; name: string };
 
 const PAGE_SIZE = 10;
@@ -17,16 +18,6 @@ function SvgIcon({ children, size = 16 }: { children: React.ReactNode; size?: nu
   );
 }
 
-function getCategoryLabel(category: string) {
-  const catLower = category.toLowerCase();
-  if (catLower.includes('balita') || catLower.includes('anak')) {
-    return 'Balita & Anak';
-  }
-  if (catLower.includes('hamil') || catLower.includes('anc')) {
-    return 'Ibu Hamil (ANC)';
-  }
-  return 'Lansia & PTM';
-}
 
 export default async function ReportsPage({ searchParams }: Props) {
   const params = await searchParams;
@@ -52,29 +43,25 @@ export default async function ReportsPage({ searchParams }: Props) {
   }
   
   const formatDate = (date: string) => new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' }).format(new Date(`${date}T00:00:00+07:00`));
-  const formatMonthYear = (date: string) => new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'Asia/Jakarta' }).format(new Date(`${date}T00:00:00+07:00`));
 
   const total = report.rows.length;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const page = Math.min(totalPages, Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1));
-  const from = (page - 1) * PAGE_SIZE;
-  const paginatedRows = report.rows.slice(from, from + PAGE_SIZE);
-
-  const buildPageHref = (targetPage: number) => {
-    const sp = new URLSearchParams(exportQuery);
-    if (targetPage > 1) sp.set('page', String(targetPage));
-    const qs = sp.toString();
-    return qs ? `/laporan?${qs}` : '/laporan';
+  const tables = reportTablePages(report.rows, filters, params, PAGE_SIZE);
+  const categoryLabel = filters.category === 'semua' ? 'Semua kategori' : tables[0]?.title ?? filters.category;
+  const buildPageHref = (pageParam: string, targetPage: number) => {
+    const search = new URLSearchParams(exportQuery);
+    for (const table of tables) {
+      const target = table.pageParam === pageParam ? targetPage : table.page;
+      if (target > 1) search.set(table.pageParam, String(target));
+    }
+    return '/laporan?' + search;
   };
-
-  const pageNumbers = Array.from({ length: Math.min(totalPages, 5) }, (_, index) => Math.max(1, Math.min(page - 2, totalPages - 4)) + index);
 
   return (
     <div className="stitch-dashboard">
       <PageHero
         profile={profile}
         pageTitle="Laporan & Rekapitulasi"
-        pageDescription="Rekapitulasi data pemeriksaan, kehadiran, dan statistik kesehatan posyandu per kategori dan rentang waktu."
+        pageDescription="Rekapitulasi data bayi, balita, dan ibu hamil sesuai Posyandu dan periode yang dipilih."
       />
 
       <main className="stitch-content laporan-content report-page">
@@ -85,7 +72,7 @@ export default async function ReportsPage({ searchParams }: Props) {
             posyandu={posyandu}
           />
           <p className="muted-copy">
-            Rentang dihitung mundur dari tanggal akhir, termasuk tanggal tersebut. Periode mengikuti tanggal pengukuran atau pemeriksaan. Setelah mengubah filter, klik Tampilkan sebelum mengunduh.
+            Rentang dihitung mundur dari tanggal akhir, termasuk tanggal tersebut. Periode mengikuti tanggal pemeriksaan atau tanggal pendaftaran untuk data yang belum memiliki pemeriksaan pada periode tersebut. Setelah mengubah filter, klik Tampilkan sebelum mengunduh.
           </p>
         </section>
 
@@ -103,7 +90,7 @@ export default async function ReportsPage({ searchParams }: Props) {
             </div>
             <div className="stitch-report-title">
               <h2>Data Rekap Laporan</h2>
-              <p>{total} catatan · {formatDate(filters.startDate)} – {formatDate(filters.endDate)}</p>
+              <p>{categoryLabel} · {total} catatan · {formatDate(filters.startDate)} – {formatDate(filters.endDate)}</p>
             </div>
             {total > 0 && (
               <div className="report-downloads">
@@ -135,7 +122,7 @@ export default async function ReportsPage({ searchParams }: Props) {
               ) : availability && availability.count > 0 && availability.startDate && availability.endDate ? (
                 <div>
                   <p>Tidak ada catatan pada periode {formatDate(filters.startDate)} sampai {formatDate(filters.endDate)}.</p>
-                  <p>Ada {availability.count} catatan pada kategori dan Posyandu yang dipilih, dengan tanggal pemeriksaan {formatDate(availability.startDate)} sampai {formatDate(availability.endDate)}.</p>
+                  <p>Ada {availability.count} catatan pada kategori dan Posyandu yang dipilih, dengan tanggal pencatatan {formatDate(availability.startDate)} sampai {formatDate(availability.endDate)}.</p>
                   <Link className="ghost-btn" href={`/laporan?${availableQuery}`}>Tampilkan periode seluruh riwayat</Link>
                 </div>
               ) : (
@@ -148,115 +135,40 @@ export default async function ReportsPage({ searchParams }: Props) {
             </div>
           ) : (
             <>
-              <div className="lansia-table-wrap report-desktop-results">
-                <table className="stitch-report-table">
-                  <thead>
-                    <tr>
-                      <th style={{ width: 48, textAlign: 'center' }}>NO</th>
-                      <th>PERIODE / TANGGAL</th>
-                      <th>KATEGORI &amp; MODUL</th>
-                      <th>POSYANDU &amp; SASARAN</th>
-                      <th>HASIL PEMERIKSAAN</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginatedRows.map((row, index) => {
-                      return (
-                        <tr key={`${row.category}:${row.id}`}>
-                          <td style={{ textAlign: 'center', color: '#64748b', fontWeight: 600 }}>
-                            {from + index + 1}
-                          </td>
-                          <td>
-                            <div className="report-date-cell">
-                              <strong>{formatDate(row.date)}</strong>
-                              <span>Periode {formatMonthYear(row.date)}</span>
-                            </div>
-                          </td>
-                          <td>
-                            <span className="report-category-text">{getCategoryLabel(row.category)}</span>
-                          </td>
-                          <td>
-                            <div className="report-posyandu-cell">
-                              <strong>{row.posyandu}</strong>
-                              <span>{row.name}</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div className="report-detail-cell">
-                              <strong>{row.result}</strong>
-                              {row.notes && row.notes !== '-' && <span>{row.notes}</span>}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              <ul className="report-mobile-list" role="list" aria-label="Catatan laporan">
-                {paginatedRows.map((row) => (
-                  <li className="report-mobile-record" key={`${row.category}:${row.id}`}>
-                    <div className="report-record-identity">
-                      <time dateTime={row.date}>{formatDate(row.date)}</time>
-                      <h3>{row.name}</h3>
-                    </div>
-                    <dl className="report-record-details">
-                      <div>
-                        <dt>Kategori</dt>
-                        <dd>{getCategoryLabel(row.category)}</dd>
-                      </div>
-                      <div>
-                        <dt>Posyandu</dt>
-                        <dd>{row.posyandu}</dd>
-                      </div>
-                      <div>
-                        <dt>Hasil</dt>
-                        <dd>{row.result}</dd>
-                      </div>
-                      {row.notes && row.notes !== '-' && (
-                        <div>
-                          <dt>Catatan</dt>
-                          <dd>{row.notes}</dd>
-                        </div>
-                      )}
-                    </dl>
-                  </li>
-                ))}
-              </ul>
+              {tables.map(table => (
+                <section className="report-category-table" key={table.title} aria-label={`Laporan ${table.title}`}>
+                  <h3>{table.title} · {table.total} catatan</h3>
+                  <div className="horizontal-data-scroll report-table-scroll" role="region" aria-label={`Tabel laporan ${table.title}, geser untuk melihat kolom lainnya`} tabIndex={0}>
+                    <table className="stitch-report-table report-full-table" aria-label={`Detail laporan ${table.title}`}>
+                      <thead>
+                        <tr>{table.columns.map(column => <th scope="col" key={column.label}>{column.label}</th>)}</tr>
+                      </thead>
+                      <tbody>
+                        {table.total === 0 && <tr><td colSpan={table.columns.length}>Tidak ada data untuk filter yang dipilih.</td></tr>}
+                        {table.rows.map((row, index) => (
+                          <tr key={`${row.category}:${row.id}`}>
+                            {table.columns.map(column => <td key={column.label}>{reportCellText(column.value(row, table.offset + index))}</td>)}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="schedule-footer">
+                    <p>Menampilkan <strong>{table.total ? table.offset + 1 : 0}–{table.offset + table.rows.length}</strong> dari <strong>{table.total}</strong> catatan {table.title}</p>
+                    {table.totalPages > 1 && <nav className="pagination" aria-label={`Halaman ${table.title}`}>
+                      {table.page > 1 ? <Link className="ghost-btn" href={buildPageHref(table.pageParam, table.page - 1)}>Sebelumnya</Link> : <span className="ghost-btn disabled">Sebelumnya</span>}
+                      {Array.from({ length: Math.min(table.totalPages, 5) }, (_, index) => Math.max(1, Math.min(table.page - 2, table.totalPages - 4)) + index).map(number => (
+                        <Link key={number} className={`page-number${number === table.page ? ' active' : ''}`} href={buildPageHref(table.pageParam, number)} aria-current={number === table.page ? 'page' : undefined}>{number}</Link>
+                      ))}
+                      {table.page < table.totalPages ? <Link className="ghost-btn" href={buildPageHref(table.pageParam, table.page + 1)}>Selanjutnya</Link> : <span className="ghost-btn disabled">Selanjutnya</span>}
+                    </nav>}
+                  </div>
+                </section>
+              ))}
             </>
           )}
 
-          <div className="schedule-footer">
-            <p>
-              Menampilkan <strong>{total ? from + 1 : 0}–{from + paginatedRows.length}</strong> dari <strong>{total}</strong> catatan
-            </p>
-            <nav className="pagination" aria-label="Halaman">
-              {page > 1 ? (
-                <Link className="ghost-btn" href={buildPageHref(page - 1)}>
-                  Sebelumnya
-                </Link>
-              ) : (
-                <span className="ghost-btn disabled">Sebelumnya</span>
-              )}
-              {pageNumbers.map((number) => (
-                <Link
-                  key={number}
-                  className={`page-number${number === page ? ' active' : ''}`}
-                  href={buildPageHref(number)}
-                  aria-current={number === page ? 'page' : undefined}
-                >
-                  {number}
-                </Link>
-              ))}
-              {page < totalPages ? (
-                <Link className="ghost-btn" href={buildPageHref(page + 1)}>
-                  Selanjutnya
-                </Link>
-              ) : (
-                <span className="ghost-btn disabled">Selanjutnya</span>
-              )}
-            </nav>
-          </div>
+
         </section>
       </main>
     </div>
