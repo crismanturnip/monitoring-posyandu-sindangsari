@@ -96,7 +96,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
   const posyandu = (posyanduData ?? []) as Posyandu[];
   const editing = editData as unknown as Mother | null;
   const deleting = deleteData as unknown as Mother | null;
-  const showForm = canManage && (params.tambah === '1' || Boolean(editing));
+  const showForm = params.tambah === '1' || Boolean(editing);
 
   const total = count ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
