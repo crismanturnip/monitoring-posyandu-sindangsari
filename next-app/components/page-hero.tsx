@@ -62,8 +62,6 @@ export function PageHero({ profile, pageTitle, pageDescription, compact = false 
       {/* Top bar inside hero */}
       <div className="stitch-hero-top">
         {compact ? pageHeading : <div className="stitch-hero-location">
-          <span className="stitch-location-dot" />
-          <span className="stitch-location-name">POSYANDU DESA SINDANG SARI</span>
           <span className="stitch-location-badge">{roleBadge}</span>
         </div>}
 
