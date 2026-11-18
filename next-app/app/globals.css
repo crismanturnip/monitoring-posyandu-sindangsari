@@ -731,22 +731,6 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   flex-wrap: wrap;
 }
 
-.stitch-location-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #2dd4bf;
-  box-shadow: 0 0 10px rgba(45, 212, 191, 0.85);
-}
-
-.stitch-location-name {
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
 .stitch-location-badge {
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.2);
