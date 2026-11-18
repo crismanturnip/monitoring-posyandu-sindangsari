@@ -3038,9 +3038,9 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 
 .balita-modal-fields {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  align-items: end;
-  gap: 17px 15px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 16px;
 }
 
 .balita-modal-field {
@@ -3056,21 +3056,25 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 }
 
 .balita-modal-field.full {
-  grid-column: span 12;
+  grid-column: 1 / -1;
 }
 
 .balita-modal-date,
 .balita-modal-gender,
 .balita-modal-birthplace,
 .balita-modal-delivery {
-  grid-column: span 6;
+  grid-column: auto;
 }
 
 .balita-measurement-row {
   display: grid;
-  grid-column: span 12;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 0.8fr) minmax(0, 0.8fr);
-  gap: 15px;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.balita-measurement-row .balita-modal-posyandu {
+  grid-column: 1 / -1;
 }
 
 .balita-modal-label {
