@@ -3112,7 +3112,8 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 }
 
 .balita-modal-field input:focus,
-.balita-modal-field select:focus {
+.balita-modal-field select:focus,
+.balita-modal-field textarea:focus {
   border-color: #078679;
   outline: 3px solid rgba(8, 135, 121, 0.12);
 }
