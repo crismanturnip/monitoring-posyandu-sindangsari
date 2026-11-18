@@ -35,24 +35,27 @@ export async function deletePosyandu(formData: FormData) {
   if (!id) redirect('/admin/posyandu?error=Data%20Posyandu%20tidak%20valid.');
 
   const { supabase } = await requireBidan();
-  
-  // Periksa apakah Posyandu masih memiliki keterkaitan data aktif
-  const [childrenCheck, mothersCheck, elderlyCheck, schedulesCheck, kaderCheck] = await Promise.all([
-    supabase.from('children').select('id', { count: 'exact', head: true }).eq('posyandu_id', id),
-    supabase.from('pregnant_mothers').select('id', { count: 'exact', head: true }).eq('posyandu_id', id),
-    supabase.from('elderly_people').select('id', { count: 'exact', head: true }).eq('posyandu_id', id),
-    supabase.from('schedules').select('id', { count: 'exact', head: true }).eq('posyandu_id', id),
-    supabase.from('kader_assignments').select('id', { count: 'exact', head: true }).eq('posyandu_id', id),
-  ]);
+  const sources = [
+    { table: 'children', label: 'data bayi/balita' },
+    { table: 'pregnant_mothers', label: 'data ibu hamil' },
+    { table: 'elderly_people', label: 'data lansia' },
+    { table: 'schedules', label: 'jadwal' },
+    { table: 'kader_assignments', label: 'riwayat penugasan kader' },
+  ] as const;
+  const checks = await Promise.all(sources.map(({ table }) =>
+    supabase.from(table).select('id', { count: 'exact', head: true }).eq('posyandu_id', id),
+  ));
+  if (checks.some(({ error }) => error)) {
+    redirect(`/admin/posyandu?error=${encodeURIComponent('Keterkaitan data Posyandu gagal diperiksa. Coba lagi sebelum menghapus.')}`);
+  }
 
-  const totalLinked = (childrenCheck.count ?? 0) + 
-                      (mothersCheck.count ?? 0) + 
-                      (elderlyCheck.count ?? 0) + 
-                      (schedulesCheck.count ?? 0) + 
-                      (kaderCheck.count ?? 0);
-
-  if (totalLinked > 0) {
-    redirect('/admin/posyandu?error=Posyandu%20tidak%20dapat%20dihapus%20karena%20masih%20memiliki%20data%20terkait%20(warga/jadwal/kader).%20Gunakan%20opsi%20Nonaktifkan.');
+  const linked = sources.flatMap(({ label }, index) => {
+    const count = checks[index].count ?? 0;
+    return count > 0 ? [`${count} ${label}`] : [];
+  });
+  if (linked.length > 0) {
+    const reason = `Posyandu tidak dapat dihapus karena masih terkait dengan ${linked.join(', ')}. Data yang diarsipkan dan penugasan yang sudah berakhir juga tetap tercatat. Gunakan Nonaktifkan jika Posyandu tidak lagi digunakan.`;
+    redirect(`/admin/posyandu?error=${encodeURIComponent(reason)}`);
   }
 
   const { error } = await supabase.from('posyandu').delete().eq('id', id);
