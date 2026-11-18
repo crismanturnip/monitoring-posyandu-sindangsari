@@ -12,7 +12,7 @@ export default async function PosyanduPage({ searchParams }: PageProps) {
   const posyandu = (data ?? []) as Posyandu[];
 
   return <div className="stitch-dashboard">
-    <PageHero compact profile={profile} pageTitle="Data Posyandu" pageDescription="Tambah, aktifkan, nonaktifkan, atau hapus Posyandu tanpa menghilangkan keterkaitan data." />
+    <PageHero compact profile={profile} pageTitle="Data Posyandu" pageDescription="Posyandu yang sudah memiliki data warga, jadwal, atau riwayat kader tidak dapat dihapus. Nonaktifkan jika tidak lagi digunakan." />
     <main className="stitch-content posyandu-content">
     {message.error && <div className="form-error" role="alert">{message.error}</div>}{message.success && <div className="form-success" role="status">{message.success}</div>}{error && <div className="form-error" role="alert">Daftar Posyandu gagal dimuat.</div>}
     <section className="admin-grid"><form action={createPosyandu} className="card stacked-form"><h2>Tambah Posyandu</h2><label>Nama Posyandu<input name="name" required minLength={2} placeholder="Contoh: Posyandu Melati" /></label><label>Alamat / lokasi utama<textarea name="address" rows={3} placeholder="Opsional" /></label><button type="submit">Simpan Posyandu</button></form>
