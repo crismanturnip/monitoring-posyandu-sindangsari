@@ -121,6 +121,21 @@ export function BalitaCreateModal({ posyandu, group = 'balita' }: { posyandu: Po
                   </div>
                 </fieldset>
 
+                <label className="balita-modal-field balita-modal-birthplace">
+                  <span className="balita-modal-label">Tempat Lahir <span>*</span></span>
+                  <input name="birthPlace" required placeholder="Contoh: Bandung" />
+                </label>
+                <label className="balita-modal-field balita-modal-delivery">
+                  <span className="balita-modal-label">Jenis Persalinan <span>*</span></span>
+                  <select name="deliveryType" required defaultValue="">
+                    <option value="" disabled>Pilih jenis persalinan</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Operasi Caesar">Operasi Caesar</option>
+                    <option value="Vakum">Vakum</option>
+                    <option value="Forsep">Forsep</option>
+                  </select>
+                </label>
+
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label">Nama Ibu Kandung <span>*</span></span>
                   <input name="motherName" required placeholder="Nama lengkap ibu" />
@@ -164,20 +179,6 @@ export function BalitaCreateModal({ posyandu, group = 'balita' }: { posyandu: Po
                     <option value="NONE">Belum diisi</option>
                     <option value="GIZI_BAIK">Gizi Baik</option>
                     <option value="PERLU_PANTAUAN">Perlu Pantauan</option>
-                  </select>
-                </label>
-                <label className="balita-modal-field balita-modal-birthplace">
-                  <span className="balita-modal-label">Tempat Lahir <span>*</span></span>
-                  <input name="birthPlace" required placeholder="Contoh: Bandung" />
-                </label>
-                <label className="balita-modal-field balita-modal-delivery">
-                  <span className="balita-modal-label">Jenis Persalinan <span>*</span></span>
-                  <select name="deliveryType" required defaultValue="">
-                    <option value="" disabled>Pilih jenis persalinan</option>
-                    <option value="Normal">Normal</option>
-                    <option value="Operasi Caesar">Operasi Caesar</option>
-                    <option value="Vakum">Vakum</option>
-                    <option value="Forsep">Forsep</option>
                   </select>
                 </label>
               </div>
