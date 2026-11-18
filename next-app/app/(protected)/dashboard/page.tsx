@@ -122,8 +122,6 @@ export default async function DashboardPage() {
         {/* Top bar inside hero */}
         <div className="stitch-hero-top">
           <div className="stitch-hero-location">
-            <span className="stitch-location-dot" />
-            <span className="stitch-location-name">POSYANDU DESA SINDANG SARI</span>
             <span className="stitch-location-badge">
               {profile.role === 'BIDAN' ? 'Bidan Desa Aktif' : 'Kader Posyandu Aktif'}
             </span>
