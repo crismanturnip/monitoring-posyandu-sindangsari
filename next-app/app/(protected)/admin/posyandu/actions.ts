@@ -58,7 +58,13 @@ export async function deletePosyandu(formData: FormData) {
     redirect(`/admin/posyandu?error=${encodeURIComponent(reason)}`);
   }
 
-  const { error } = await supabase.from('posyandu').delete().eq('id', id);
+  const { data, error } = await supabase.from('posyandu').delete().eq('id', id).select('id');
+  if (error?.code === '23503') {
+    redirect(`/admin/posyandu?error=${encodeURIComponent('Posyandu baru saja terhubung dengan data lain. Muat ulang halaman dan gunakan Nonaktifkan jika tidak lagi digunakan.')}`);
+  }
+  if (error?.code === '42501') {
+    redirect(`/admin/posyandu?error=${encodeURIComponent('Izin hapus Posyandu belum aktif di database. Terapkan migrasi terbaru terlebih dahulu.')}`);
+  }
   if (error) redirect(`/admin/posyandu?error=${encodeURIComponent('Posyandu gagal dihapus: ' + error.message)}`);
   
   revalidatePath('/admin/posyandu');
