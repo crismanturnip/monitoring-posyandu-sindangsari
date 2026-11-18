@@ -66,7 +66,8 @@ export async function deletePosyandu(formData: FormData) {
     redirect(`/admin/posyandu?error=${encodeURIComponent('Izin hapus Posyandu belum aktif di database. Terapkan migrasi terbaru terlebih dahulu.')}`);
   }
   if (error) redirect(`/admin/posyandu?error=${encodeURIComponent('Posyandu gagal dihapus: ' + error.message)}`);
-  
+  if (!data?.length) redirect(`/admin/posyandu?error=${encodeURIComponent('Posyandu tidak ditemukan. Muat ulang halaman.')}`);
+
   revalidatePath('/admin/posyandu');
   revalidatePath('/');
   redirect('/admin/posyandu?success=Data%20Posyandu%20berhasil%20dihapus.');
