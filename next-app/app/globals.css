@@ -3139,14 +3139,15 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 138px;
+  flex: 1 1 0;
+  min-width: 0;
   gap: 7px;
-  min-height: 40px;
+  min-height: 44px;
   border: 1px solid #dce5ef;
   border-radius: 12px;
   color: #677771;
   background: #f7f9fb;
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
 }
 
