@@ -3097,8 +3097,14 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   padding: 10px 13px;
   color: #243248;
   background: #f7f9fb;
-  font-size: 12px;
-  font-weight: 450;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.balita-modal-field textarea {
+  resize: vertical;
+  line-height: 1.5;
 }
 
 .balita-modal-field input::placeholder {
