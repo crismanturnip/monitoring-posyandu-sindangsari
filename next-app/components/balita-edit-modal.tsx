@@ -153,6 +153,21 @@ export function BalitaEditModal({
                   </div>
                 </fieldset>
 
+                <label className="balita-modal-field">
+                  <span className="balita-modal-label">Tempat Lahir <span>*</span></span>
+                  <input name="birthPlace" required defaultValue={child.birth_place ?? ''} />
+                </label>
+                <label className="balita-modal-field">
+                  <span className="balita-modal-label">Jenis Persalinan</span>
+                  <select name="deliveryType" defaultValue={child.delivery_type ?? ''}>
+                    <option value="">Belum dicatat</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Operasi Caesar">Operasi Caesar</option>
+                    <option value="Vakum">Vakum</option>
+                    <option value="Forsep">Forsep</option>
+                  </select>
+                </label>
+
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label">Nama Ibu Kandung <span>*</span></span>
                   <input name="motherName" required defaultValue={child.mother_name} />
@@ -172,7 +187,7 @@ export function BalitaEditModal({
                   <input name="weightKg" type="number" step="0.01" min="0.01" />
                 </label>
                 <label className="balita-modal-field">
-                  <span className="balita-modal-label">Tinggi Badan (cm)</span>
+                  <span className="balita-modal-label">{group === 'bayi' ? 'Panjang Badan (cm)' : 'Tinggi Badan (cm)'}</span>
                   <input name="heightCm" type="number" step="0.01" min="0.01" />
                 </label>
                 <label className="balita-modal-field full">
@@ -190,10 +205,6 @@ export function BalitaEditModal({
                   </select>
                 </label>
 
-                <label className="balita-modal-field full">
-                  <span className="balita-modal-label">Tempat Lahir <span>*</span></span>
-                  <input name="birthPlace" required defaultValue={child.birth_place ?? ''} />
-                </label>
 
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label balita-notes-label">
