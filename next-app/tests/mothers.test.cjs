@@ -72,11 +72,14 @@ test('mother registration starts with blank clinical results and an explicit exa
   assert.match(html, /name="visitedAt"[^>]*value="2026-11-17"/);
 });
 
-test('empty mother lists and kader access do not invent clinical results or expose management controls', async () => {
+test('kader can open the same mother registration form while edit and delete stay with bidan', async () => {
   const empty = await renderPage({}, { empty: true });
   assert(empty.html.includes('Belum ada data ibu hamil'));
   const kader = await renderPage({ tambah: '1' }, { role: 'KADER' });
   assert(kader.html.includes('BB: 53 kg'));
-  assert(!kader.html.includes('Tambah Data Ibu Hamil'));
-  assert(!kader.html.includes('name="visitedAt"'));
+  assert(kader.html.includes('Tambah Data Ibu Hamil'));
+  assert(kader.html.includes('name="visitedAt"'));
+  assert(kader.html.includes('name="posyanduId"'));
+  assert(!kader.html.includes('aria-label="Edit Ibu pengujian"'));
+  assert(!kader.html.includes('aria-label="Hapus Ibu pengujian"'));
 });
