@@ -121,13 +121,10 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
       <PageHero profile={profile} pageTitle="Ibu Hamil" />
 
       <main className="stitch-content ibu-hamil-content">
-        {/* Tombol Tambah Data Ibu Hamil */}
         <div className="ibu-hamil-top-actions">
-          {canManage && (
-            <Link className="ibu-hamil-add-btn" href={buildHref({ tambah: '1', page: pageParam })}>
-              <PlusIcon /> Tambah Data Ibu Hamil
-            </Link>
-          )}
+          <Link className="ibu-hamil-add-btn" href={buildHref({ tambah: '1', page: pageParam })}>
+            <PlusIcon /> Tambah Data Ibu Hamil
+          </Link>
         </div>
 
         {/* 2 Stat Cards sesuai screenshot */}
