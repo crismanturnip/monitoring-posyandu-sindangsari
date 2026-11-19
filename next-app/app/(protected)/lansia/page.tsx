@@ -61,7 +61,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
 
   let query = supabase
     .from('elderly_people')
-    .select('id, name, posyandu_id, posyandu(name), elderly_examinations(id, examined_at, officer_notes, created_at)', { count: 'exact' })
+    .select('id, name, posyandu_id, posyandu!elderly_people_posyandu_id_fkey(name), elderly_examinations(id, examined_at, officer_notes, created_at)', { count: 'exact' })
     .is('deleted_at', null)
     .order('examined_at', { referencedTable: 'elderly_examinations', ascending: false })
     .order('created_at', { referencedTable: 'elderly_examinations', ascending: false })
@@ -91,7 +91,7 @@ export default async function ElderlyPeoplePage({ searchParams }: Props) {
     query,
     supabase.from('posyandu').select('id, name').eq('is_active', true).order('name'),
     editId ? supabase.from('elderly_people').select('id, name, posyandu_id').eq('id', editId).maybeSingle() : Promise.resolve({ data: null }),
-    deleteId ? supabase.from('elderly_people').select('id, name, posyandu(name)').eq('id', deleteId).maybeSingle() : Promise.resolve({ data: null }),
+    deleteId ? supabase.from('elderly_people').select('id, name, posyandu!elderly_people_posyandu_id_fkey(name)').eq('id', deleteId).maybeSingle() : Promise.resolve({ data: null }),
     examinationCountQuery,
   ]);
 

@@ -51,7 +51,7 @@ export async function ChildRegisterPage({ searchParams, group }: Props) {
     const rows: Child[] = [];
     while (true) {
       const { data, count, error } = await supabase.from('children')
-        .select('id, name, nik, mother_name, mother_nik, father_name, father_nik, phone_number, gestational_age_weeks, birth_date, gender, birth_place, delivery_type, posyandu_id, kms_status, posyandu(name)', { count: 'exact' })
+        .select('id, name, nik, mother_name, mother_nik, father_name, father_nik, phone_number, gestational_age_weeks, birth_date, gender, birth_place, delivery_type, posyandu_id, kms_status, posyandu!children_posyandu_id_fkey(name)', { count: 'exact' })
         .is('deleted_at', null)
         .order('name').order('id')
         .range(rows.length, rows.length + 499);

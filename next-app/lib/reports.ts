@@ -84,11 +84,11 @@ function categoryFor(source: Source, birthDate: string | undefined, date: string
 
 async function loadSource(supabase: SupabaseClient, filters: ReportFilters, source: Source) {
   let historyQuery = supabase.from(source.table)
-    .select(`*, ${source.relation}!inner(*, posyandu(name))`, { count: 'exact' })
+    .select(`*, ${source.relation}!inner(*, posyandu!${source.relation}_posyandu_id_fkey(name))`, { count: 'exact' })
     .is(`${source.relation}.deleted_at`, null)
     .gte(source.dateColumn, filters.startDate).lte(source.dateColumn, filters.endDate)
     .order(source.dateColumn, { ascending: false }).order('id', { ascending: true });
-  let peopleQuery = supabase.from(source.relation).select('*, posyandu(name)', { count: 'exact' })
+  let peopleQuery = supabase.from(source.relation).select(`*, posyandu!${source.relation}_posyandu_id_fkey(name)`, { count: 'exact' })
     .is('deleted_at', null)
     .gte('created_at', `${filters.startDate}T00:00:00+07:00`)
     .lte('created_at', `${filters.endDate}T23:59:59.999999+07:00`)

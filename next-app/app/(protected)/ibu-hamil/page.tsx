@@ -66,7 +66,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
 
   let query = supabase
     .from('pregnant_mothers')
-    .select('id, name, nik, birth_date, husband_name, husband_nik, phone_number, gestational_age_weeks, posyandu_id, posyandu(name), created_at, pregnancy_visits(id, visited_at, officer_notes, created_at)', { count: 'exact' })
+    .select('id, name, nik, birth_date, husband_name, husband_nik, phone_number, gestational_age_weeks, posyandu_id, posyandu!pregnant_mothers_posyandu_id_fkey(name), created_at, pregnancy_visits(id, visited_at, officer_notes, created_at)', { count: 'exact' })
     .is('deleted_at', null)
     .order('visited_at', { referencedTable: 'pregnancy_visits', ascending: false })
     .order('created_at', { referencedTable: 'pregnancy_visits', ascending: false })
@@ -89,7 +89,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
     query,
     supabase.from('posyandu').select('id, name').eq('is_active', true).order('name'),
     editId ? supabase.from('pregnant_mothers').select('id, name, nik, birth_date, husband_name, husband_nik, phone_number, gestational_age_weeks, posyandu_id').eq('id', editId).maybeSingle() : Promise.resolve({ data: null }),
-    deleteId ? supabase.from('pregnant_mothers').select('id, name, posyandu(name)').eq('id', deleteId).maybeSingle() : Promise.resolve({ data: null }),
+    deleteId ? supabase.from('pregnant_mothers').select('id, name, posyandu!pregnant_mothers_posyandu_id_fkey(name)').eq('id', deleteId).maybeSingle() : Promise.resolve({ data: null }),
   ]);
 
   const rawMothers = (mothersData ?? []) as unknown as Mother[];
