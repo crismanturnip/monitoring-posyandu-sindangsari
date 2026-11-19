@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test:reports": "node tests/reports.test.cjs && node tests/report-mutations.test.cjs && node tests/report-tables.test.cjs && node tests/mothers.test.cjs",
     "test:lansia": "node tests/lansia.test.cjs",
     "test:registers": "node tests/register-pages.test.cjs",
@@ -33,6 +33,8 @@
     "@types/node": "^22.15.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.6",
     "prisma": "^6.19.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0"

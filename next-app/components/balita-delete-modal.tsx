@@ -27,6 +27,7 @@ export function BalitaDeleteModal({ child, ageMonths, group = 'balita' }: { chil
   useEffect(() => {
     if (!isOpen) return;
 
+    const trigger = triggerRef.current;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     dialogRef.current?.focus();
@@ -38,7 +39,7 @@ export function BalitaDeleteModal({ child, ageMonths, group = 'balita' }: { chil
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', handleKeyDown);
-      triggerRef.current?.focus();
+      trigger?.focus();
     };
   }, [isOpen]);
 

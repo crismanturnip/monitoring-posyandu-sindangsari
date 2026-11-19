@@ -4,14 +4,15 @@ import { PasswordInput } from '@/components/password-input';
 import { AuthField, AuthShell, AuthSubmit } from '@/components/auth-shell';
 import styles from '@/components/auth-shell.module.css';
 
-type LoginPageProps = { searchParams: Promise<{ error?: string; registered?: string; password_updated?: string }> };
+type LoginPageProps = { searchParams: Promise<{ error?: string; registered?: string; verified?: string; password_updated?: string }> };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   return <AuthShell showBackLink={false} theme="teal"><form action={signIn}>
     <h1>Masuk ke sistem</h1><p>Gunakan akun bidan atau kader yang sudah aktif</p>
     {params.error && <div className="form-error" role="alert">{params.error}</div>}
-    {params.registered && <div className="form-success">Registrasi diterima, tunggu persetujuan bidan sebelum masuk</div>}
+    {params.registered && <div className="form-success">Registrasi diterima. Periksa email untuk verifikasi, lalu tunggu persetujuan bidan.</div>}
+    {params.verified && <div className="form-success">Email terverifikasi. Akun dapat digunakan setelah disetujui bidan.</div>}
     {params.password_updated && <div className="form-success">Kata sandi berhasil diperbarui, silakan masuk kembali</div>}
     <AuthField label="Email" icon="mail"><input name="email" type="email" autoComplete="email" required /></AuthField>
     <AuthField label="Kata sandi" icon="lock"><PasswordInput name="password" autoComplete="current-password" required /></AuthField>

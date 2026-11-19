@@ -3,12 +3,25 @@ import { requireActiveProfile } from '@/lib/auth';
 import { changePassword } from '@/app/(auth)/actions';
 import { LogoutButton } from '@/components/logout-button';
 import { PasswordInput } from '@/components/password-input';
+import { requestPosyanduTransfer, updateAccountProfile } from './actions';
 
 type Props = { searchParams: Promise<{ error?: string; success?: string }> };
 
 export default async function AccountPage({ searchParams }: Props) {
-  const { profile } = await requireActiveProfile();
+  const { profile, supabase } = await requireActiveProfile();
   const message = await searchParams;
+  const [authResult, profileResult, assignmentResult, transferResult, posyanduResult] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase.from('profiles').select('email, phone_number, requested_posyandu_id, created_at').eq('id', profile.id).single(),
+    profile.role === 'KADER' ? supabase.from('kader_assignments').select('posyandu_id, posyandu(name)').eq('kader_id', profile.id).is('ended_at', null).maybeSingle() : Promise.resolve({ data: null, error: null }),
+    profile.role === 'KADER' ? supabase.from('kader_transfer_requests').select('id, requested_posyandu_id, requested_at').eq('kader_id', profile.id).eq('status', 'PENDING').maybeSingle() : Promise.resolve({ data: null, error: null }),
+    profile.role === 'KADER' ? supabase.rpc('registration_posyandu') : Promise.resolve({ data: [], error: null }),
+  ]);
+  const account = profileResult.data;
+  const assigned = assignmentResult.data as { posyandu_id: string; posyandu: { name: string } | null } | null;
+  const pendingTransfer = transferResult.data as { requested_posyandu_id: string; requested_at: string } | null;
+  const availablePosyandu = (posyanduResult.data ?? []) as { id: string; name: string }[];
+  const posyanduName = (id: string | null | undefined) => availablePosyandu.find(item => item.id === id)?.name ?? 'Posyandu tidak tersedia';
 
   const todayFormatted = new Intl.DateTimeFormat('id-ID', {
     weekday: 'long',
@@ -127,6 +140,42 @@ export default async function AccountPage({ searchParams }: Props) {
           </div>
         )}
 
+        <section className="card account-profile-card" aria-labelledby="account-profile-title">
+          <div className="account-profile-heading">
+            <div>
+              <h2 id="account-profile-title">Profil Saya</h2>
+              <p>Informasi akun yang digunakan untuk layanan Posyandu.</p>
+            </div>
+            <span>{roleTitle}</span>
+          </div>
+          {profileResult.error && <p className="form-error" role="alert">Profil belum dapat dimuat. Coba muat ulang halaman.</p>}
+          <dl className="account-profile-facts">
+            <div><dt>Email</dt><dd>{authResult.data.user?.email ?? account?.email ?? '—'}</dd></div>
+            <div><dt>Status akun</dt><dd>Aktif</dd></div>
+            <div><dt>Peran</dt><dd>{sessionRole}</dd></div>
+            {profile.role === 'KADER' && <div><dt>Posyandu tugas</dt><dd>{assigned?.posyandu?.name ?? 'Belum ditugaskan'}</dd></div>}
+            {profile.role === 'KADER' && account?.requested_posyandu_id && <div><dt>Posyandu yang diminta saat daftar</dt><dd>{posyanduName(account.requested_posyandu_id)}</dd></div>}
+          </dl>
+          <form action={updateAccountProfile} className="account-profile-form">
+            <label>Nama lengkap<input name="fullName" defaultValue={profile.full_name} minLength={2} maxLength={100} required /></label>
+            <label>Nomor telepon<input name="phoneNumber" type="tel" defaultValue={account?.phone_number ?? ''} placeholder="08xxxxxxxxxx" /></label>
+            <button type="submit">Simpan profil</button>
+          </form>
+          {profile.role === 'KADER' && <div className="account-transfer-section">
+            <h3>Permintaan pindah Posyandu</h3>
+            {pendingTransfer ? <p>Menunggu keputusan bidan untuk {posyanduName(pendingTransfer.requested_posyandu_id)}.</p> : <form action={requestPosyanduTransfer} className="account-transfer-form">
+              <label>Posyandu tujuan
+                <select name="posyanduId" required defaultValue="">
+                  <option value="" disabled>Pilih Posyandu aktif</option>
+                  {availablePosyandu.filter(item => item.id !== assigned?.posyandu_id).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+                </select>
+              </label>
+              <button type="submit" disabled={availablePosyandu.every(item => item.id === assigned?.posyandu_id)}>Ajukan pindah</button>
+            </form>}
+            <p>Penugasan saat ini tetap berlaku sampai bidan menyetujui permintaan.</p>
+          </div>}
+        </section>
+
         {/* Security Password Card */}
         <section className="account-security-card">
           <div className="security-card-header">
@@ -157,6 +206,7 @@ export default async function AccountPage({ searchParams }: Props) {
                 id="currentPassword"
                 name="currentPassword"
                 autoComplete="current-password"
+                required
                 placeholder="••••••••••••"
               />
             </div>

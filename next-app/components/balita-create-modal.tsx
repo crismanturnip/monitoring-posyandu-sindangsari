@@ -34,6 +34,7 @@ export function BalitaCreateModal({ posyandu, group = 'balita' }: { posyandu: Po
   useEffect(() => {
     if (!isOpen) return;
 
+    const trigger = triggerRef.current;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     dialogRef.current?.focus();
@@ -45,7 +46,7 @@ export function BalitaCreateModal({ posyandu, group = 'balita' }: { posyandu: Po
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', handleKeyDown);
-      triggerRef.current?.focus();
+      trigger?.focus();
     };
   }, [isOpen]);
 

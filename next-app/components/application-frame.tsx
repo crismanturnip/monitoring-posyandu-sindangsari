@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { LogoutButton } from '@/components/logout-button';
 
 type FrameProfile = { full_name: string; role: 'BIDAN' | 'KADER' } | null;
@@ -45,8 +45,8 @@ function NavIcon({ type }: { type: keyof typeof navIconPaths }) {
 
 export function ApplicationFrame({ profile, children }: { profile: FrameProfile; children: ReactNode }) {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
-  useEffect(() => setMenuOpen(false), [pathname]);
+  const [openMenuPath, setOpenMenuPath] = useState<string | null>(null);
+  const menuOpen = openMenuPath === pathname;
   const isPublic = publicPaths.has(pathname) || pathname.startsWith('/auth/');
   if (!profile || isPublic) return children;
 
@@ -58,13 +58,13 @@ export function ApplicationFrame({ profile, children }: { profile: FrameProfile;
         aria-label={menuOpen ? 'Tutup menu' : 'Buka menu'}
         aria-expanded={menuOpen}
         aria-controls="application-sidebar"
-        onClick={() => setMenuOpen((current) => !current)}
+        onClick={() => setOpenMenuPath(menuOpen ? null : pathname)}
       >
         <span />
         <span />
         <span />
       </button>
-      {menuOpen && <button className="menu-backdrop" type="button" aria-label="Tutup menu" onClick={() => setMenuOpen(false)} />}
+      {menuOpen && <button className="menu-backdrop" type="button" aria-label="Tutup menu" onClick={() => setOpenMenuPath(null)} />}
       <aside id="application-sidebar" className={`sidebar${menuOpen ? ' open' : ''}`}>
         <div className="brand">
           <Image src="/logo-posyandu-sindangsari.png" alt="" width={44} height={44} sizes="44px" className="sidebar-logo" />
@@ -93,7 +93,7 @@ export function ApplicationFrame({ profile, children }: { profile: FrameProfile;
               </Link>
               <Link className={`nav-item${isActive(pathname, '/admin/kader') ? ' active' : ''}`} href="/admin/kader">
                 <NavIcon type="approval" />
-                <span>Persetujuan Kader</span>
+                <span>Pengaturan</span>
               </Link>
             </>
           )}
