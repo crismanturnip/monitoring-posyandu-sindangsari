@@ -94,8 +94,8 @@ async function loadSource(supabase: SupabaseClient, filters: ReportFilters, sour
     .lte('created_at', `${filters.endDate}T23:59:59.999999+07:00`)
     .order('created_at', { ascending: false }).order('id', { ascending: true });
   if (filters.posyanduId) {
-    historyQuery = historyQuery.eq(`${source.relation}.posyandu_id`, filters.posyanduId);
-    peopleQuery = peopleQuery.eq('posyandu_id', filters.posyanduId);
+    historyQuery = historyQuery.eq('recorded_posyandu_id', filters.posyanduId);
+    peopleQuery = peopleQuery.eq('registered_posyandu_id', filters.posyanduId);
   }
   const [history, people] = await Promise.all([loadReportRecords(historyQuery), loadReportRecords(peopleQuery)]);
   const error = history.error ?? people.error;
@@ -112,7 +112,8 @@ async function loadSource(supabase: SupabaseClient, filters: ReportFilters, sour
     const date = String(item[source.dateColumn]);
     const weightKg = numberField(item.weight_kg), heightCm = numberField(item.height_cm);
     rows.push({
-      ...metadata, personId, id: String(item.id), date, category: categoryFor(source, metadata.birthDate, date),
+      ...metadata, posyandu: textField(item.recorded_posyandu_name) ?? metadata.posyandu,
+      personId, id: String(item.id), date, category: categoryFor(source, metadata.birthDate, date),
       result: source === reportSources.children ? `BB ${weightKg ?? '—'} kg; TB/PB ${heightCm ?? '—'} cm` : source === reportSources.mothers ? 'Kunjungan' : 'Pemeriksaan',
       notes: textField(item.officer_notes) ?? '—', weightKg, heightCm,
       headCircumferenceCm: numberField(item.head_circumference_cm), lilaCm: numberField(item.lila_cm),
@@ -123,7 +124,8 @@ async function loadSource(supabase: SupabaseClient, filters: ReportFilters, sour
     if (represented.has(person.id) || !person.created_at) continue;
     const date = jakartaDate(new Date(person.created_at));
     const metadata = personFields(person);
-    rows.push({ ...metadata, id: `registration:${person.id}`, date, category: categoryFor(source, metadata.birthDate, date), result: '—', notes: '—' });
+    rows.push({ ...metadata, posyandu: textField(person.registered_posyandu_name) ?? metadata.posyandu,
+      id: `registration:${person.id}`, date, category: categoryFor(source, metadata.birthDate, date), result: '—', notes: '—' });
   }
   return { rows, error: null };
 }

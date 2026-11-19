@@ -42,6 +42,19 @@ function fixture({ failingTable, existing = {}, apiLimit = 1000, readErrorOffset
     elderly_people: [{ id: 'elderly-1', name: 'Lansia tersimpan', posyandu_id: 'pos-a' }],
     child_measurements: [], pregnancy_visits: [], elderly_examinations: [], ...existing,
   };
+  for (const table of ['children', 'pregnant_mothers', 'elderly_people']) {
+    for (const person of tables[table]) {
+      person.registered_posyandu_id ??= person.posyandu_id;
+      person.registered_posyandu_name ??= 'Posyandu pengujian';
+    }
+  }
+  for (const [table, [personKey, personTable]] of Object.entries(sources)) {
+    for (const row of tables[table]) {
+      const person = tables[personTable].find(item => item.id === row[personKey]);
+      row.recorded_posyandu_id ??= person?.posyandu_id;
+      row.recorded_posyandu_name ??= 'Posyandu pengujian';
+    }
+  }
   const requests = [], invalidated = [];
   const supabase = createClient('https://example.supabase.co', 'test-public-key', {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
@@ -76,6 +89,14 @@ function fixture({ failingTable, existing = {}, apiLimit = 1000, readErrorOffset
       let data;
       if (method === 'POST') {
         const row = { id: `${table}-${tables[table].length + 1}`, ...(!sources[table] ? { created_at: '2026-11-17T01:00:00Z' } : {}), ...payload };
+        if (!sources[table] && row.posyandu_id) {
+          row.registered_posyandu_id = row.posyandu_id;
+          row.registered_posyandu_name = 'Posyandu pengujian';
+        }
+        if (sources[table]) {
+          row.recorded_posyandu_id = tables[sources[table][1]].find(person => person.id === row[sources[table][0]])?.posyandu_id;
+          row.recorded_posyandu_name = 'Posyandu pengujian';
+        }
         tables[table].push(row);
         data = [row];
       } else if (method === 'PATCH') {
@@ -295,6 +316,10 @@ test('automatic examination dates use WIB at the UTC day boundary', async () => 
     await assert.rejects(app.actions('balita').updateChildFromModal(form({
       ...childForm, id: 'child-1', weightKg: '11', heightCm: '82',
     })), (error) => Boolean(error.destination));
+    assert.equal(app.tables.child_measurements.length, 0, 'Identity edits must not add a measurement');
+    await assert.rejects(app.actions('balita').addMeasurement(form({
+      childId: 'child-1', measuredAt: '2026-11-17', weightKg: '11', heightCm: '82',
+    })), (error) => Boolean(error.destination));
     await assert.rejects(app.actions('lansia').createElderlyPerson(form({
       name: 'Lansia baru', posyanduId: 'pos-a', bloodPressure: '120/80',
     })), (error) => Boolean(error.destination));
@@ -342,18 +367,60 @@ test('mother registration can retry a rejected initial examination without regis
   assert.equal(app.tables.pregnancy_visits.length, 0);
 });
 
-test('mother updates preserve the selected Posyandu and append clinical results to history', async () => {
+test('mother identity updates preserve history and never append a visit', async () => {
   const app = fixture();
   await app.actions('ibu-hamil').updatePregnantMother(form({
     id: 'mother-1', name: 'Nama baru', posyanduId: 'pos-b', visitedAt: '2026-11-17',
     weight: '58', height: '158', bloodPressure: '110/70', lila: '25,5',
   }));
   assert.equal((await loadReportRows(app.supabase, filters())).rows.length, 0);
-  const report = await loadReportRows(app.supabase, filters({ posyandu: 'pos-b' }));
+  assert.equal(app.tables.pregnancy_visits.length, 0);
+  assert.equal(app.tables.pregnant_mothers[0].posyandu_id, 'pos-b');
+});
+
+test('moving a person does not rewrite their original registration report location', async () => {
+  const app = fixture();
+  await assert.rejects(app.actions('balita').createChild(form(childForm)), error => Boolean(error.destination));
+  const child = app.tables.children.at(-1);
+  await assert.rejects(app.actions('balita').updateChildFromModal(form({
+    ...childForm, id: child.id, posyanduId: 'pos-b',
+  })), error => Boolean(error.destination));
+  const original = await loadReportRows(app.supabase, filters({ category: 'balita' }));
+  assert.equal(original.rows.length, 1);
+  assert.equal(original.rows[0].posyandu, 'Posyandu pengujian');
+  const destination = await loadReportRows(app.supabase, filters({ category: 'balita', posyandu: 'pos-b' }));
+  assert.equal(destination.rows.length, 0);
+});
+
+test('correcting a selected measurement updates the same report row and keeps its Posyandu snapshot', async () => {
+  const app = fixture({ existing: { child_measurements: [{
+    id: 'measurement-1', child_id: 'child-1', measured_at: '2026-11-17', weight_kg: 10, height_cm: 80, officer_notes: 'Lama',
+  }] } });
+  await app.actions('balita').updateMeasurement(form({
+    measurementId: 'measurement-1', childId: 'child-1', measuredAt: '2026-11-18', weightKg: '11', heightCm: '82', notes: 'Koreksi',
+  }));
+  assert.equal(app.tables.child_measurements.length, 1);
+  const report = await loadReportRows(app.supabase, filters());
   assert.equal(report.rows.length, 1);
-  assert.equal(report.rows[0].name, 'Nama baru');
+  assert.equal(report.rows[0].date, '2026-11-18');
+  assert.equal(report.rows[0].weightKg, 11);
+  assert.equal(report.rows[0].notes, 'Koreksi');
+  assert.equal(report.rows[0].posyandu, 'Posyandu pengujian');
+});
+
+test('correcting a selected pregnancy visit keeps one report row', async () => {
+  const app = fixture({ existing: { pregnancy_visits: [{
+    id: 'visit-1', pregnant_mother_id: 'mother-1', visited_at: '2026-11-17', officer_notes: 'BB: 50 kg\nTD: 120/80 mmHg',
+  }] } });
+  await app.actions('ibu-hamil').updatePregnancyVisit(form({
+    visitId: 'visit-1', pregnantMotherId: 'mother-1', visitedAt: '2026-11-18', weight: '51', bloodPressure: '110/70', notes: 'Koreksi',
+  }));
+  assert.equal(app.tables.pregnancy_visits.length, 1);
+  const report = await loadReportRows(app.supabase, filters({ category: 'ibu-hamil' }));
+  assert.equal(report.rows.length, 1);
+  assert.equal(report.rows[0].date, '2026-11-18');
+  assert.match(report.rows[0].notes, /BB: 51 kg/);
   assert.match(report.rows[0].notes, /TD: 110\/70 mmHg/);
-  assert.match(report.rows[0].notes, /LiLA: 25.5 cm/);
 });
 
 test('lansia registration and editing preserve every submitted examination result', async () => {

@@ -363,7 +363,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
             {/* Form Modal Sesuai Layout Referensi */}
             <form action={editing ? updatePregnantMother : createPregnantMother} className="anc-modal-form">
               <input type="hidden" name="returnTo" value={closeHref || '/ibu-hamil'} />
-              <input type="hidden" name="visitedAt" value={jakartaDate()} />
+              {!editing && <input type="hidden" name="visitedAt" value={jakartaDate()} />}
               {editing && <input type="hidden" name="id" value={editing.id} />}
 
               {/* Bagian 1: Identitas Ibu & Informasi Domisili */}
@@ -520,6 +520,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                     <input name="gestationalWeeks" type="number" step="0.1" min="0.1" defaultValue={editing?.gestational_age_weeks ?? ''} className="anc-input no-icon" />
                   </div>
 
+                  {!editing && <>
                   <div className="anc-field">
                     <label className="anc-label">
                       <span>Berat dan tinggi badan saat pemeriksaan</span>
@@ -567,6 +568,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                       <p className="muted-copy">Hasil penilaian gizi dicatat oleh petugas berdasarkan pemeriksaan.</p>
                     </div>
                   </div>
+                  </>}
                 </div>
               </div>
 

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { addMeasurement, softDeleteChild, updateChild } from '../actions';
+import { addMeasurement, softDeleteChild, updateChild, updateMeasurement } from '../actions';
 import { requireActiveProfile } from '@/lib/auth';
 import { LogoutButton } from '@/components/logout-button';
 import { jakartaDate } from '@/lib/health-record-dates';
@@ -14,6 +14,8 @@ type Measurement = {
   created_at: string;
   weight_kg: number;
   height_cm: number;
+  head_circumference_cm: number | null;
+  lila_cm: number | null;
   officer_notes: string | null;
 };
 
@@ -32,7 +34,7 @@ export default async function ChildDetailPage({ params, searchParams }: Props) {
       .single(),
     supabase
       .from('child_measurements')
-      .select('id, measured_at, created_at, weight_kg, height_cm, officer_notes')
+      .select('id, measured_at, created_at, weight_kg, height_cm, head_circumference_cm, lila_cm, officer_notes')
       .eq('child_id', id)
       .order('measured_at', { ascending: false })
       .order('created_at', { ascending: false }),
@@ -148,12 +150,26 @@ export default async function ChildDetailPage({ params, searchParams }: Props) {
             ) : (
               <div className="data-list">
                 {measurements.map((item) => (
-                  <div className="data-row" key={item.id}>
+                  <div className="data-row measurement-history-row" key={item.id}>
                     <div>
                       <strong>{formatDate(item.measured_at)}</strong>
                       <span>{item.officer_notes || 'Tanpa catatan'}</span>
                     </div>
                     <strong>{item.weight_kg} kg · {item.height_cm} cm</strong>
+                    <details className="history-edit">
+                      <summary>Perbaiki hasil ini</summary>
+                      <form action={updateMeasurement} className="stacked-form">
+                        <input type="hidden" name="measurementId" value={item.id} />
+                        <input type="hidden" name="childId" value={id} />
+                        <label>Tanggal pengukuran<input name="measuredAt" type="date" defaultValue={item.measured_at} required /></label>
+                        <label>Berat badan (kg)<input name="weightKg" type="number" min="0.01" step="0.01" defaultValue={item.weight_kg} required /></label>
+                        <label>Tinggi / panjang badan (cm)<input name="heightCm" type="number" min="0.01" step="0.01" defaultValue={item.height_cm} required /></label>
+                        <label>Lingkar kepala (cm)<input name="headCircumferenceCm" type="number" min="0.01" step="0.01" defaultValue={item.head_circumference_cm ?? ''} /></label>
+                        <label>LiLA (cm)<input name="lilaCm" type="number" min="0.01" step="0.01" defaultValue={item.lila_cm ?? ''} /></label>
+                        <label>Catatan petugas<textarea name="notes" rows={3} defaultValue={item.officer_notes ?? ''} /></label>
+                        <button type="submit">Simpan koreksi</button>
+                      </form>
+                    </details>
                   </div>
                 ))}
               </div>

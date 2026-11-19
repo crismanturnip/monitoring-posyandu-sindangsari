@@ -37,3 +37,14 @@ export function examinationNotes(formData: FormData, category: 'ibu-hamil' | 'la
   if (notes) parts.push(notes);
   return parts.join('\n') || null;
 }
+
+export function parseMotherExaminationNotes(value: string | null) {
+  const parsed = { weight: '', height: '', bloodPressure: '', lila: '', notes: [] as string[] };
+  for (const line of (value ?? '').split('\n')) {
+    const match = /^(BB|TB|TD|LiLA): (.+?)(?: (kg|cm|mmHg))?$/.exec(line);
+    if (!match) { if (line) parsed.notes.push(line); continue; }
+    const key = ({ BB: 'weight', TB: 'height', TD: 'bloodPressure', LiLA: 'lila' } as const)[match[1] as 'BB' | 'TB' | 'TD' | 'LiLA'];
+    parsed[key] = match[2];
+  }
+  return { ...parsed, notes: parsed.notes.join('\n') };
+}

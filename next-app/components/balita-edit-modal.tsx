@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { updateChildFromModal } from '@/app/(protected)/balita/actions';
-import { ChildReportIdentityFields, ChildReportMeasurementFields } from '@/components/child-report-fields';
+import { ChildReportIdentityFields } from '@/components/child-report-fields';
 
 type Child = {
   id: string;
@@ -22,28 +22,26 @@ type Child = {
   kms_status: string | null;
 };
 type Posyandu = { id: string; name: string };
-type Measurement = { measured_at: string; weight_kg: number; height_cm: number; officer_notes: string | null };
 
 export function BalitaEditModal({
   child,
   posyandu,
-  measurement,
   group = 'balita',
 }: {
   child: Child;
   posyandu: Posyandu[];
-  measurement: Measurement | null;
+  measurement?: unknown;
   group?: 'bayi' | 'balita';
 }) {
   const label = group === 'bayi' ? 'Bayi' : 'Balita';
   const [isOpen, setIsOpen] = useState(false);
-  const [formError, setFormError] = useState('');
   const dialogRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
 
+    const trigger = triggerRef.current;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     dialogRef.current?.focus();
@@ -55,27 +53,9 @@ export function BalitaEditModal({
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', handleKeyDown);
-      triggerRef.current?.focus();
+      trigger?.focus();
     };
   }, [isOpen]);
-
-  const validateMeasurements = (event: FormEvent<HTMLFormElement>) => {
-    const formData = new FormData(event.currentTarget);
-    const weight = String(formData.get('weightKg') ?? '').trim();
-    const height = String(formData.get('heightCm') ?? '').trim();
-    const extra = ['headCircumferenceCm', 'lilaCm', 'notes'].some(key => String(formData.get(key) ?? '').trim());
-    if (extra && !weight && !height) {
-      event.preventDefault();
-      setFormError('Isi berat dan tinggi badan untuk menyimpan hasil pemeriksaan.');
-      return;
-    }
-    if (Boolean(weight) !== Boolean(height)) {
-      event.preventDefault();
-      setFormError('Isi berat dan tinggi badan bersama-sama, atau kosongkan keduanya jika tidak mencatat pengukuran.');
-      return;
-    }
-    setFormError('');
-  };
 
   return (
     <>
@@ -119,11 +99,10 @@ export function BalitaEditModal({
               </button>
             </header>
 
-            <form action={updateChildFromModal} className="balita-modal-form" onSubmit={validateMeasurements}>
+            <form action={updateChildFromModal} className="balita-modal-form">
               <input type="hidden" name="id" value={child.id} />
               <input type="hidden" name="returnPath" value={`/${group}`} />
               <div className="balita-edit-fields">
-                {measurement && <p className="muted-copy">Pengukuran terakhir: {measurement.weight_kg} kg, {measurement.height_cm} cm ({measurement.measured_at}). Isi hasil di bawah hanya untuk mencatat pengukuran baru.</p>}
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label">Nama Lengkap {label} <span>*</span></span>
                   <input name="name" required defaultValue={child.name} />
@@ -182,20 +161,6 @@ export function BalitaEditModal({
                   </select>
                 </label>
 
-                <label className="balita-modal-field">
-                  <span className="balita-modal-label">Berat Badan (kg)</span>
-                  <input name="weightKg" type="number" step="0.01" min="0.01" />
-                </label>
-                <label className="balita-modal-field">
-                  <span className="balita-modal-label">{group === 'bayi' ? 'Panjang Badan (cm)' : 'Tinggi Badan (cm)'}</span>
-                  <input name="heightCm" type="number" step="0.01" min="0.01" />
-                </label>
-                <label className="balita-modal-field full">
-                  <span className="balita-modal-label">Tanggal pengukuran baru</span>
-                  <input name="measuredAt" type="date" defaultValue={new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' })} />
-                </label>
-                <ChildReportMeasurementFields group={group} />
-
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label">Status Gizi KMS</span>
                   <select name="kmsStatus" defaultValue={child.kms_status ?? 'NONE'}>
@@ -206,15 +171,8 @@ export function BalitaEditModal({
                 </label>
 
 
-                <label className="balita-modal-field full">
-                  <span className="balita-modal-label balita-notes-label">
-                    Catatan Petugas <span>(Opsional)</span>
-                  </span>
-                  <textarea name="notes" rows={3} />
-                </label>
               </div>
 
-              {formError && <p className="balita-modal-form-error" role="alert">{formError}</p>}
 
               <footer className="balita-modal-footer">
                 <button type="button" className="balita-modal-cancel" onClick={() => setIsOpen(false)}>

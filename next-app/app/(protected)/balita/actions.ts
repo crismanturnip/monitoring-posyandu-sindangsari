@@ -115,29 +115,16 @@ export async function updateChildFromModal(formData: FormData) {
   const deliveryType = String(formData.get('deliveryType') ?? '').trim();
   const gender = String(formData.get('gender') ?? '');
   const kmsStatus = String(formData.get('kmsStatus') ?? '').trim();
-  const weightValue = String(formData.get('weightKg') ?? '').trim();
-  const heightValue = String(formData.get('heightCm') ?? '').trim();
-  const weight = optionalNumber(formData.get('weightKg'));
-  const height = optionalNumber(formData.get('heightCm'));
 
   if (!id || !name || !isValidNik(nik) || !motherName || !posyanduId || !birthDate ||
       !['LAKI_LAKI', 'PEREMPUAN'].includes(gender)) {
     throw new Error('Nama balita, NIK 16 digit, nama ibu, Posyandu, tanggal lahir, dan jenis kelamin wajib diisi.');
   }
-  if (Boolean(weightValue) !== Boolean(heightValue)) {
-    throw new Error('Isi berat dan tinggi badan bersama-sama, atau kosongkan keduanya jika tidak mencatat pengukuran.');
-  }
-  if (['headCircumferenceCm', 'lilaCm', 'notes'].some(key => optionalText(formData, key)) && !weightValue) {
-    throw new Error('Isi berat dan tinggi badan untuk menyimpan hasil pemeriksaan.');
-  }
-  if ((weightValue && !weight) || (heightValue && !height)) {
-    throw new Error('Berat dan tinggi badan harus berupa angka lebih besar dari 0.');
-  }
   if (kmsStatus && kmsStatus !== 'NONE' && !['GIZI_BAIK', 'PERLU_PANTAUAN'].includes(kmsStatus)) {
     throw new Error('Pilih status gizi KMS yang tersedia.');
   }
 
-  const { profile, supabase } = await requireActiveProfile();
+  const { supabase } = await requireActiveProfile();
   const childUpdates: {
     name: string;
     nik: string;
@@ -179,28 +166,33 @@ export async function updateChildFromModal(formData: FormData) {
     throw new Error('Data balita tidak berubah. Pastikan Anda memiliki akses ke Posyandu balita tersebut.');
   }
 
-  if (weight && height) {
-    const measuredAt = String(formData.get('measuredAt') ?? '') || jakartaDate();
-    if (!isValidRecordDate(measuredAt)) throw new Error('Tanggal pengukuran tidak valid.');
-    const { error: measurementError } = await supabase.from('child_measurements').insert({
-      child_id: id,
-      measured_at: measuredAt,
-      weight_kg: weight,
-      height_cm: height,
-      ...measurementReportFields(formData),
-      officer_notes: String(formData.get('notes') ?? '').trim() || null,
-      recorded_by: profile.id,
-    });
-
-    if (measurementError) throw new Error(`Data balita diperbarui, tetapi pengukuran gagal disimpan: ${measurementError.message}`);
-  }
-
   revalidatePath('/balita');
   revalidatePath('/bayi');
   revalidatePath(`/balita/${id}`);
   revalidatePath(`/bayi/${id}`);
   revalidatePath('/laporan');
   redirect(returnPath(formData));
+}
+
+export async function updateMeasurement(formData: FormData) {
+  const id = String(formData.get('measurementId') ?? '');
+  const childId = String(formData.get('childId') ?? '');
+  const measuredAt = String(formData.get('measuredAt') ?? '');
+  const weight = optionalNumber(formData.get('weightKg'));
+  const height = optionalNumber(formData.get('heightCm'));
+  if (!id || !childId || !isValidRecordDate(measuredAt) || !weight || !height) {
+    throw new Error('Isi tanggal, berat, dan tinggi pengukuran yang valid.');
+  }
+  const { supabase } = await requireActiveProfile();
+  const { data, error } = await supabase.from('child_measurements').update({
+    measured_at: measuredAt, weight_kg: weight, height_cm: height,
+    ...measurementReportFields(formData), officer_notes: optionalText(formData, 'notes'),
+  }).eq('id', id).eq('child_id', childId).select('id').maybeSingle();
+  if (error) throw new Error(`Gagal memperbarui pengukuran: ${error.message}`);
+  if (!data) throw new Error('Pengukuran tidak ditemukan atau tidak dapat diakses.');
+  revalidatePath(`/balita/${childId}`);
+  revalidatePath(`/bayi/${childId}`);
+  revalidatePath('/laporan');
 }
 
 export async function addMeasurement(formData: FormData) {

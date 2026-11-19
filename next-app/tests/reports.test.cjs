@@ -76,14 +76,15 @@ function mockClient({ failingTable, empty = false } = {}) {
       : table === 'pregnancy_visits' ? ['2026-10-01', '2026-11-09'] : ['2026-09-01', '2026-11-05'];
     let records = empty || parent ? [] : dates.map((date, index) => ({
       id: `record-${index}`, [source.date]: date, weight_kg: 10, height_cm: 80, officer_notes: `Catatan ${table}`,
+      recorded_posyandu_id: 'pos-a', recorded_posyandu_name: 'Pos A',
       [source.relation]: { id: `person-${index}`, birth_date: '2025-01-01', name: `Contoh ${source.relation}`, posyandu_id: 'pos-a', posyandu: { name: 'Pos A' } },
     }));
-    if (!empty && table === 'child_measurements') records.push({ id: 'newborn', measured_at: '2026-11-08', weight_kg: 3.1, height_cm: 49.5, officer_notes: 'Bayi baru lahir', children: { id: 'newborn-child', birth_date: '2026-11-08', name: 'Bayi Contoh', posyandu_id: 'pos-a', posyandu: { name: 'Pos A' } } });
-    if (!empty && !parent) records.push({ id: 'other-pos', [source.date]: '2025-01-01', [source.relation]: { id: 'other-person', birth_date: '2025-01-01', name: 'Pos lain', posyandu_id: 'pos-b', posyandu: { name: 'Pos B' } } });
+    if (!empty && table === 'child_measurements') records.push({ id: 'newborn', measured_at: '2026-11-08', recorded_posyandu_id: 'pos-a', recorded_posyandu_name: 'Pos A', weight_kg: 3.1, height_cm: 49.5, officer_notes: 'Bayi baru lahir', children: { id: 'newborn-child', birth_date: '2026-11-08', name: 'Bayi Contoh', posyandu_id: 'pos-a', posyandu: { name: 'Pos A' } } });
+    if (!empty && !parent) records.push({ id: 'other-pos', [source.date]: '2025-01-01', recorded_posyandu_id: 'pos-b', recorded_posyandu_name: 'Pos B', [source.relation]: { id: 'other-person', birth_date: '2025-01-01', name: 'Pos lain', posyandu_id: 'pos-b', posyandu: { name: 'Pos B' } } });
     let ascending = true, limit = Infinity, offset = 0, count = false;
     const query = {
       select(columns, options = {}) { if (!parent) assert(columns.includes(`${source.relation}!inner`)); count = options.count === 'exact'; return query; },
-      eq(path, value) { assert.equal(path, parent ? 'posyandu_id' : `${source.relation}.posyandu_id`); records = records.filter(row => (parent ? row : row[source.relation]).posyandu_id === value); return query; },
+      eq(path, value) { assert.equal(path, parent ? 'registered_posyandu_id' : 'recorded_posyandu_id'); records = records.filter(row => row[path] === value); return query; },
       is(path, value) { assert.equal(path, parent ? 'deleted_at' : `${source.relation}.deleted_at`); assert.equal(value, null); return query; },
       gte(column, value) { assert.equal(column, source.date); records = records.filter(row => row[column] >= value); return query; },
       lte(column, value) { assert.equal(column, source.date); records = records.filter(row => row[column] <= value); return query; },
