@@ -19,6 +19,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
+Konfirmasi email saat Bidan menyetujui kader pending berjalan lewat Supabase Edge Function; aplikasi Next.js tidak memerlukan service-role key di environment lokal atau Vercel.
+
 ## Perintah
 
 - `npm run dev` — menjalankan server pengembangan

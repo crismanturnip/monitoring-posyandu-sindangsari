@@ -152,7 +152,7 @@ export default async function DashboardPage() {
           <div className="stitch-greeting-content">
             <span className="stitch-greeting-prefix">Selamat Datang,</span>
             <h1 className="stitch-greeting-name">
-              {profile.full_name}! <span className="stitch-wave-icon">👋</span>
+              {profile.full_name}!
             </h1>
             <p className="stitch-greeting-desc">
               Ringkasan operasional dan monitoring kesehatan ibu, bayi, dan balita hari ini.

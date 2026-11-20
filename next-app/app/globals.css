@@ -53,6 +53,12 @@
 .settings-kader-controls { display: grid; gap: 12px; width: min(100%, 430px); }
 .settings-kader-controls details summary { color: #146c5e; cursor: pointer; font-size: 13px; font-weight: 600; }
 .settings-kader-controls details .settings-assignment-form { margin-top: 12px; }
+.settings-kader-delete { display: grid; gap: 8px; }
+.settings-kader-delete-warning { margin: 0; color: #8f302c; font-size: 12px; line-height: 1.55; }
+.settings-kader-delete-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.settings-kader-delete-actions form { margin: 0; }
+.settings-kader-delete button { min-height: 38px; border: 0; border-radius: 10px; padding: 8px 12px; color: white; font: inherit; font-size: 12px; font-weight: 750; cursor: pointer; }
+.settings-kader-delete .form-error, .settings-kader-delete .form-success { margin: 0; font-size: 12px; }
 .measurement-history-row { flex-wrap: wrap; align-items: start; }
 .history-edit { flex: 1 0 100%; }
 .history-edit summary { cursor: pointer; color: #146c5e; font-size: 13px; font-weight: 600; }
