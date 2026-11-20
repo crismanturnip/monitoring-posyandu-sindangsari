@@ -468,8 +468,8 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 .auth-card label { display: grid; gap: 7px; margin-top: 15px; color: #345248; font-size: 12px; font-weight: 720; }
 .auth-card input { border: 1px solid #d3e1d7; border-radius: 11px; padding: 11px 12px; background: #fbfdfb; outline: none; transition: all .18s ease; }
 .auth-card input:focus { border-color: var(--green-600); background: white; box-shadow: 0 0 0 4px rgba(54,149,102,.1); }
-.auth-card button { width: 100%; min-height: 45px; margin-top: 23px; border: 0; border-radius: 12px; color: white; background: linear-gradient(135deg, var(--green-600), var(--green-900)); box-shadow: 0 12px 24px rgba(33,98,71,.22); font-weight: 780; cursor: pointer; transition: all .18s ease; }
-.auth-card button:hover { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(33,98,71,.28); }
+.auth-card form > button { width: 100%; min-height: 45px; margin-top: 23px; border: 0; border-radius: 12px; color: white; background: linear-gradient(135deg, var(--green-600), var(--green-900)); box-shadow: 0 12px 24px rgba(33,98,71,.22); font-weight: 780; cursor: pointer; transition: all .18s ease; }
+.auth-card form > button:hover { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(33,98,71,.28); }
 .auth-card .auth-footer { margin: 16px 0 0; text-align: center; font-size: 11px; }
 .auth-card .auth-footer + .auth-footer { margin-top: 7px; }
 .auth-card a { color: var(--green-700); font-weight: 750; text-decoration: none; }
