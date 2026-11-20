@@ -1,11 +1,17 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { updateRecoveredPassword } from '@/app/(auth)/actions';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { PasswordInput } from '@/components/password-input';
 
 type Props = { searchParams: Promise<{ error?: string }> };
 
 export default async function UpdatePasswordPage({ searchParams }: Props) {
   const { error } = await searchParams;
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/forgot-password?error=Tautan%20reset%20tidak%20valid%20atau%20sudah%20kedaluwarsa.');
+
   return <main className="auth-page"><section className="auth-card">
     <div className="brand"><div className="brand-mark">P</div><div><strong>Monitoring Posyandu</strong><span>Desa Sindang Sari</span></div></div>
     <h1>Buat kata sandi baru</h1>
