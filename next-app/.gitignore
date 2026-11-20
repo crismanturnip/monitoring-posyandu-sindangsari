@@ -1,11 +1,14 @@
 node_modules
 .next
+.next-playwright
 .playwright-cli/
 out
 .env
 .env.local
 .env.*.local
 *.log
+test-results/
+playwright-report/
 supabase/.temp/
 
 .vercel/

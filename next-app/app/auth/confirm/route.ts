@@ -9,7 +9,8 @@ export async function GET(request: Request) {
 
   if (!tokenHash) return NextResponse.redirect(expiredUrl);
 
-  const supabase = await createSupabaseServerClient();
+  const response = NextResponse.redirect(new URL('/update-password', url.origin));
+  const supabase = await createSupabaseServerClient(response);
   const { error } = await supabase.auth.verifyOtp({
     token_hash: tokenHash,
     type: 'recovery',
@@ -17,7 +18,6 @@ export async function GET(request: Request) {
 
   if (error) return NextResponse.redirect(expiredUrl);
 
-  const response = NextResponse.redirect(new URL('/update-password', url.origin));
   response.headers.set('Cache-Control', 'no-store');
   return response;
 }

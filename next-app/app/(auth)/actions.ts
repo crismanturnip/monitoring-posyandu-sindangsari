@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { isValidRecoveredPassword } from '@/lib/password-recovery';
 
 async function siteOrigin() {
   const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '');
@@ -87,7 +88,7 @@ export async function requestPasswordReset(formData: FormData) {
 export async function updateRecoveredPassword(formData: FormData) {
   const password = String(formData.get('password') ?? '');
   const confirmPassword = String(formData.get('confirmPassword') ?? '');
-  if (password.length < 8 || password !== confirmPassword) {
+  if (!isValidRecoveredPassword(password, confirmPassword)) {
     redirect(authErrorPath('/update-password', 'Kata sandi minimal 8 karakter dan konfirmasi harus sama.'));
   }
 
