@@ -43,7 +43,7 @@ function NavIcon({ type }: { type: keyof typeof navIconPaths }) {
   );
 }
 
-export function ApplicationFrame({ profile, children }: { profile: FrameProfile; children: ReactNode }) {
+export function ApplicationFrame({ profile, assignedPosyanduName, children }: { profile: FrameProfile; assignedPosyanduName: string | null; children: ReactNode }) {
   const pathname = usePathname();
   const [openMenuPath, setOpenMenuPath] = useState<string | null>(null);
   const menuOpen = openMenuPath === pathname;
@@ -116,7 +116,14 @@ export function ApplicationFrame({ profile, children }: { profile: FrameProfile;
           <div className="sidebar-mobile-logout"><LogoutButton className="sidebar-logout-btn" /></div>
         </div>
       </aside>
-      <div className="main">{children}</div>
+      <div className="main">
+        {profile.role === 'KADER' && (
+          <header className="kader-context-header">
+            {assignedPosyanduName ? <><span>Kamu ada di</span><strong>{assignedPosyanduName}</strong></> : <strong>Kamu belum ditugaskan ke Posyandu</strong>}
+          </header>
+        )}
+        {children}
+      </div>
     </div>
   );
 }
