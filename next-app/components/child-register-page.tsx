@@ -31,7 +31,7 @@ type Child = {
   posyandu: { name: string } | null;
 };
 type Posyandu = { id: string; name: string };
-type Measurement = { child_id: string; measured_at: string; created_at: string; weight_kg: number; height_cm: number; officer_notes: string | null };
+type Measurement = { child_id: string; measured_at: string; created_at: string; weight_kg: number; height_cm: number; head_circumference_cm?: number | null; officer_notes: string | null };
 
 
 const getGenderLabel = (gender: string) => (gender === 'LAKI_LAKI' ? 'Laki-laki' : 'Perempuan');
@@ -107,7 +107,7 @@ export async function ChildRegisterPage({ searchParams, group }: Props) {
   const { data: measurementData, error: measurementError } = tableRows.length
     ? await supabase
       .from('child_measurements')
-      .select('child_id, measured_at, created_at, weight_kg, height_cm, officer_notes')
+      .select('child_id, measured_at, created_at, weight_kg, height_cm, head_circumference_cm, officer_notes')
       .in('child_id', tableRows.map((child) => child.id))
       .order('measured_at', { ascending: false })
       .order('created_at', { ascending: false })

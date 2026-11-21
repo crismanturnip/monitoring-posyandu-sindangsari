@@ -16,6 +16,5 @@ export function ChildReportIdentityFields({ child, group }: { child?: ChildIdent
 export function ChildReportMeasurementFields({ group }: { group: 'bayi' | 'balita' }) {
   return group === 'balita' ? <>
     <label className="balita-modal-field"><span className="balita-modal-label">Lingkar kepala (cm)</span><input name="headCircumferenceCm" type="number" step="0.01" min="0.01" /></label>
-    <label className="balita-modal-field"><span className="balita-modal-label">LiLA jika diukur (cm)</span><input name="lilaCm" type="number" step="0.01" min="0.01" /></label>
   </> : null;
 }

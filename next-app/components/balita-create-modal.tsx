@@ -162,6 +162,12 @@ export function BalitaCreateModal({ posyandu, group = 'balita' }: { posyandu: Po
                     <span className="balita-modal-label">{group === 'bayi' ? 'Panjang Badan Lahir (cm)' : 'Tinggi Badan (cm)'}</span>
                     <input name={group === 'bayi' ? 'birthLength' : 'heightCm'} type="number" step="0.01" min="0.01" placeholder={group === 'bayi' ? 'Contoh: 49' : 'Contoh: 80'} aria-describedby="balita-initial-measurement-help" />
                   </label>
+                  {group === 'bayi' && (
+                    <label className="balita-modal-field balita-modal-head">
+                      <span className="balita-modal-label">Lingkar Kepala (cm)</span>
+                      <input name="headCircumferenceCm" type="number" step="0.01" min="0.01" placeholder="Contoh: 34" aria-describedby="balita-initial-measurement-help" />
+                    </label>
+                  )}
                 </div>
                 {group === 'balita' && <>
                   <label className="balita-modal-field full">

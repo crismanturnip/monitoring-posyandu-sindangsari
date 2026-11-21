@@ -2983,7 +2983,7 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 }
 
 .balita-edit-modal {
-  width: min(100%, 500px);
+  width: min(100%, 620px);
 }
 
 .balita-edit-fields {
@@ -3198,14 +3198,17 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
   justify-content: center;
   flex: 1 1 0;
   min-width: 0;
-  gap: 7px;
+  gap: 6px;
+  padding: 0 10px;
   min-height: 44px;
   border: 1px solid #dce5ef;
   border-radius: 12px;
   color: #677771;
   background: #f7f9fb;
   font-size: 12px;
+  white-space: nowrap;
   cursor: pointer;
+  user-select: none;
 }
 
 .balita-gender-option:has(input:checked) {
@@ -3216,11 +3219,15 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
 
 .balita-gender-option input {
   accent-color: #008477;
+  flex-shrink: 0;
+  margin: 0;
 }
 
 .balita-gender-option span {
   font-size: 15px;
   font-weight: 800;
+  flex-shrink: 0;
+  line-height: 1;
 }
 
 .balita-modal-footer {

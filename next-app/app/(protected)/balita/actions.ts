@@ -53,7 +53,7 @@ export async function createChild(formData: FormData) {
   if (hasMeasurement && (!weight || !height || !isValidRecordDate(measuredAt))) {
     throw new Error('Isi tanggal pengukuran, berat dan tinggi badan dengan lengkap dan valid, atau kosongkan kedua hasil pengukuran.');
   }
-  if (hasOtherMeasurement && !hasMeasurement) throw new Error('Isi berat dan tinggi badan untuk menyimpan hasil pemeriksaan.');
+  if (hasOtherMeasurement && !hasMeasurement && !babyForm) throw new Error('Isi berat dan tinggi badan untuk menyimpan hasil pemeriksaan.');
   const { profile, supabase } = await requireActiveProfile();
   const { data, error } = await supabase.from('children').insert({
     name, nik: nik || null, mother_name: motherName, ...childReportFields(formData), posyandu_id: posyanduId, birth_date: birthDate, gender,
@@ -70,7 +70,17 @@ export async function createChild(formData: FormData) {
   revalidatePath('/bayi');
   revalidatePath('/laporan');
   const detailPath = `/${childRegisterGroup(birthDate, jakartaDate()) ?? 'balita'}/${data.id}`;
-  if (hasMeasurement) {
+  const headCircumference = optionalPositiveNumber(formData, 'headCircumferenceCm');
+  const birthWeight = optionalNumber(formData.get('birthWeight'));
+  const birthLength = optionalNumber(formData.get('birthLength'));
+  if (babyForm && headCircumference && birthWeight && birthLength) {
+    const { error: mError } = await supabase.from('child_measurements').insert({
+      child_id: data.id, measured_at: birthDate, weight_kg: birthWeight, height_cm: birthLength,
+      head_circumference_cm: headCircumference,
+      recorded_by: profile.id,
+    });
+    if (!mError) revalidatePath('/laporan');
+  } else if (hasMeasurement) {
     const { error: measurementError } = await supabase.from('child_measurements').insert({
       child_id: data.id, measured_at: measuredAt, weight_kg: weight, height_cm: height,
       ...measurementReportFields(formData), officer_notes: optionalText(formData, 'notes'),
@@ -181,7 +191,9 @@ export async function updateChildFromModal(formData: FormData) {
   // Sync birth weight/length to the oldest child_measurement row (if any)
   const birthWeightVal = formData.has('birthWeight') ? optionalNumber(formData.get('birthWeight')) : null;
   const birthLengthVal = formData.has('birthLength') ? optionalNumber(formData.get('birthLength')) : null;
-  if (birthWeightVal !== null || birthLengthVal !== null) {
+  const headCircumferenceVal = formData.has('headCircumferenceCm') ? optionalPositiveNumber(formData, 'headCircumferenceCm') : null;
+
+  if (birthWeightVal !== null || birthLengthVal !== null || (babyForm && headCircumferenceVal !== null)) {
     const { data: firstMeasurements } = await supabase
       .from('child_measurements')
       .select('id')
@@ -190,13 +202,38 @@ export async function updateChildFromModal(formData: FormData) {
       .order('created_at', { ascending: true })
       .limit(1);
     if (firstMeasurements && firstMeasurements.length > 0) {
-      const mUpdate: { weight_kg?: number; height_cm?: number } = {};
+      const mUpdate: { weight_kg?: number; height_cm?: number; head_circumference_cm?: number | null } = {};
       if (birthWeightVal !== null) mUpdate.weight_kg = birthWeightVal;
       if (birthLengthVal !== null) mUpdate.height_cm = birthLengthVal;
+      if (headCircumferenceVal !== null) mUpdate.head_circumference_cm = headCircumferenceVal;
       await supabase
         .from('child_measurements')
         .update(mUpdate)
         .eq('id', firstMeasurements[0].id)
+        .eq('child_id', id);
+    }
+  }
+
+  // For balita, sync weightKg, heightCm, and headCircumferenceCm to latest measurement
+  const weightKg = formData.has('weightKg') ? optionalNumber(formData.get('weightKg')) : null;
+  const heightCm = formData.has('heightCm') ? optionalNumber(formData.get('heightCm')) : null;
+  if (!babyForm && (weightKg !== null || heightCm !== null || headCircumferenceVal !== null)) {
+    const { data: latestMeasurements } = await supabase
+      .from('child_measurements')
+      .select('id')
+      .eq('child_id', id)
+      .order('measured_at', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(1);
+    if (latestMeasurements && latestMeasurements.length > 0) {
+      const mUpdate: { weight_kg?: number; height_cm?: number; head_circumference_cm?: number | null } = {};
+      if (weightKg !== null) mUpdate.weight_kg = weightKg;
+      if (heightCm !== null) mUpdate.height_cm = heightCm;
+      if (headCircumferenceVal !== null) mUpdate.head_circumference_cm = headCircumferenceVal;
+      await supabase
+        .from('child_measurements')
+        .update(mUpdate)
+        .eq('id', latestMeasurements[0].id)
         .eq('child_id', id);
     }
   }

@@ -28,11 +28,12 @@ type Posyandu = { id: string; name: string };
 export function BalitaEditModal({
   child,
   posyandu,
+  measurement,
   group = 'balita',
 }: {
   child: Child;
   posyandu: Posyandu[];
-  measurement?: unknown;
+  measurement?: { weight_kg?: number | null; height_cm?: number | null; head_circumference_cm?: number | null } | null;
   group?: 'bayi' | 'balita';
 }) {
   const label = group === 'bayi' ? 'Bayi' : 'Balita';
@@ -120,7 +121,7 @@ export function BalitaEditModal({
                   <input name="birthDate" type="date" required defaultValue={child.birth_date} />
                 </label>
 
-                <fieldset className="balita-modal-field balita-gender-field">
+                <fieldset className="balita-modal-field balita-modal-gender balita-gender-field">
                   <legend>Jenis Kelamin <span>*</span></legend>
                   <div className="balita-gender-options">
                     <label className="balita-gender-option">
@@ -148,14 +149,31 @@ export function BalitaEditModal({
                     <option value="Forsep">Forsep</option>
                   </select>
                 </label>
-                {group === 'bayi' && <>
+                {group === 'bayi' ? <>
                   <label className="balita-modal-field">
                     <span className="balita-modal-label">Berat Badan Lahir (kg)</span>
-                    <input name="birthWeight" type="number" step="0.01" min="0.01" defaultValue={child.birth_weight_kg ?? ''} />
+                    <input name="birthWeight" type="number" step="0.01" min="0.01" defaultValue={child.birth_weight_kg ?? measurement?.weight_kg ?? ''} />
                   </label>
                   <label className="balita-modal-field">
                     <span className="balita-modal-label">Panjang Badan Lahir (cm)</span>
-                    <input name="birthLength" type="number" step="0.01" min="0.01" defaultValue={child.birth_length_cm ?? ''} />
+                    <input name="birthLength" type="number" step="0.01" min="0.01" defaultValue={child.birth_length_cm ?? measurement?.height_cm ?? ''} />
+                  </label>
+                  <label className="balita-modal-field">
+                    <span className="balita-modal-label">Lingkar Kepala (cm)</span>
+                    <input name="headCircumferenceCm" type="number" step="0.01" min="0.01" placeholder="Contoh: 34" defaultValue={measurement?.head_circumference_cm ?? ''} />
+                  </label>
+                </> : <>
+                  <label className="balita-modal-field">
+                    <span className="balita-modal-label">Berat Badan (kg)</span>
+                    <input name="weightKg" type="number" step="0.01" min="0.01" placeholder="Contoh: 12.5" defaultValue={measurement?.weight_kg ?? ''} />
+                  </label>
+                  <label className="balita-modal-field">
+                    <span className="balita-modal-label">Tinggi Badan (cm)</span>
+                    <input name="heightCm" type="number" step="0.01" min="0.01" placeholder="Contoh: 85" defaultValue={measurement?.height_cm ?? ''} />
+                  </label>
+                  <label className="balita-modal-field">
+                    <span className="balita-modal-label">Lingkar Kepala (cm)</span>
+                    <input name="headCircumferenceCm" type="number" step="0.01" min="0.01" placeholder="Contoh: 48" defaultValue={measurement?.head_circumference_cm ?? ''} />
                   </label>
                 </>}
 
