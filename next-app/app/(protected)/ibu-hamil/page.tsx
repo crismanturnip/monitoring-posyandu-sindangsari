@@ -602,7 +602,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                   <span>
                     {editing
                       ? `Tercatat oleh: ${profile.full_name} (${profile.role === 'BIDAN' ? 'Bidan Desa' : 'Kader Posyandu'})`
-                      : `Bidan Desa: ${profile.full_name}`}
+                      : `${profile.role === 'BIDAN' ? 'Bidan Desa' : 'Kader Posyandu'}: ${profile.full_name}`}
                   </span>
                 </div>
 

@@ -92,4 +92,8 @@ test('kader and bidan can access the same mother features: add, edit, detail, an
   assert(kader.html.includes('aria-label="Ubah Ibu pengujian"'));
   assert(kader.html.includes('aria-label="Lihat detail Ibu pengujian"'));
   assert(kader.html.includes('aria-label="Hapus Ibu pengujian"'));
+  assert(kader.html.includes('Kader Posyandu: Petugas pengujian'));
+  assert(!kader.html.includes('Bidan Desa: Petugas pengujian'));
+  const bidan = await renderPage({ tambah: '1' }, { role: 'BIDAN' });
+  assert(bidan.html.includes('Bidan Desa: Petugas pengujian'));
 });
