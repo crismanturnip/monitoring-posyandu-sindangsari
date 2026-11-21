@@ -265,9 +265,7 @@ export async function ChildRegisterPage({ searchParams, group }: Props) {
                             group={group}
                           />
                           <Link href={`${basePath}/${child.id}`} className="balita-action-btn" aria-label="Lihat detail">↗</Link>
-                          {profile.role === 'BIDAN' && (
-                            <BalitaDeleteModal child={child} ageMonths={ageMonths} group={group} />
-                          )}
+                          <BalitaDeleteModal child={child} ageMonths={ageMonths} group={group} />
                         </td>
                       </tr>
                     );

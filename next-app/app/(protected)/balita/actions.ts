@@ -178,6 +178,29 @@ export async function updateChildFromModal(formData: FormData) {
     throw new Error('Data balita tidak berubah. Pastikan Anda memiliki akses ke Posyandu balita tersebut.');
   }
 
+  // Sync birth weight/length to the oldest child_measurement row (if any)
+  const birthWeightVal = formData.has('birthWeight') ? optionalNumber(formData.get('birthWeight')) : null;
+  const birthLengthVal = formData.has('birthLength') ? optionalNumber(formData.get('birthLength')) : null;
+  if (birthWeightVal !== null || birthLengthVal !== null) {
+    const { data: firstMeasurements } = await supabase
+      .from('child_measurements')
+      .select('id')
+      .eq('child_id', id)
+      .order('measured_at', { ascending: true })
+      .order('created_at', { ascending: true })
+      .limit(1);
+    if (firstMeasurements && firstMeasurements.length > 0) {
+      const mUpdate: { weight_kg?: number; height_cm?: number } = {};
+      if (birthWeightVal !== null) mUpdate.weight_kg = birthWeightVal;
+      if (birthLengthVal !== null) mUpdate.height_cm = birthLengthVal;
+      await supabase
+        .from('child_measurements')
+        .update(mUpdate)
+        .eq('id', firstMeasurements[0].id)
+        .eq('child_id', id);
+    }
+  }
+
   revalidatePath('/balita');
   revalidatePath('/bayi');
   revalidatePath(`/balita/${id}`);
@@ -233,7 +256,7 @@ export async function addMeasurement(formData: FormData) {
 export async function softDeleteChild(formData: FormData) {
   const id = String(formData.get('id') ?? '');
   if (!id) throw new Error('ID balita wajib tersedia untuk menghapus data.');
-  const { supabase } = await requireBidan();
+  const { supabase } = await requireActiveProfile();
   const { error } = await supabase
     .from('children')
     .update({ deleted_at: new Date().toISOString() })

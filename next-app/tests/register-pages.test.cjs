@@ -110,7 +110,7 @@ for (const role of ['KADER', 'BIDAN']) test(`${role} sees separate registers wit
   for (const html of [baby, toddler]) {
     for (const heading of ['Jenis Kelamin', 'Umur', 'Nama Ibu']) assert(html.includes(`>${heading}</th>`));
     assert(html.includes('tabIndex="0"') || html.includes('tabindex="0"'));
-    assert.equal(html.includes('class="balita-action-btn delete"'), role === 'BIDAN');
+    assert(html.includes('class="balita-action-btn delete"'));
   }
 });
 
