@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { requireActiveProfile, requireBidan } from '@/lib/auth';
+import { requireActiveProfile } from '@/lib/auth';
 import { jakartaDate, isValidRecordDate } from '@/lib/health-record-dates';
 import { examinationNotes } from '@/lib/examination-notes';
 import { optionalNik, optionalPositiveNumber, optionalText } from '@/lib/report-input';
@@ -111,7 +111,7 @@ export async function addPregnancyVisit(formData: FormData) {
 export async function softDeletePregnantMother(formData: FormData) {
   const id = String(formData.get('id') ?? '');
   if (!id) return;
-  const { supabase } = await requireBidan();
+  const { supabase } = await requireActiveProfile();
   const { error } = await supabase.from('pregnant_mothers').update({ deleted_at: new Date().toISOString() }).eq('id', id);
   if (error) throw new Error(`Gagal menghapus data ibu hamil: ${error.message}`);
   revalidatePath('/ibu-hamil');

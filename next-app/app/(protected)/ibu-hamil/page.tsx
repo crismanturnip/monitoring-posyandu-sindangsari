@@ -55,13 +55,13 @@ const PlusIcon = () => <Svg><path d="M12 5v14M5 12h14" /></Svg>;
 const ResetIcon = () => <Svg><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></Svg>;
 const EditIcon = () => <Svg><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></Svg>;
 const TrashIcon = ({ size }: { size?: number }) => <Svg size={size}><path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="m19 6-1 14H6L5 6" /></Svg>;
+const DetailIcon = () => <Svg><path d="M7 17 17 7" /><path d="M7 7h10v10" /></Svg>;
 const CloseIcon = () => <Svg size={18}><path d="M18 6 6 18M6 6l12 12" /></Svg>;
 
 
 export default async function PregnantMothersPage({ searchParams }: Props) {
   const params = await searchParams;
   const { profile, supabase } = await requireActiveProfile();
-  const canManage = profile.role === 'BIDAN';
 
   const q = (params.q ?? '').replace(/[,()%*\\]/g, ' ').trim().slice(0, 80);
   const posyanduFilter = uuidPattern.test(params.posyandu ?? '') ? String(params.posyandu) : '';
@@ -86,8 +86,8 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
 
   query = query.order('name').range(from, from + PAGE_SIZE - 1);
 
-  const editId = canManage && uuidPattern.test(params.edit ?? '') ? String(params.edit) : '';
-  const deleteId = canManage && uuidPattern.test(params.hapus ?? '') ? String(params.hapus) : '';
+  const editId = uuidPattern.test(params.edit ?? '') ? String(params.edit) : '';
+  const deleteId = uuidPattern.test(params.hapus ?? '') ? String(params.hapus) : '';
 
   const [{ data: mothersData, count, error: mothersError }, { data: posyanduData }, { data: editData }, { data: deleteData }] = await Promise.all([
     query,
@@ -211,13 +211,13 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                   <th>POSYANDU</th>
                   <th>STATUS KESEHATAN / RISIKO</th>
                   <th>PEMERIKSAAN TERAKHIR</th>
-                  {canManage && <th style={{ textAlign: 'center', width: 90 }}>AKSI</th>}
+                  <th style={{ textAlign: 'center', width: 130 }}>AKSI</th>
                 </tr>
               </thead>
               <tbody>
                 {mothers.length === 0 && (
                   <tr>
-                    <td colSpan={canManage ? 8 : 7}>
+                    <td colSpan={8}>
                       <div className="empty">Belum ada data ibu hamil yang cocok dengan pencarian Anda.</div>
                     </td>
                   </tr>
@@ -262,26 +262,31 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                           </div>
                         </div>
                       </td>
-                      {canManage && (
-                        <td>
-                          <div className="row-icons" style={{ justifyContent: 'center' }}>
-                            <Link
-                              className="icon-btn"
-                              href={buildHref({ edit: mother.id, page: pageParam })}
-                              aria-label={`Ubah ${mother.name}`}
-                            >
-                              <EditIcon />
-                            </Link>
-                            <Link
-                              className="icon-btn icon-btn-danger"
-                              href={buildHref({ hapus: mother.id, page: pageParam })}
-                              aria-label={`Hapus ${mother.name}`}
-                            >
-                              <TrashIcon />
-                            </Link>
-                          </div>
-                        </td>
-                      )}
+                      <td>
+                        <div className="row-icons" style={{ justifyContent: 'center' }}>
+                          <Link
+                            className="icon-btn"
+                            href={buildHref({ edit: mother.id, page: pageParam })}
+                            aria-label={`Ubah ${mother.name}`}
+                          >
+                            <EditIcon />
+                          </Link>
+                          <Link
+                            className="icon-btn"
+                            href={`/ibu-hamil/${mother.id}`}
+                            aria-label={`Lihat detail ${mother.name}`}
+                          >
+                            <DetailIcon />
+                          </Link>
+                          <Link
+                            className="icon-btn icon-btn-danger"
+                            href={buildHref({ hapus: mother.id, page: pageParam })}
+                            aria-label={`Hapus ${mother.name}`}
+                          >
+                            <TrashIcon />
+                          </Link>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}

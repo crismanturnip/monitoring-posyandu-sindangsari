@@ -81,7 +81,7 @@ test('mother registration starts with blank clinical results and an explicit exa
   assert(!html.includes('P (Para)'));
 });
 
-test('kader can open the same mother registration form while edit and delete stay with bidan', async () => {
+test('kader and bidan can access the same mother features: add, edit, detail, and delete', async () => {
   const empty = await renderPage({}, { empty: true });
   assert(empty.html.includes('Belum ada data ibu hamil'));
   const kader = await renderPage({ tambah: '1' }, { role: 'KADER' });
@@ -89,6 +89,7 @@ test('kader can open the same mother registration form while edit and delete sta
   assert(kader.html.includes('Tambah Data Ibu Hamil'));
   assert(kader.html.includes('name="visitedAt"'));
   assert(kader.html.includes('name="posyanduId"'));
-  assert(!kader.html.includes('aria-label="Edit Ibu pengujian"'));
-  assert(!kader.html.includes('aria-label="Hapus Ibu pengujian"'));
+  assert(kader.html.includes('aria-label="Ubah Ibu pengujian"'));
+  assert(kader.html.includes('aria-label="Lihat detail Ibu pengujian"'));
+  assert(kader.html.includes('aria-label="Hapus Ibu pengujian"'));
 });
