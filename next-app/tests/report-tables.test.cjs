@@ -21,7 +21,8 @@ const generatedAt = new Date('2026-11-17T03:28:00Z');
 const rows = [
   { id: 'baby', date: '2026-11-17', category: 'Bayi', name: 'Bayi Ny. Contoh', birthDate: '2026-11-17',
     nik: '0000000000000001', motherName: 'Ibu Contoh', motherNik: '0000000000000002', fatherName: 'Ayah Contoh', fatherNik: '0000000000000003',
-    phone: '081234567890', gender: 'PEREMPUAN', posyandu: 'Posyandu Contoh', weightKg: 3.1, heightCm: 49.5, result: 'Pengukuran', notes: 'Catatan bayi',
+    phone: '081234567890', gender: 'PEREMPUAN', posyandu: 'Posyandu Contoh', weightKg: 3.1, heightCm: 49.5,
+    birthWeightKg: 3.2, birthLengthCm: 50, result: 'Pengukuran', notes: 'Catatan bayi',
     deliveryType: 'Normal', gestationalWeeks: 39 },
   { id: 'child', date: '2026-11-17', category: 'Balita', name: '=Nama Balita Contoh', birthDate: '2024-05-04',
     posyandu: 'Posyandu Contoh', weightKg: 10.5, heightCm: 80, result: 'Pengukuran', notes: 'Catatan balita', headCircumferenceCm: 48 },
@@ -57,8 +58,13 @@ test('each category has its agreed columns without duplicate BB/PB or a record-t
   assert.deepEqual(tables.map(table => table.title), ['Bayi', 'Balita', 'Ibu Hamil']);
   assert(tables.every(table => table.rows.length === 1));
   for (const table of tables) assert(!table.columns.some(column => /jenis catatan|pemeriksaan/i.test(column.label)));
-  assert.equal(tables[0].columns.filter(column => /^BB/.test(column.label)).length, 1);
-  assert.equal(tables[0].columns.filter(column => /^PB/.test(column.label)).length, 1);
+  assert(tables[0].columns.some(column => column.label === 'Berat Badan Lahir (kg)'));
+  assert(tables[0].columns.some(column => column.label === 'Panjang Badan Lahir (cm)'));
+  assert.equal(tables[1].columns.filter(column => /^BB/.test(column.label)).length, 1);
+  assert.equal(tables[1].columns.filter(column => /^TB/.test(column.label)).length, 1);
+  const babyTable = tables[0];
+  assert.equal(babyTable.columns.find(column => column.label === 'Berat Badan Lahir (kg)').value(rows[0], 0), 3.2);
+  assert.equal(babyTable.columns.find(column => column.label === 'Panjang Badan Lahir (cm)').value(rows[0], 0), 50);
   for (const label of ['Nama ayah', 'NIK ayah', 'Nama ibu', 'NIK ibu', 'No. HP orang tua']) {
     assert(tables[0].columns.some(column => column.label === label));
     assert(tables[1].columns.some(column => column.label === label));
@@ -114,11 +120,11 @@ test('Excel contains one normal sheet with three plain tables and no frozen pane
   assert.equal(sectionCell(sheet, 'Bayi', 'Umur').value, '0 hari (baru lahir)');
   assert.equal(sectionCell(sheet, 'Bayi', 'NIK bayi').value, '0000000000000001');
   assert.equal(sectionCell(sheet, 'Bayi', 'No. HP orang tua').value, '081234567890');
-  assert.equal(sectionCell(sheet, 'Bayi', 'BB (kg)').value, 3.1);
-  assert.equal(sectionCell(sheet, 'Bayi', 'PB (cm)').value, 49.5);
+  assert.equal(sectionCell(sheet, 'Bayi', 'Berat Badan Lahir (kg)').value, 3.2);
+  assert.equal(sectionCell(sheet, 'Bayi', 'Panjang Badan Lahir (cm)').value, 50);
   assert(sectionCell(sheet, 'Bayi', 'Tanggal').value instanceof Date);
-  assert.equal(sectionCell(sheet, 'Ibu Hamil', 'BB (kg)').value, 52.5);
-  assert.equal(sectionCell(sheet, 'Ibu Hamil', 'LiLA (cm)').value, 24.5);
+  assert.equal(sectionCell(sheet, 'Bayi', 'Berat Badan Lahir (kg)').value, 3.2);
+  assert.equal(sectionCell(sheet, 'Bayi', 'Panjang Badan Lahir (cm)').value, 50);
   assert.equal(sectionCell(sheet, 'Ibu Hamil', 'Tekanan darah (mmHg)').value, '110/70');
   assert.equal(sectionCell(sheet, 'Balita', 'Nama balita').value, '=Nama Balita Contoh');
   assert.equal(sectionCell(sheet, 'Balita', 'Nama balita').formula, undefined);
@@ -149,7 +155,7 @@ test('PDF uses landscape A3 tables and includes every category, parent/contact v
   assert.equal(pdf.getPageCount(), 1);
   assert.equal(pdf.getPage(0).getWidth(), 1190.55);
   assert.equal(pdf.getPage(0).getHeight(), 841.89);
-  for (const value of [REPORT_TITLE, '0 hari (baru lahir)', 'Nama ayah', 'NIK ayah', 'Nama suami', '081234567890', '0000000000000001', 'Catatan bayi', 'Catatan balita', 'Catatan ibu']) {
+  for (const value of [REPORT_TITLE, '0 hari (baru lahir)', 'Nama ayah', 'NIK ayah', 'Nama suami', '081234567890', '0000000000000001', 'Berat Badan Lahir (kg)', 'Panjang Badan Lahir (cm)', 'Catatan bayi', 'Catatan balita', 'Catatan ibu']) {
     assert(hasPdfText(content, value), `Missing PDF text: ${value}`);
   }
   assert((content.match(/\nS\n/g) ?? []).length > 100, 'Cell borders were not drawn');

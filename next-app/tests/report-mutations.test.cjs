@@ -14,6 +14,7 @@ require.extensions['.ts'] = (module, filename) => {
   module._compile(outputText, filename);
 };
 const { loadReportRows, normalizeReportFilters } = require('../lib/reports.ts');
+const { reportTables } = require('../lib/report-tables.ts');
 
 const sources = {
   child_measurements: ['child_id', 'children', 'measured_at'],
@@ -191,11 +192,28 @@ test('registration appears without fabricating an examination from birth details
     ...childForm, birthWeight: '3.1', birthLength: '49.5',
   })), (error) => Boolean(error.destination));
   assert.equal(app.tables.children.at(-1).birth_weight_kg, 3.1);
+  assert.equal(app.tables.children.at(-1).birth_length_cm, 49.5);
   const report = await loadReportRows(app.supabase, filters());
   assert.equal(report.rows.length, 1);
   assert.equal(report.rows[0].weightKg, undefined);
   assert.equal(report.rows[0].heightCm, undefined);
   assert.equal(app.tables.child_measurements.length, 0);
+});
+
+test('editing a baby updates birth weight and length without adding a measurement', async () => {
+  const app = fixture();
+  await assert.rejects(app.actions('balita').updateChildFromModal(form({
+    ...childForm,
+    id: 'child-1',
+    returnPath: '/bayi',
+    birthWeight: '3.25',
+    birthLength: '50.5',
+  })), error => error.destination === '/bayi');
+
+  assert.equal(app.tables.children[0].birth_weight_kg, 3.25);
+  assert.equal(app.tables.children[0].birth_length_cm, 50.5);
+  assert.equal(app.tables.child_measurements.length, 0);
+  assert(app.invalidated.includes('/bayi/child-1'));
 });
 
 test('newborn registration opens baby details and refreshes both registers', async () => {
@@ -497,7 +515,8 @@ test('smaller API limits still return every report row and a failed later page n
 test('baby and balita categories follow age on each record date and retain stored parent/contact metadata', async () => {
   const child = { id: 'newborn', name: 'Bayi Ny. Pengujian', birth_date: '2026-11-17', created_at: '2026-11-16T17:05:00Z',
     posyandu_id: 'pos-a', nik: '0000000000000001', mother_name: 'Ibu uji', mother_nik: '0000000000000002',
-    father_name: 'Ayah uji', father_nik: '0000000000000003', phone_number: '081234567890' };
+    father_name: 'Ayah uji', father_nik: '0000000000000003', phone_number: '081234567890',
+    birth_weight_kg: 3.2, birth_length_cm: 50 };
   const app = fixture({ existing: { children: [child] } });
   let report = await loadReportRows(app.supabase, filters({ category: 'bayi', start: '2026-11-17', end: '2026-11-17' }));
   assert.equal(report.rows.length, 1);
@@ -505,11 +524,18 @@ test('baby and balita categories follow age on each record date and retain store
   assert.equal(report.rows[0].fatherNik, child.father_nik);
   assert.equal(report.rows[0].phone, child.phone_number);
   assert.equal(report.rows[0].weightKg, undefined);
+  assert.equal(report.rows[0].birthWeightKg, child.birth_weight_kg);
+  assert.equal(report.rows[0].birthLengthCm, child.birth_length_cm);
+  const babyTable = reportTables(report.rows, filters({ category: 'bayi' }))[0];
+  assert.equal(babyTable.columns.find(column => column.label === 'Berat Badan Lahir (kg)').value(report.rows[0], 0), 3.2);
+  assert.equal(babyTable.columns.find(column => column.label === 'Panjang Badan Lahir (cm)').value(report.rows[0], 0), 50);
   assert.equal((await loadReportRows(app.supabase, filters({ category: 'balita' }))).rows.length, 0);
   await assert.rejects(app.actions('balita').addMeasurement(form({ childId: child.id, measuredAt: '2026-11-17', weightKg: '3.1', heightCm: '49.5' })), error => Boolean(error.destination));
   report = await loadReportRows(app.supabase, filters({ category: 'bayi' }));
   assert.equal(report.rows.length, 1, 'Registration must not duplicate its examination');
   assert.equal(report.rows[0].weightKg, 3.1);
+  assert.equal(report.rows[0].birthWeightKg, 3.2);
+  assert.equal(report.rows[0].birthLengthCm, 50);
   const birthday = fixture({ existing: { children: [{ ...child, birth_date: '2025-11-17' }], child_measurements: [
     { id: 'before', child_id: child.id, measured_at: '2026-11-16', weight_kg: 9, height_cm: 70 },
     { id: 'after', child_id: child.id, measured_at: '2026-11-17', weight_kg: 9.1, height_cm: 70.5 },

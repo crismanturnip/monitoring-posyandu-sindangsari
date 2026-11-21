@@ -121,11 +121,11 @@ export default async function ChildDetailPage({ params, searchParams }: Props) {
             </select>
           </label>
           <label>
-            Berat lahir (kg)
+            Berat Badan Lahir (kg)
             <input name="birthWeight" type="number" step="0.01" min="0.01" defaultValue={child.birth_weight_kg ?? ''} />
           </label>
           <label>
-            Panjang lahir (cm)
+            Panjang Badan Lahir (cm)
             <input name="birthLength" type="number" step="0.01" min="0.01" defaultValue={child.birth_length_cm ?? ''} />
           </label>
           <button type="submit">Simpan perubahan</button>

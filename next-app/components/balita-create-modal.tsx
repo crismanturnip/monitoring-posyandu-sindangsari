@@ -154,25 +154,29 @@ export function BalitaCreateModal({ posyandu, group = 'balita' }: { posyandu: Po
                     </select>
                   </label>
                   <label className="balita-modal-field balita-modal-weight">
-                    <span className="balita-modal-label">Berat Badan (kg)</span>
-                    <input name="weightKg" type="number" step="0.01" min="0.01" placeholder="Contoh: 10.5" aria-describedby="balita-initial-measurement-help" />
+                    <span className="balita-modal-label">{group === 'bayi' ? 'Berat Badan Lahir (kg)' : 'Berat Badan (kg)'}</span>
+                    <input name={group === 'bayi' ? 'birthWeight' : 'weightKg'} type="number" step="0.01" min="0.01" placeholder={group === 'bayi' ? 'Contoh: 3.2' : 'Contoh: 10.5'} aria-describedby="balita-initial-measurement-help" />
                   </label>
                   <label className="balita-modal-field balita-modal-height">
-                    <span className="balita-modal-label">{group === 'bayi' ? 'Panjang Badan (cm)' : 'Tinggi Badan (cm)'}</span>
-                    <input name="heightCm" type="number" step="0.01" min="0.01" placeholder="Contoh: 80" aria-describedby="balita-initial-measurement-help" />
+                    <span className="balita-modal-label">{group === 'bayi' ? 'Panjang Badan Lahir (cm)' : 'Tinggi Badan (cm)'}</span>
+                    <input name={group === 'bayi' ? 'birthLength' : 'heightCm'} type="number" step="0.01" min="0.01" placeholder={group === 'bayi' ? 'Contoh: 49' : 'Contoh: 80'} aria-describedby="balita-initial-measurement-help" />
                   </label>
                 </div>
-                <label className="balita-modal-field full">
-                  <span className="balita-modal-label">Tanggal pengukuran</span>
-                  <input name="measuredAt" type="date" defaultValue={jakartaDate()} aria-describedby="balita-initial-measurement-help" />
-                </label>
-                <ChildReportMeasurementFields group={group} />
-                <label className="balita-modal-field full">
-                  <span className="balita-modal-label">Catatan pemeriksaan</span>
-                  <textarea name="notes" rows={2} />
-                </label>
+                {group === 'balita' && <>
+                  <label className="balita-modal-field full">
+                    <span className="balita-modal-label">Tanggal pengukuran</span>
+                    <input name="measuredAt" type="date" defaultValue={jakartaDate()} aria-describedby="balita-initial-measurement-help" />
+                  </label>
+                  <ChildReportMeasurementFields group={group} />
+                  <label className="balita-modal-field full">
+                    <span className="balita-modal-label">Catatan pemeriksaan</span>
+                    <textarea name="notes" rows={2} />
+                  </label>
+                </>}
                 <p id="balita-initial-measurement-help" className="balita-modal-field full muted-copy">
-                  Opsional. Isi BB, TB dan tanggal pengukuran untuk mencatat hasil ke laporan. Pendaftaran identitas saja belum masuk rekap pemeriksaan.
+                  {group === 'bayi'
+                    ? 'Berat dan panjang badan lahir disimpan sebagai data lahir bayi, bukan sebagai riwayat pengukuran.'
+                    : 'Opsional. Isi BB, TB dan tanggal pengukuran untuk mencatat hasil ke laporan. Pendaftaran identitas saja belum masuk rekap pemeriksaan.'}
                 </p>
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label">Status Gizi KMS <span>*</span></span>

@@ -12,6 +12,7 @@ const today = '2026-11-17';
 const person = (id, birth_date) => ({
   id, name: `Anak contoh ${id}`, birth_date, gender: 'PEREMPUAN', mother_name: 'Ibu contoh',
   nik: '0012345678901234', posyandu_id: 'pos-a', posyandu: { name: 'Posyandu contoh' }, kms_status: 'GIZI_BAIK',
+  birth_weight_kg: 3.2, birth_length_cm: 49.5,
 });
 
 function fixture(options = {}) {
@@ -96,10 +97,18 @@ for (const role of ['KADER', 'BIDAN']) test(`${role} sees separate registers wit
   assert(!baby.includes('Anak contoh setahun'));
   assert(baby.includes('0 hari (baru lahir)'));
   assert(baby.includes('href="/bayi/baru-lahir"'));
+  assert(baby.includes('>Berat Badan Lahir (kg)</th>'));
+  assert(baby.includes('>Panjang Badan Lahir (cm)</th>'));
+  assert(baby.includes('>3.2</td>'));
+  assert(baby.includes('>49.5</td>'));
+  assert(toddler.includes('>BB (kg)</th>'));
+  assert(toddler.includes('>TB (cm)</th>'));
+  assert(toddler.includes('>4</td>'));
+  assert(toddler.includes('>54</td>'));
   assert(toddler.includes('Anak contoh setahun'));
   assert(!toddler.includes('Anak contoh sebelum-setahun'));
   for (const html of [baby, toddler]) {
-    for (const heading of ['Jenis Kelamin', 'Umur', 'Nama Ibu', 'BB (kg)']) assert(html.includes(`>${heading}</th>`));
+    for (const heading of ['Jenis Kelamin', 'Umur', 'Nama Ibu']) assert(html.includes(`>${heading}</th>`));
     assert(html.includes('tabIndex="0"') || html.includes('tabindex="0"'));
     assert.equal(html.includes('class="balita-action-btn delete"'), role === 'BIDAN');
   }
@@ -112,6 +121,10 @@ test('register pagination preserves search and category and loads past an API pa
   assert(!html.includes('Anak contoh bayi-0<'));
   assert(html.includes('/bayi?q=contoh&amp;posyandu=semua&amp;usia=semua&amp;page=1'));
   assert.equal(app.requests.filter(url => url.pathname.endsWith('/children')).length, 3);
+  assert(app.requests.filter(url => url.pathname.endsWith('/children')).every(url => {
+    const columns = url.searchParams.get('select') ?? '';
+    return columns.includes('birth_weight_kg') && columns.includes('birth_length_cm');
+  }));
   const empty = await app.render('bayi', { usia: '6-12' });
   assert(empty.includes('Belum ada data bayi'));
 });

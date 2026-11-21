@@ -139,6 +139,8 @@ export async function updateChildFromModal(formData: FormData) {
     birth_date: string;
     gender: string;
     delivery_type: string | null;
+    birth_weight_kg?: number | null;
+    birth_length_cm?: number | null;
     kms_status?: string | null;
   } = {
     name,
@@ -151,6 +153,8 @@ export async function updateChildFromModal(formData: FormData) {
     gender,
     delivery_type: deliveryType || null,
   };
+  if (formData.has('birthWeight')) childUpdates.birth_weight_kg = optionalNumber(formData.get('birthWeight'));
+  if (formData.has('birthLength')) childUpdates.birth_length_cm = optionalNumber(formData.get('birthLength'));
   if (kmsStatus === 'NONE') childUpdates.kms_status = null;
   else if (kmsStatus) childUpdates.kms_status = kmsStatus;
 

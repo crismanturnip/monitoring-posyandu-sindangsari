@@ -24,6 +24,8 @@ type Child = {
   gender: string;
   birth_place: string | null;
   delivery_type: string | null;
+  birth_weight_kg: number | null;
+  birth_length_cm: number | null;
   posyandu_id: string;
   kms_status: string | null;
   posyandu: { name: string } | null;
@@ -51,7 +53,7 @@ export async function ChildRegisterPage({ searchParams, group }: Props) {
     const rows: Child[] = [];
     while (true) {
       const { data, count, error } = await supabase.from('children')
-        .select('id, name, nik, mother_name, mother_nik, father_name, father_nik, phone_number, gestational_age_weeks, birth_date, gender, birth_place, delivery_type, posyandu_id, kms_status, posyandu!children_posyandu_id_fkey(name)', { count: 'exact' })
+        .select('id, name, nik, mother_name, mother_nik, father_name, father_nik, phone_number, gestational_age_weeks, birth_date, gender, birth_place, delivery_type, birth_weight_kg, birth_length_cm, posyandu_id, kms_status, posyandu!children_posyandu_id_fkey(name)', { count: 'exact' })
         .is('deleted_at', null)
         .order('name').order('id')
         .range(rows.length, rows.length + 499);
@@ -231,8 +233,8 @@ export async function ChildRegisterPage({ searchParams, group }: Props) {
                     <th scope="col">Umur</th>
                     <th scope="col">Nama Ibu</th>
                     <th scope="col">Posyandu</th>
-                    <th scope="col">BB (kg)</th>
-                    <th scope="col">{group === 'bayi' ? 'PB (cm)' : 'TB (cm)'}</th>
+                    <th scope="col">{group === 'bayi' ? 'Berat Badan Lahir (kg)' : 'BB (kg)'}</th>
+                    <th scope="col">{group === 'bayi' ? 'Panjang Badan Lahir (cm)' : 'TB (cm)'}</th>
                     <th scope="col">Status Gizi KMS</th>
                     <th scope="col">Aksi</th>
                   </tr>
@@ -250,8 +252,8 @@ export async function ChildRegisterPage({ searchParams, group }: Props) {
                         <td className="balita-age-cell">{reportAge(child.birth_date, today)}</td>
                         <td data-label="Nama Ibu">{child.mother_name}</td>
                         <td data-label="Posyandu">{child.posyandu?.name ?? 'Posyandu'}</td>
-                        <td className="balita-measurement">{measurement?.weight_kg ?? 'Belum diukur'}</td>
-                        <td className="balita-measurement">{measurement?.height_cm ?? 'Belum diukur'}</td>
+                        <td className="balita-measurement">{group === 'bayi' ? child.birth_weight_kg ?? 'Belum dicatat' : measurement?.weight_kg ?? 'Belum diukur'}</td>
+                        <td className="balita-measurement">{group === 'bayi' ? child.birth_length_cm ?? 'Belum dicatat' : measurement?.height_cm ?? 'Belum diukur'}</td>
                         <td data-label="Status Gizi KMS">
                           <span className="balita-kms-text">{getStatusLabel(child.kms_status)}</span>
                         </td>

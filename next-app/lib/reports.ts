@@ -9,6 +9,7 @@ export type ReportFilters = { category: ReportCategory; period: ReportPeriod; po
 export type ReportRow = {
   id: string; personId?: string; date: string; category: string; name: string; posyandu: string;
   result: string; notes: string; weightKg?: number; heightCm?: number;
+  birthWeightKg?: number; birthLengthCm?: number;
   nik?: string; birthDate?: string; gender?: string; motherName?: string; motherNik?: string;
   fatherName?: string; fatherNik?: string; phone?: string; deliveryType?: string;
   gestationalWeeks?: number; headCircumferenceCm?: number; lilaCm?: number;
@@ -73,6 +74,7 @@ function personFields(person: Person) {
     husbandName: textField(person.husband_name), husbandNik: textField(person.husband_nik),
     phone: textField(person.phone_number), deliveryType: textField(person.delivery_type),
     gestationalWeeks: numberField(person.gestational_age_weeks),
+    birthWeightKg: numberField(person.birth_weight_kg), birthLengthCm: numberField(person.birth_length_cm),
   };
 }
 

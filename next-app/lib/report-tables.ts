@@ -43,8 +43,8 @@ function childColumns(baby: boolean): ReportColumn[] {
     field('Nama ibu', 'motherName', 63), field('NIK ibu', 'motherNik', 85),
     field('Nama ayah', 'fatherName', 63), field('NIK ayah', 'fatherNik', 85),
     ...contact,
-    numeric('BB (kg)', 38, row => row.weightKg),
-    numeric(baby ? 'PB (cm)' : 'TB (cm)', 38, row => row.heightCm),
+    numeric(baby ? 'Berat Badan Lahir (kg)' : 'BB (kg)', 38, row => baby ? row.birthWeightKg : row.weightKg),
+    numeric(baby ? 'Panjang Badan Lahir (cm)' : 'TB (cm)', 38, row => baby ? row.birthLengthCm : row.heightCm),
     ...(baby ? [field('Keterangan kelahiran', 'deliveryType', 58), numeric('Usia kehamilan saat lahir (minggu)', 68, row => row.gestationalWeeks)]
       : [numeric('Lingkar kepala (cm)', 58, row => row.headCircumferenceCm), numeric('LiLA jika diukur (cm)', 52, row => row.lilaCm)]),
     field('Catatan', 'notes', baby ? 80 : 96),

@@ -18,6 +18,8 @@ type Child = {
   gender: string;
   birth_place: string | null;
   delivery_type: string | null;
+  birth_weight_kg: number | null;
+  birth_length_cm: number | null;
   posyandu_id: string;
   kms_status: string | null;
 };
@@ -146,6 +148,16 @@ export function BalitaEditModal({
                     <option value="Forsep">Forsep</option>
                   </select>
                 </label>
+                {group === 'bayi' && <>
+                  <label className="balita-modal-field">
+                    <span className="balita-modal-label">Berat Badan Lahir (kg)</span>
+                    <input name="birthWeight" type="number" step="0.01" min="0.01" defaultValue={child.birth_weight_kg ?? ''} />
+                  </label>
+                  <label className="balita-modal-field">
+                    <span className="balita-modal-label">Panjang Badan Lahir (cm)</span>
+                    <input name="birthLength" type="number" step="0.01" min="0.01" defaultValue={child.birth_length_cm ?? ''} />
+                  </label>
+                </>}
 
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label">Nama Ibu Kandung <span>*</span></span>
