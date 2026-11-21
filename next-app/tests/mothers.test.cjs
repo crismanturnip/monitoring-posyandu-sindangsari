@@ -75,6 +75,10 @@ test('mother registration starts with blank clinical results and an explicit exa
   }
   assert(html.includes('HPHT (Hari Pertama Haid Terakhir)'));
   assert(html.includes('Riwayat kehamilan (G/P/A)'));
+  assert(html.includes('G (Graviditas)'));
+  assert(!html.includes('G (Gravida)'));
+  assert(html.includes('P (Paritas)'));
+  assert(!html.includes('P (Para)'));
 });
 
 test('kader can open the same mother registration form while edit and delete stay with bidan', async () => {

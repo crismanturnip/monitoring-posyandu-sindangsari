@@ -78,13 +78,14 @@ export default async function ChildDetailPage({ params, searchParams }: Props) {
         <form action={updateChild} className="card stacked-form">
           <h2>Identitas</h2>
           <input type="hidden" name="id" value={id} />
+          <input type="hidden" name="returnPath" value={basePath} />
           <label>
             Nama anak
             <input name="name" required defaultValue={child.name} />
           </label>
           <label>
-            NIK {group}
-            <input name="nik" type="text" inputMode="numeric" pattern="[0-9]{16}" minLength={16} maxLength={16} required defaultValue={child.nik ?? ''} placeholder="16 digit NIK" title="NIK harus terdiri dari 16 digit angka" />
+            NIK {group} {group === 'bayi' ? '(opsional)' : ''}
+            <input name="nik" type="text" inputMode="numeric" pattern="[0-9]{16}" minLength={16} maxLength={16} required={group !== 'bayi'} defaultValue={child.nik ?? ''} placeholder="16 digit NIK" title="NIK harus terdiri dari 16 digit angka" />
           </label>
           <label>
             Nama ibu

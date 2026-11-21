@@ -204,16 +204,53 @@ test('editing a baby updates birth weight and length without adding a measuremen
   const app = fixture();
   await assert.rejects(app.actions('balita').updateChildFromModal(form({
     ...childForm,
+    nik: '',
     id: 'child-1',
     returnPath: '/bayi',
     birthWeight: '3.25',
     birthLength: '50.5',
   })), error => error.destination === '/bayi');
 
+  assert.equal(app.tables.children[0].nik, null);
   assert.equal(app.tables.children[0].birth_weight_kg, 3.25);
   assert.equal(app.tables.children[0].birth_length_cm, 50.5);
   assert.equal(app.tables.child_measurements.length, 0);
   assert(app.invalidated.includes('/bayi/child-1'));
+});
+
+test('creating a baby allows an empty NIK but validates a supplied NIK', async () => {
+  const { jakartaDate } = require('../lib/health-record-dates.ts');
+  const app = fixture();
+  await assert.rejects(app.actions('balita').createChild(form({
+    ...childForm, name: 'Bayi tanpa NIK', nik: '', birthDate: jakartaDate(), returnPath: '/bayi',
+  })), error => error.destination === '/bayi/children-2');
+  assert.equal(app.tables.children.at(-1).nik, null);
+
+  const invalid = fixture();
+  await assert.rejects(invalid.actions('balita').createChild(form({
+    ...childForm, nik: '123', birthDate: jakartaDate(), returnPath: '/bayi',
+  })), /Lengkapi semua data wajib/);
+  assert.equal(invalid.requests.length, 0);
+});
+
+test('NIK remains required for balita create and edit forms', async () => {
+  const create = fixture();
+  await assert.rejects(create.actions('balita').createChild(form({ ...childForm, nik: '', returnPath: '/balita' })), /Lengkapi semua data wajib/);
+  assert.equal(create.requests.length, 0);
+
+  const edit = fixture();
+  await assert.rejects(edit.actions('balita').updateChildFromModal(form({
+    ...childForm, nik: '', id: 'child-1', returnPath: '/balita',
+  })), /NIK 16 digit/);
+  assert.equal(edit.requests.length, 0);
+});
+
+test('editing a baby from its detail form accepts an empty NIK', async () => {
+  const app = fixture();
+  await app.actions('balita').updateChild(form({
+    ...childForm, nik: '', id: 'child-1', returnPath: '/bayi',
+  }));
+  assert.equal(app.tables.children[0].nik, null);
 });
 
 test('newborn registration opens baby details and refreshes both registers', async () => {

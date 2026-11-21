@@ -111,8 +111,8 @@ export function BalitaEditModal({
                 </label>
 
                 <label className="balita-modal-field full">
-                  <span className="balita-modal-label">NIK {label} <span>*</span></span>
-                  <input name="nik" type="text" inputMode="numeric" pattern="[0-9]{16}" minLength={16} maxLength={16} required defaultValue={child.nik ?? ''} placeholder="16 digit NIK" title="NIK harus terdiri dari 16 digit angka" />
+                  <span className="balita-modal-label">NIK {label} {group === 'bayi' ? '(opsional)' : <span>*</span>}</span>
+                  <input name="nik" type="text" inputMode="numeric" pattern="[0-9]{16}" minLength={16} maxLength={16} required={group !== 'bayi'} defaultValue={child.nik ?? ''} placeholder="16 digit NIK" title="NIK harus terdiri dari 16 digit angka" />
                 </label>
 
                 <label className="balita-modal-field">

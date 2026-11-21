@@ -532,8 +532,8 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                   <div className="anc-field">
                     <label className="anc-label">Riwayat kehamilan (G/P/A)</label>
                     <div className="anc-gpa-grid">
-                      <label>G (Gravida)<input name="gravida" type="number" min="1" max="32767" step="1" inputMode="numeric" defaultValue={editing?.gravida ?? ''} className="anc-input no-icon" /></label>
-                      <label>P (Para)<input name="para" type="number" min="0" max="32767" step="1" inputMode="numeric" defaultValue={editing?.para ?? ''} className="anc-input no-icon" /></label>
+                      <label>G (Graviditas)<input name="gravida" type="number" min="1" max="32767" step="1" inputMode="numeric" defaultValue={editing?.gravida ?? ''} className="anc-input no-icon" /></label>
+                      <label>P (Paritas)<input name="para" type="number" min="0" max="32767" step="1" inputMode="numeric" defaultValue={editing?.para ?? ''} className="anc-input no-icon" /></label>
                       <label>A (Abortus)<input name="abortus" type="number" min="0" max="32767" step="1" inputMode="numeric" defaultValue={editing?.abortus ?? ''} className="anc-input no-icon" /></label>
                     </div>
                   </div>

@@ -92,6 +92,7 @@ export function BalitaCreateModal({ posyandu, group = 'balita' }: { posyandu: Po
             </header>
 
             <form action={createChild} onSubmit={validateMeasurement} className="balita-modal-form">
+              <input type="hidden" name="returnPath" value={`/${group}`} />
               <div className="balita-modal-fields">
                 <label className="balita-modal-field full">
                   <span className="balita-modal-label">Nama Lengkap {label} <span>*</span></span>
@@ -99,8 +100,8 @@ export function BalitaCreateModal({ posyandu, group = 'balita' }: { posyandu: Po
                 </label>
 
                 <label className="balita-modal-field full">
-                  <span className="balita-modal-label">NIK {label} <span>*</span></span>
-                  <input name="nik" type="text" inputMode="numeric" pattern="[0-9]{16}" minLength={16} maxLength={16} required placeholder="16 digit NIK" title="NIK harus terdiri dari 16 digit angka" />
+                  <span className="balita-modal-label">NIK {label} {group === 'bayi' ? '(opsional)' : <span>*</span>}</span>
+                  <input name="nik" type="text" inputMode="numeric" pattern="[0-9]{16}" minLength={16} maxLength={16} required={group !== 'bayi'} placeholder="16 digit NIK" title="NIK harus terdiri dari 16 digit angka" />
                 </label>
 
                 <label className="balita-modal-field balita-modal-date">
