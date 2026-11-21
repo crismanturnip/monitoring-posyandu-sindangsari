@@ -4186,3 +4186,252 @@ button:disabled { cursor: not-allowed !important; filter: grayscale(.45); opacit
     color: #fff;
   }
 }
+
+/* Ibu hamil mobile layout and pregnancy history inputs */
+.anc-lila-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 180px) minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+}
+
+.anc-gpa-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+
+.anc-gpa-grid label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  color: #1e293b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.anc-gpa-grid input {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .ibu-hamil-content {
+    gap: 14px;
+    padding: 16px 12px 34px;
+  }
+
+  .ibu-hamil-top-actions {
+    justify-content: stretch;
+    margin: 0;
+  }
+
+  .ibu-hamil-add-btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 46px;
+    padding: 10px 14px;
+  }
+
+  .ibu-hamil-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .ibu-hamil-stat-card {
+    min-width: 0;
+    border-radius: 15px;
+    padding: 15px 12px;
+  }
+
+  .ibu-hamil-stat-card .stitch-stat-header {
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .ibu-hamil-stat-card .stitch-stat-label {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    line-height: 1.35;
+  }
+
+  .ibu-hamil-stat-card .stitch-stat-icon-wrap {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-radius: 10px;
+  }
+
+  .ibu-hamil-stat-card .stitch-stat-value {
+    margin: 10px 0 12px;
+    font-size: 26px;
+  }
+
+  .ibu-hamil-stat-card .stitch-stat-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ibu-hamil-stat-card .stitch-chip {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .ibu-hamil-stat-card .maternal-risk-value {
+    margin: 10px 0 12px;
+    font-size: 16px;
+    overflow-wrap: anywhere;
+  }
+
+  .ibu-hamil-content .filter-bar {
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .ibu-hamil-content .filter-search {
+    min-width: 0;
+    flex-basis: 100%;
+  }
+
+  .ibu-hamil-content .filter-search input,
+  .ibu-hamil-content .filter-bar select,
+  .ibu-hamil-content .filter-bar .primary-btn,
+  .ibu-hamil-content .filter-bar .ghost-btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+  }
+
+  .anc-modal-backdrop {
+    place-items: start center;
+    overflow-y: auto;
+    padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
+  }
+
+  .anc-modal {
+    width: 100%;
+    max-height: calc(100dvh - 20px);
+    border-radius: 16px;
+    overscroll-behavior: contain;
+  }
+
+  .anc-modal-header {
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 12px;
+  }
+
+  .anc-modal-icon {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  .anc-modal-heading h2 {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .anc-modal-heading p {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .anc-modal-close {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+
+  .anc-modal-form {
+    min-width: 0;
+    gap: 16px;
+    padding: 14px 12px 16px;
+  }
+
+  .anc-section-head,
+  .anc-section-title {
+    align-items: flex-start;
+  }
+
+  .anc-section-title {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .anc-section-head h3 {
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .anc-section-hint {
+    width: 100%;
+  }
+
+  .anc-field,
+  .anc-input-group {
+    min-width: 0;
+  }
+
+  .anc-input,
+  .anc-select {
+    min-width: 0;
+    font-size: 16px;
+  }
+
+  .anc-lila-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .anc-gpa-grid {
+    gap: 6px;
+  }
+
+  .anc-gpa-grid label {
+    font-size: 10px;
+  }
+
+  .anc-modal-footer {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .anc-footer-actions {
+    width: 100%;
+  }
+
+  .anc-footer-actions > * {
+    min-width: 0;
+    flex: 1;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .ibu-hamil-content {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .ibu-hamil-stat-card {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .anc-modal-header {
+    gap: 8px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .anc-modal-form {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}

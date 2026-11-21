@@ -7,14 +7,31 @@ import { jakartaDate, isValidRecordDate } from '@/lib/health-record-dates';
 import { examinationNotes } from '@/lib/examination-notes';
 import { optionalNik, optionalPositiveNumber, optionalText } from '@/lib/report-input';
 
+function optionalCount(formData: FormData, key: string, minimum: number) {
+  const value = optionalText(formData, key);
+  if (!value) return null;
+  if (!/^\d+$/.test(value)) throw new Error(`${key} harus berupa bilangan bulat.`);
+  const count = Number(value);
+  if (!Number.isSafeInteger(count) || count < minimum || count > 32767) {
+    throw new Error(`${key} harus berupa bilangan bulat antara ${minimum} dan 32767.`);
+  }
+  return count;
+}
+
 function motherFields(formData: FormData) {
   const birthDate = optionalText(formData, 'birthDate');
+  const hpht = optionalText(formData, 'hpht');
   if (birthDate && !isValidRecordDate(birthDate)) throw new Error('Tanggal lahir ibu tidak valid.');
+  if (hpht && !isValidRecordDate(hpht)) throw new Error('Tanggal HPHT tidak valid.');
   return {
     nik: optionalNik(formData, 'nik'), birth_date: birthDate,
     husband_name: optionalText(formData, 'husbandName'), husband_nik: optionalNik(formData, 'husbandNik'),
     phone_number: optionalText(formData, 'phoneNumber'),
     gestational_age_weeks: optionalPositiveNumber(formData, 'gestationalWeeks'),
+    hpht,
+    gravida: optionalCount(formData, 'gravida', 1),
+    para: optionalCount(formData, 'para', 0),
+    abortus: optionalCount(formData, 'abortus', 0),
   };
 }
 

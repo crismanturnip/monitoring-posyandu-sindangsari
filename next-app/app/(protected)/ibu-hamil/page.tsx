@@ -27,6 +27,10 @@ type Mother = {
   husband_nik: string | null;
   phone_number: string | null;
   gestational_age_weeks: number | null;
+  hpht: string | null;
+  gravida: number | null;
+  para: number | null;
+  abortus: number | null;
   posyandu_id: string;
   posyandu: { name: string } | null;
   created_at?: string;
@@ -66,7 +70,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
 
   let query = supabase
     .from('pregnant_mothers')
-    .select('id, name, nik, birth_date, husband_name, husband_nik, phone_number, gestational_age_weeks, posyandu_id, posyandu!pregnant_mothers_posyandu_id_fkey(name), created_at, pregnancy_visits(id, visited_at, officer_notes, created_at)', { count: 'exact' })
+    .select('id, name, nik, birth_date, husband_name, husband_nik, phone_number, gestational_age_weeks, hpht, gravida, para, abortus, posyandu_id, posyandu!pregnant_mothers_posyandu_id_fkey(name), created_at, pregnancy_visits(id, visited_at, officer_notes, created_at)', { count: 'exact' })
     .is('deleted_at', null)
     .order('visited_at', { referencedTable: 'pregnancy_visits', ascending: false })
     .order('created_at', { referencedTable: 'pregnancy_visits', ascending: false })
@@ -88,7 +92,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
   const [{ data: mothersData, count, error: mothersError }, { data: posyanduData }, { data: editData }, { data: deleteData }] = await Promise.all([
     query,
     supabase.from('posyandu').select('id, name').eq('is_active', true).order('name'),
-    editId ? supabase.from('pregnant_mothers').select('id, name, nik, birth_date, husband_name, husband_nik, phone_number, gestational_age_weeks, posyandu_id').eq('id', editId).maybeSingle() : Promise.resolve({ data: null }),
+    editId ? supabase.from('pregnant_mothers').select('id, name, nik, birth_date, husband_name, husband_nik, phone_number, gestational_age_weeks, hpht, gravida, para, abortus, posyandu_id').eq('id', editId).maybeSingle() : Promise.resolve({ data: null }),
     deleteId ? supabase.from('pregnant_mothers').select('id, name, posyandu!pregnant_mothers_posyandu_id_fkey(name)').eq('id', deleteId).maybeSingle() : Promise.resolve({ data: null }),
   ]);
 
@@ -322,7 +326,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
 
       {/* Modal Tambah / Edit Ibu Hamil Baru Sesuai Referensi Gambar */}
       {showForm && (
-        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="anc-modal-title">
+        <div className="modal-backdrop anc-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="anc-modal-title">
           <div className="anc-modal">
             {/* Header Modal */}
             <div className="anc-modal-header">
@@ -520,6 +524,20 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                     <input name="gestationalWeeks" type="number" step="0.1" min="0.1" defaultValue={editing?.gestational_age_weeks ?? ''} className="anc-input no-icon" />
                   </div>
 
+                  <div className="anc-field">
+                    <label className="anc-label" htmlFor="mother-hpht">HPHT (Hari Pertama Haid Terakhir)</label>
+                    <input id="mother-hpht" name="hpht" type="date" defaultValue={editing?.hpht ?? ''} className="anc-input no-icon" />
+                  </div>
+
+                  <div className="anc-field">
+                    <label className="anc-label">Riwayat kehamilan (G/P/A)</label>
+                    <div className="anc-gpa-grid">
+                      <label>G (Gravida)<input name="gravida" type="number" min="1" max="32767" step="1" inputMode="numeric" defaultValue={editing?.gravida ?? ''} className="anc-input no-icon" /></label>
+                      <label>P (Para)<input name="para" type="number" min="0" max="32767" step="1" inputMode="numeric" defaultValue={editing?.para ?? ''} className="anc-input no-icon" /></label>
+                      <label>A (Abortus)<input name="abortus" type="number" min="0" max="32767" step="1" inputMode="numeric" defaultValue={editing?.abortus ?? ''} className="anc-input no-icon" /></label>
+                    </div>
+                  </div>
+
                   {!editing && <>
                   <div className="anc-field">
                     <label className="anc-label">
@@ -556,7 +574,7 @@ export default async function PregnantMothersPage({ searchParams }: Props) {
                       <span>Lingkar Lengan Atas (LiLA) dalam cm</span>
                       <span className="hint">ⓘ Batas Normal Kemenkes: ≥ 23.5 cm</span>
                     </label>
-                    <div style={{ display: 'grid', gridTemplateColumns: editing ? '160px 1fr' : '180px 1fr', gap: 14, alignItems: 'center' }}>
+                    <div className="anc-lila-layout">
                       <div className="anc-input-group">
                         <span className="anc-input-icon">
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>

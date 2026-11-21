@@ -38,6 +38,12 @@ export default async function PregnantMotherDetailPage({ params, searchParams }:
         <label>NIK suami<input name="husbandNik" inputMode="numeric" pattern="[0-9]{16}" maxLength={16} defaultValue={mother.husband_nik ?? ''} /></label>
         <label>No. HP ibu/keluarga<input name="phoneNumber" type="tel" defaultValue={mother.phone_number ?? ''} /></label>
         <label>Usia kehamilan (minggu)<input name="gestationalWeeks" type="number" min="0.1" step="0.1" defaultValue={mother.gestational_age_weeks ?? ''} /></label>
+        <label>HPHT (Hari Pertama Haid Terakhir)<input name="hpht" type="date" defaultValue={mother.hpht ?? ''} /></label>
+        <div className="anc-gpa-grid">
+          <label>G (Gravida)<input name="gravida" type="number" min="1" max="32767" step="1" defaultValue={mother.gravida ?? ''} /></label>
+          <label>P (Para)<input name="para" type="number" min="0" max="32767" step="1" defaultValue={mother.para ?? ''} /></label>
+          <label>A (Abortus)<input name="abortus" type="number" min="0" max="32767" step="1" defaultValue={mother.abortus ?? ''} /></label>
+        </div>
         <button type="submit">Simpan identitas</button>
       </form>
       <div>

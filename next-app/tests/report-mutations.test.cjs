@@ -354,7 +354,13 @@ test('the mother registration form preserves clinical fields in a dated report v
     name: 'Ibu baru', posyanduId: 'pos-a', visitedAt: '2026-11-17', weight: '52.5', height: '158', lila: '24,0',
     nik: '1111222233334444', birthDate: '1998-05-14', husbandName: 'Suami pengujian',
     husbandNik: '5555666677778888', phoneNumber: '081234567890', gestationalWeeks: '24',
+    hpht: '2026-05-31', gravida: '3', para: '1', abortus: '1',
   })), (error) => error.destination?.startsWith('/ibu-hamil/') && !error.destination.includes('failed'));
+  const savedMother = app.tables.pregnant_mothers.at(-1);
+  assert.equal(savedMother.hpht, '2026-05-31');
+  assert.equal(savedMother.gravida, 3);
+  assert.equal(savedMother.para, 1);
+  assert.equal(savedMother.abortus, 1);
   const report = await loadReportRows(app.supabase, filters());
   assert.equal(report.rows.length, 1);
   assert.match(report.rows[0].notes, /BB: 52.5 kg/);
@@ -366,6 +372,16 @@ test('the mother registration form preserves clinical fields in a dated report v
   assert.equal(report.rows[0].husbandName, 'Suami pengujian');
   assert.equal(report.rows[0].phone, '081234567890');
   assert.equal(report.rows[0].gestationalWeeks, 24);
+});
+
+test('invalid HPHT and pregnancy counts are rejected before saving the mother', async () => {
+  const app = fixture();
+  const create = app.actions('ibu-hamil').createPregnantMother;
+  const base = { name: 'Ibu validasi', posyanduId: 'pos-a', visitedAt: '2026-11-17' };
+  await assert.rejects(create(form({ ...base, hpht: '2026-02-30' })), /Tanggal HPHT tidak valid/);
+  await assert.rejects(create(form({ ...base, gravida: '0' })), /gravida harus berupa bilangan bulat/);
+  await assert.rejects(create(form({ ...base, para: '-1' })), /para harus berupa bilangan bulat/);
+  assert.equal(app.tables.pregnant_mothers.length, 1);
 });
 
 test('mother registration without clinical results does not fabricate a visit', async () => {
@@ -390,10 +406,15 @@ test('mother identity updates preserve history and never append a visit', async 
   await app.actions('ibu-hamil').updatePregnantMother(form({
     id: 'mother-1', name: 'Nama baru', posyanduId: 'pos-b', visitedAt: '2026-11-17',
     weight: '58', height: '158', bloodPressure: '110/70', lila: '25,5',
+    hpht: '2026-06-01', gravida: '2', para: '1', abortus: '0',
   }));
   assert.equal((await loadReportRows(app.supabase, filters())).rows.length, 0);
   assert.equal(app.tables.pregnancy_visits.length, 0);
   assert.equal(app.tables.pregnant_mothers[0].posyandu_id, 'pos-b');
+  assert.equal(app.tables.pregnant_mothers[0].hpht, '2026-06-01');
+  assert.equal(app.tables.pregnant_mothers[0].gravida, 2);
+  assert.equal(app.tables.pregnant_mothers[0].para, 1);
+  assert.equal(app.tables.pregnant_mothers[0].abortus, 0);
 });
 
 test('moving a person does not rewrite their original registration report location', async () => {

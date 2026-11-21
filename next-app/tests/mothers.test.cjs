@@ -70,6 +70,11 @@ test('mother registration starts with blank clinical results and an explicit exa
     assert(!/value="[^\"]+"/.test(input[0]), `${name} contains a fabricated result`);
   }
   assert.match(html, /name="visitedAt"[^>]*value="2026-11-17"/);
+  for (const name of ['hpht', 'gravida', 'para', 'abortus']) {
+    assert.match(html, new RegExp(`name="${name}"`));
+  }
+  assert(html.includes('HPHT (Hari Pertama Haid Terakhir)'));
+  assert(html.includes('Riwayat kehamilan (G/P/A)'));
 });
 
 test('kader can open the same mother registration form while edit and delete stay with bidan', async () => {
