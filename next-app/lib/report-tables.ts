@@ -17,6 +17,24 @@ function clinicalNumber(row: ReportRow, label: string) {
   const value = clinical(row, label)?.match(/^\d+(?:[.,]\d+)?/)?.[0];
   return value ? Number(value.replace(',', '.')) : undefined;
 }
+function clinicalGpa(row: ReportRow) {
+  if (row.gravida !== undefined || row.para !== undefined || row.abortus !== undefined) {
+    return { gravida: row.gravida, para: row.para, abortus: row.abortus };
+  }
+  const fromGpa = (row.gpa ?? clinical(row, 'GPA'))?.match(/G(\d+)\s*P(\d+)\s*A(\d+)/i);
+  if (fromGpa) {
+    return {
+      gravida: Number(fromGpa[1]),
+      para: Number(fromGpa[2]),
+      abortus: Number(fromGpa[3]),
+    };
+  }
+  return {
+    gravida: clinicalNumber(row, 'Graviditas') ?? clinicalNumber(row, 'G'),
+    para: clinicalNumber(row, 'Paritas') ?? clinicalNumber(row, 'P'),
+    abortus: clinicalNumber(row, 'Abortus') ?? clinicalNumber(row, 'A'),
+  };
+}
 const field = (label: string, key: keyof ReportRow, width: number): ReportColumn => ({ label, width, value: row => show(row[key]) });
 const numeric = (label: string, width: number, get: (row: ReportRow) => number | undefined): ReportColumn => ({
   label, width, numberFormat: '0.##', value: row => get(row) ?? REPORT_EMPTY,
@@ -46,7 +64,7 @@ function childColumns(baby: boolean): ReportColumn[] {
     numeric(baby ? 'Berat Badan Lahir (kg)' : 'BB (kg)', 38, row => baby ? row.birthWeightKg : row.weightKg),
     numeric(baby ? 'Panjang Badan Lahir (cm)' : 'TB (cm)', 38, row => baby ? row.birthLengthCm : row.heightCm),
     ...(baby ? [field('Keterangan kelahiran', 'deliveryType', 58), numeric('Usia kehamilan saat lahir (minggu)', 68, row => row.gestationalWeeks)]
-      : [numeric('Lingkar kepala (cm)', 58, row => row.headCircumferenceCm), numeric('LiLA jika diukur (cm)', 52, row => row.lilaCm)]),
+      : [numeric('Lingkar kepala (cm)', 58, row => row.headCircumferenceCm)]),
     field('Catatan', 'notes', baby ? 80 : 96),
   ];
 }
@@ -58,6 +76,9 @@ const motherColumns: ReportColumn[] = [
   field('Nama suami', 'husbandName', 90), field('NIK suami', 'husbandNik', 90),
   field('No. HP ibu/keluarga', 'phone', 80), field('Posyandu', 'posyandu', 80),
   numeric('Usia kehamilan (minggu)', 65, row => row.gestationalWeeks),
+  numeric('Graviditas', 52, row => clinicalGpa(row).gravida),
+  numeric('Paritas', 46, row => clinicalGpa(row).para),
+  numeric('Abortus', 46, row => clinicalGpa(row).abortus),
   numeric('BB (kg)', 48, row => row.weightKg ?? clinicalNumber(row, 'BB')),
   numeric('TB (cm)', 48, row => row.heightCm ?? clinicalNumber(row, 'TB')),
   { label: 'Tekanan darah (mmHg)', width: 78, value: row => show(row.bloodPressure ?? clinical(row, 'TD')?.replace(/\s*mmHg$/i, '')) },

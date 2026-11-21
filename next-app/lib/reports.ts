@@ -14,6 +14,7 @@ export type ReportRow = {
   fatherName?: string; fatherNik?: string; phone?: string; deliveryType?: string;
   gestationalWeeks?: number; headCircumferenceCm?: number; lilaCm?: number;
   husbandName?: string; husbandNik?: string; bloodPressure?: string;
+  gravida?: number; para?: number; abortus?: number; gpa?: string;
 };
 export type ReportAvailability = { count: number; startDate: string | null; endDate: string | null; error: string | null };
 
@@ -66,6 +67,13 @@ const textField = (value: unknown) => typeof value === 'string' && value.trim() 
 const numberField = (value: unknown) => value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value)) ? Number(value) : undefined;
 
 function personFields(person: Person) {
+  const g = numberField(person.gravida);
+  const p = numberField(person.para);
+  const a = numberField(person.abortus);
+  const gpa = textField(person.gpa) ?? ((g !== undefined || p !== undefined || a !== undefined)
+    ? `G${g ?? 0}P${p ?? 0}A${a ?? 0}`
+    : undefined);
+
   return {
     personId: person.id, name: person.name, posyandu: person.posyandu?.name ?? '—',
     nik: textField(person.nik), birthDate: textField(person.birth_date), gender: textField(person.gender),
@@ -75,6 +83,7 @@ function personFields(person: Person) {
     phone: textField(person.phone_number), deliveryType: textField(person.delivery_type),
     gestationalWeeks: numberField(person.gestational_age_weeks),
     birthWeightKg: numberField(person.birth_weight_kg), birthLengthCm: numberField(person.birth_length_cm),
+    gravida: g, para: p, abortus: a, gpa,
   };
 }
 

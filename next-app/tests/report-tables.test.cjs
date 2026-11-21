@@ -28,7 +28,8 @@ const rows = [
     posyandu: 'Posyandu Contoh', weightKg: 10.5, heightCm: 80, result: 'Pengukuran', notes: 'Catatan balita', headCircumferenceCm: 48 },
   { id: 'mother', date: '2026-11-17', category: 'Ibu Hamil', name: 'Ibu Hamil Contoh', birthDate: '1998-05-14',
     husbandName: 'Suami Contoh', husbandNik: '0000000000000004', phone: '081234567891', posyandu: 'Posyandu Contoh',
-    result: 'Kunjungan', notes: 'BB: 52.5 kg\nTB: 158 cm\nTD: 110/70 mmHg\nLiLA: 24.5 cm\nCatatan ibu' },
+    result: 'Kunjungan', notes: 'BB: 52.5 kg\nTB: 158 cm\nTD: 110/70 mmHg\nLiLA: 24.5 cm\nCatatan ibu',
+    gravida: 2, para: 1, abortus: 0, gpa: 'G2P1A0' },
 ];
 function pdfText(pdf) {
   return pdf.context.enumerateIndirectObjects().filter(([, value]) => value instanceof PDFRawStream)
@@ -70,6 +71,14 @@ test('each category has its agreed columns without duplicate BB/PB or a record-t
     assert(tables[1].columns.some(column => column.label === label));
   }
   assert(tables[2].columns.some(column => column.label === 'Nama suami'));
+  assert(!tables[1].columns.some(column => /LiLA/i.test(column.label)));
+  assert(!tables[2].columns.some(column => column.label === 'GPA'));
+  assert(tables[2].columns.some(column => column.label === 'Graviditas'));
+  assert(tables[2].columns.some(column => column.label === 'Paritas'));
+  assert(tables[2].columns.some(column => column.label === 'Abortus'));
+  assert.equal(tables[2].columns.find(column => column.label === 'Graviditas').value(rows[2], 0), 2);
+  assert.equal(tables[2].columns.find(column => column.label === 'Paritas').value(rows[2], 0), 1);
+  assert.equal(tables[2].columns.find(column => column.label === 'Abortus').value(rows[2], 0), 0);
 });
 
 test('screen pagination shows newest dates first while export tables stay oldest first', async () => {
@@ -125,6 +134,9 @@ test('Excel contains one normal sheet with three plain tables and no frozen pane
   assert(sectionCell(sheet, 'Bayi', 'Tanggal').value instanceof Date);
   assert.equal(sectionCell(sheet, 'Bayi', 'Berat Badan Lahir (kg)').value, 3.2);
   assert.equal(sectionCell(sheet, 'Bayi', 'Panjang Badan Lahir (cm)').value, 50);
+  assert.equal(sectionCell(sheet, 'Ibu Hamil', 'Graviditas').value, 2);
+  assert.equal(sectionCell(sheet, 'Ibu Hamil', 'Paritas').value, 1);
+  assert.equal(sectionCell(sheet, 'Ibu Hamil', 'Abortus').value, 0);
   assert.equal(sectionCell(sheet, 'Ibu Hamil', 'Tekanan darah (mmHg)').value, '110/70');
   assert.equal(sectionCell(sheet, 'Balita', 'Nama balita').value, '=Nama Balita Contoh');
   assert.equal(sectionCell(sheet, 'Balita', 'Nama balita').formula, undefined);
@@ -155,7 +167,7 @@ test('PDF uses landscape A3 tables and includes every category, parent/contact v
   assert.equal(pdf.getPageCount(), 1);
   assert.equal(pdf.getPage(0).getWidth(), 1190.55);
   assert.equal(pdf.getPage(0).getHeight(), 841.89);
-  for (const value of [REPORT_TITLE, '0 hari (baru lahir)', 'Nama ayah', 'NIK ayah', 'Nama suami', '081234567890', '0000000000000001', 'Berat Badan Lahir (kg)', 'Panjang Badan Lahir (cm)', 'Catatan bayi', 'Catatan balita', 'Catatan ibu']) {
+  for (const value of [REPORT_TITLE, '0 hari (baru lahir)', 'Nama ayah', 'NIK ayah', 'Nama suami', 'Graviditas', 'Paritas', 'Abortus', '081234567890', '0000000000000001', 'Berat Badan Lahir (kg)', 'Panjang Badan Lahir (cm)', 'Catatan bayi', 'Catatan balita', 'Catatan ibu']) {
     assert(hasPdfText(content, value), `Missing PDF text: ${value}`);
   }
   assert((content.match(/\nS\n/g) ?? []).length > 100, 'Cell borders were not drawn');
